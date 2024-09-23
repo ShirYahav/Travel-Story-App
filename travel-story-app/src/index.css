@@ -1,0 +1,21 @@
+:root {
+    --white : #ffffff;
+    --lightGrey: #f3f3f3;
+    --darkBrown: #473D3A;
+    --lightBrown: #B25E39;
+}
+
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    text-align: center;
+    background-color: var(--lightGrey);
+    font-family:Georgia, 'Times New Roman', Times, serif
+}
+
+p{
+    /* font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}

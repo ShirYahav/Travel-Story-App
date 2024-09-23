@@ -1,0 +1,62 @@
+.slideshowImage {
+    margin-top: 1px;
+    width: 100%;
+    height: 500px;
+    object-fit :cover;
+}
+
+.searchBarContainer {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the search bar horizontally and vertically */
+    z-index: 10; /* Ensure the search bar is above the images */
+    width: 80%; /* Adjust width as necessary */
+    display: flex;
+    flex-direction: column;
+    text-align: start;
+}
+
+.searchBar {
+    width: 38%;
+    padding: 12px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.getInspired {
+    color: var(--lightGrey);
+    font-size: 45px;
+    margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+    .searchBarContainer{
+        top: 25%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .getInspired {
+      font-size: 25px; 
+      margin-bottom: 6px; 
+    }
+
+    .searchBar {
+      width: 159px;
+      left: 50%;
+      padding: 10px 13px;
+      font-size: 10px;
+      align-items: center;
+    }
+
+    .slideshowImage {
+        height: 400px;
+    }
+
+}

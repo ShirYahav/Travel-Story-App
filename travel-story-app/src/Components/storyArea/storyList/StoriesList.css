@@ -1,0 +1,27 @@
+.sliderContainer {
+    height: 350px;
+}
+
+.sliderContainer .slick-slide > div  {
+    display: grid;
+    place-items: center;
+    width: 80%;
+    margin-top: 50px;
+    margin: auto;
+    height: 350px;
+    padding: 0px;
+}
+
+.slick-dots {
+    bottom: 16px;
+}
+
+@media (max-width: 768px) {
+    .storyCardsContainer {
+        gap: 10px
+    }
+
+    .sliderContainer .slick-slide > div  {
+        padding-left: 86px;
+    }
+}

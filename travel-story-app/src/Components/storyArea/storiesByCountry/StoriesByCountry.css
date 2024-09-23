@@ -1,0 +1,7 @@
+.countryHeadline {
+    color: var(--darkBrown);
+    font-size: 50px;
+    padding: 25px;
+    letter-spacing: 9px;
+    font-weight: 800;
+}

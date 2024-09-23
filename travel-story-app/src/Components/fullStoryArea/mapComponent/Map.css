@@ -1,0 +1,92 @@
+.storyMap {
+    width: 100%;
+    height: 500px;
+    margin-top: 1px;
+}
+
+.pinImageDiv {
+    width: 43px;
+    height: 43px;
+    background-color: var(--lightGrey);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+}
+.pinImage {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--lightGrey);
+    transform: rotate(45deg);
+    object-fit: cover;
+}
+
+.infoWindow {
+    width: 375px;
+}
+
+.mapPhotosDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 7px;
+}
+
+.mapPhoto {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+}
+
+.mapInformation {
+    text-align: left;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+
+.mapStoryTitle {
+    color: var(--darkBrown);
+    font-size: 25px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    margin-bottom: 1px;
+}
+
+.mapHr {
+    width: 371px;
+    border: none;
+    border-top: 2px solid var(--darkBrown);
+    margin: 0;
+    margin-top: 5px;
+}
+
+.mapStoryPar {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@media (max-width: 768px) {
+    .storyMap {
+        height: 600px;
+    }
+
+    .infoWindow {
+        max-width: 242px;
+    }
+
+    .mapPhotosDiv {
+        max-width: 237px;
+        gap: 4px;
+    }
+    
+    .mapPhotosDiv img {
+        width: 80px;
+        height: 88px;
+    }
+
+    .mapInformation{
+        max-width: 242px;
+    }
+
+    .mapHr {
+        width: 242px;
+    }
+}

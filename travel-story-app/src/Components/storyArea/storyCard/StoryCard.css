@@ -1,0 +1,73 @@
+.storyCard {
+    width: 240px;
+    height: 285px;
+    background-color: var(--lightBrown);
+    border-radius: 8px;
+    margin-bottom: 50px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.storyCard:hover {
+    transform: scale(1.05); 
+}
+
+
+.imageOverlayContainer {
+    position: relative;
+    height: 285px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+}
+
+.imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+}
+
+.textContainer {
+    position: absolute;
+    top: 16px;
+    left: 22px;
+    right: 22px;
+    bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    z-index: 2;
+    border: 3px solid white;
+    background-color: rgba(178, 94, 67, 0.6);
+}
+
+.byUser {
+    position: absolute;
+    bottom: -8px;
+    left: 2px;
+    color: var(--lightGrey);
+    font-size: 10px;
+    padding: 3px 5px;
+    border-radius: 5px;
+}
+
+.storyTitle {
+    color: var(--lightGrey);
+    font-size: 21px;
+    margin-top: 7px;
+    height: 70px;
+}
+
+.storyDescription {
+    font-size: 13px;
+    text-align: start;
+    border: 1px solid white;
+    height: 87px;
+    padding: 5px;
+    border-radius: 6px;
+    color: var(--lightGrey);
+}

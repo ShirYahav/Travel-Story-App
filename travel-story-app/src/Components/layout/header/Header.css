@@ -1,0 +1,33 @@
+.header-menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+    background-color: var(--lightBrown);
+}
+
+.menu-left,
+.menu-right {
+    color: var(--lightGrey);
+}
+
+.menu-left {
+    margin-left: 10px;
+}
+
+.menu-right {
+    margin-right: 10px;
+}
+
+a {
+    color: var(--lightGrey); 
+    text-decoration: none;
+}
+  
+ a.active {
+    color: white; 
+    background-color: var(--lightBrown); 
+  }
+  
+/* a:hover {
+} */

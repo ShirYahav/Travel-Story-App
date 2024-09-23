@@ -1,0 +1,13 @@
+.footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 60px;
+    background-color: var(--lightBrown);
+    color: var(--lightGrey);
+}
+
+.footer-copyright {
+    font-size: 10px;
+    margin-top: 6px;
+}

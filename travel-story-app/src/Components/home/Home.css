@@ -1,0 +1,60 @@
+.ourCommunity {
+    font-size: 45px;
+    font-weight: bold;
+    color: var(--darkBrown);
+}
+
+.underlineOurCommunity {
+    background-color: var(--darkBrown);
+    width: 300px;
+    margin-top: -20px;
+}
+
+.ourCommunityParagraph{
+    color: var(--darkBrown);
+    font-size: 29px;
+    width: 90%;
+    margin-left: 62px;
+    word-spacing: -1px;
+    line-height: 1.4;
+}
+
+.HomeStories {
+    width: 100%;
+    background-color: var(--darkBrown);
+    padding-bottom: 30px;
+    margin-bottom: 1px;
+}
+
+.peopleTell {
+    font-size: 40px;
+    font-weight: bold;
+    color: var(--lightGrey);
+    padding-top: 40px;
+}
+
+.underlinePeopleTell {
+    width: 220px;
+    margin-top: -10px;
+    margin-bottom: 30px;
+}
+@media (max-width: 768px) {
+    .ourCommunity {
+        font-size: 35px;
+    }
+    .ourCommunityParagraph{
+        font-size: 20px;
+        margin-left: 23px;
+    }
+    .peopleTell{
+        font-size: 28px;
+    }
+
+    .underlineOurCommunity {
+        width: 250px;
+    }
+
+    .underlinePeopleTell {
+        width: 40%;
+    }
+}
