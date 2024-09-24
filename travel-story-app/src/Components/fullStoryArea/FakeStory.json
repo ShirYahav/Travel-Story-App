@@ -68,29 +68,29 @@
   ],
   "route": [
     {
-      "from": "Tokyo",
-      "to": "Kyoto",
+      "origin": "Tokyo",
+      "destination": "Kyodestination",
       "wayOfTransport": "car",
       "note":"Bullet Train",
       "time": 140
     },
     {
-      "from": "Kyoto",
-      "to": "Osaka",
+      "origin": "Kyoto",
+      "destination": "Osaka",
       "wayOfTransport": "car",
       "note":"rented",
       "time": 180
     },
     {
-      "from": "Osaka",
-      "to": "Nara",
+      "origin": "Osaka",
+      "destination": "Nara",
       "wayOfTransport": "car",
       "note":"",
       "time": 50
     },
     {
-      "from": "Nara",
-      "to": "Tokyo",
+      "origin": "Nara",
+      "destination": "Tokyo",
       "wayOfTransport": "car",
       "note":"",
       "time": 200

@@ -1,0 +1,46 @@
+.dialogOverlay {
+    position: absolute;
+    background: var(--lightGrey);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    border-radius: 5px;
+    width: 233px;
+}
+
+.dialogInfo{
+    text-align: start;
+}
+
+.dialogContent {
+    text-align: center;
+}
+
+.dialogContent h4 {
+    margin-top: 12px;
+    margin-bottom: 3px;
+    color: var(--darkerLightBrown);
+}
+
+.dialogContent p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.closeDialogButton {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    height: 16px;
+    width: 18px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    background-color: var(--darkerLightBrown);
+    border-radius: 4px;
+}
+
+.closeDialogButton img {
+    width: 14px;  
+    height: 15px;
+    margin-top: 1px;
+}
