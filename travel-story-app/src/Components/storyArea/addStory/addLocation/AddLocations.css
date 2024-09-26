@@ -20,9 +20,34 @@
     object-fit: cover;
 }
 
+.addSaveLocationButtons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-left: 48px;
+    margin-top: 15px;
+    margin-bottom: 30px;
+}
+
 @media (max-width: 768px) {
     .formImageDiv img {
         width: 120px;
         height: 120px;
+    }
+    
+    .addSaveLocationButtons{
+        flex-direction: column;
+        gap: 3px;
+        margin-left: 0px;
+        margin-top: 15px;
+        margin-bottom: 30px;
+    }
+
+    .addSaveLocationButtons button {
+        margin-top: 10px;
+        width: 91%;
+        margin-left: 20px;
+        font-size: 12px;
+        padding: 3px;
     }
 }

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import {
   Box,
   TextField,
@@ -13,10 +12,10 @@ import DeleteIcon from "@mui/icons-material/Cancel";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
-import axios from "axios";
 import debounce from "lodash.debounce";
 import "./AddLocations.css";
+import { fetchCitiesAPI, fetchCountriesAPI } from "../../../../services/CountriesCitiesService";
+import LocationModel from "../../../../models/LocationModel";
 
 //const rapidApiKey = process.env.RAPIDAPI_KEY;
 
@@ -33,10 +32,10 @@ const theme = createTheme({
     },
   },
   typography: {
-    h4: {
+    h3: {
       fontFamily: 'Georgia, "Times New Roman", Times, serif',
-      marginTop: "20px",
-      fontSize: "30px",
+      marginTop: "30px",
+      fontSize: "32px",
     },
     h6: {
       marginBottom: "20px",
@@ -63,19 +62,8 @@ const currencies = [
   },
 ];
 
-interface Location {
-  country: string;
-  city: string;
-  startDate: Date | null;
-  endDate: Date | null;
-  story: string;
-  cost: number;
-  currency: string;
-  photos: FileList | null;
-}
-
 const AddLocations: React.FC = () => {
-  const [locations, setLocations] = useState<Location[]>([
+  const [locations, setLocations] = useState<LocationModel[]>([
     {
       country: "",
       city: "",
@@ -84,31 +72,24 @@ const AddLocations: React.FC = () => {
       story: "",
       cost: 0,
       currency: "",
-      photos: null,
+      photos: [],
     },
   ]);
 
-  const [countries, setCountries] = useState<{ name: string; code: string }[]>(
-    []
-  );
+  const [countries, setCountries] = useState<{ name: string; code: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [cities, setCities] = useState<string[]>([]);
   const [isLoadingCities, setIsLoadingCities] = useState(false);
 
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCountries = async () => {
+    const getCountries = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("https://restcountries.com/v3.1/all");
-        const countryData = response.data.map((country: any) => ({
-          name: country.name.common,
-          code: country.cca2, // ISO2 code
-        }));
-        setCountries(countryData);
+        const countryData = await fetchCountriesAPI(); 
+        setCountries(countryData); 
       } catch (error) {
         console.error("Error fetching countries: ", error);
       } finally {
@@ -116,32 +97,18 @@ const AddLocations: React.FC = () => {
       }
     };
 
-    fetchCountries();
+    getCountries();
   }, []);
 
-  const fetchCities = debounce(async (countryCode: string, query: string) => {
+  const handleFetchCities = debounce(async (countryCode: string, query: string) => {
     if (!query) return;
+
     try {
       setIsLoadingCities(true);
-      const response = await axios.get(
-        "https://wft-geo-db.p.rapidapi.com/v1/geo/cities",
-        {
-          headers: {
-            "X-RapidAPI-Key":
-              "cd2f1c50f7msh3684719070c89f5p1862a9jsnd05c79a916a5",
-            "X-RapidAPI-Host": "wft-geo-db.p.rapidapi.com",
-          },
-          params: {
-            countryIds: countryCode,
-            namePrefix: query,
-            limit: 10,
-          },
-        }
-      );
-      const cityNames = response.data.data.map((city: any) => city.city);
+      const cityNames = await fetchCitiesAPI(countryCode, query);
       setCities(cityNames);
     } catch (error) {
-      console.error("Error fetching cities: ", error);
+      console.error("Error fetching cities in the component: ", error);
     } finally {
       setIsLoadingCities(false);
     }
@@ -161,20 +128,20 @@ const AddLocations: React.FC = () => {
   ) => {
     const selectedCountry = countries.find((c) => c.name === countryName);
     if (!selectedCountry) return;
-    fetchCities(selectedCountry.code, cityQuery);
+    handleFetchCities(selectedCountry.code, cityQuery);
   };
 
-  const handleLocationChange = <K extends keyof Location>(
+  const handleLocationChange = <K extends keyof LocationModel>(
     index: number,
     field: K,
-    value: Location[K]
+    value: LocationModel[K]
   ) => {
     const updatedLocations = [...locations];
     updatedLocations[index][field] = value;
     setLocations(updatedLocations);
   };
 
-  const addLocation = () => {
+  const addLocationForm = () => {
     setLocations([
       ...locations,
       {
@@ -185,39 +152,50 @@ const AddLocations: React.FC = () => {
         story: "",
         cost: 0,
         currency: "",
-        photos: null,
+        photos: [],
       },
     ]);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
     const files = event.target.files;
     if (files) {
       const fileArray = Array.from(files);
-
-      if (selectedFiles.length + fileArray.length > 3) {
+      if (
+        locations[index].photos &&
+        locations[index].photos.length + fileArray.length > 3
+      ) {
         setErrorMessage("You can only upload up to 3 images.");
       } else {
-        const newFiles = [...selectedFiles, ...fileArray].slice(0, 3);
-        setSelectedFiles(newFiles);
+        const newFiles = [
+          ...(locations[index].photos || []),
+          ...fileArray,
+        ].slice(0, 3);
+        handleLocationChange(index, "photos", newFiles);
         setErrorMessage(null);
       }
     }
   };
 
-  const handleDeleteImg = (index: number) => {
-    const newFiles = selectedFiles.filter(
-      (_, fileIndex) => fileIndex !== index
+  const handleDeleteImg = (locationIndex: number, imgIndex: number) => {
+    const updatedPhotos = locations[locationIndex].photos.filter(
+      (_, i) => i !== imgIndex
     );
-    setSelectedFiles(newFiles);
-    setErrorMessage(null);
+    handleLocationChange(locationIndex, "photos", updatedPhotos);
+  };
+
+  const saveLocations = () => {
+    console.log("Saved Locations:", locations);
   };
 
   return (
     <ThemeProvider theme={theme}>
       <Box>
-        <Typography variant="h4" gutterBottom color="secondary">
-          Add Your Travel Story
+        <Typography variant="h3" gutterBottom color="secondary">
+          Add Locations
         </Typography>
 
         {locations.map((location, index) => (
@@ -229,7 +207,7 @@ const AddLocations: React.FC = () => {
               border: "1px solid #ddd",
               borderRadius: "8px",
               width: {
-                xs: "100%",
+                xs: "90%",
                 sm: "75%",
                 md: "50%",
               },
@@ -267,14 +245,17 @@ const AddLocations: React.FC = () => {
                   getOptionLabel={(option) => option}
                   loading={isLoadingCities}
                   openOnFocus={false}
-                  value={location.city}
-                  onInputChange={(event, newInputValue) =>
+                  value={locations[index].city}
+                  onChange={(event, newValue) => {
+                    handleLocationChange(index, "city", newValue || "");
+                  }}
+                  onInputChange={(event, newInputValue) => {
                     handleCityInputChange(
                       index,
-                      location.country,
+                      locations[index].country,
                       newInputValue
-                    )
-                  }
+                    );
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -358,6 +339,10 @@ const AddLocations: React.FC = () => {
                   defaultValue="EUR"
                   size="small"
                   helperText="Please select your currency"
+                  value={location.currency}
+                  onChange={(e) =>
+                    handleLocationChange(index, "currency", e.target.value)
+                  }
                 >
                   {currencies.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -373,11 +358,11 @@ const AddLocations: React.FC = () => {
                     accept="image/*"
                     type="file"
                     multiple
-                    onChange={handleFileChange}
+                    onChange={(e) => handleFileChange(e, index)}
                     style={{ display: "none" }}
-                    id="upload-button"
+                    id={`upload-button-${index}`}
                   />
-                  <label htmlFor="upload-button">
+                  <label htmlFor={`upload-button-${index}`}>
                     <Button
                       variant="outlined"
                       fullWidth
@@ -393,7 +378,7 @@ const AddLocations: React.FC = () => {
                     <Typography
                       variant="body2"
                       color="error"
-                      sx={{ marginTop: "5px", fontSize:'12px' }}
+                      sx={{ marginTop: "5px", fontSize: "12px" }}
                     >
                       {errorMessage}
                     </Typography>
@@ -401,16 +386,17 @@ const AddLocations: React.FC = () => {
                 </div>
 
                 <div className="imagePreview">
-                  {selectedFiles.length > 0 &&
-                    selectedFiles.map((file, index) => (
-                      <div key={index} className="formImageDiv">
+                  {locations[index].photos &&
+                    locations[index].photos.length > 0 &&
+                    locations[index].photos.map((file, i) => (
+                      <div key={i} className="formImageDiv">
                         <img
                           src={URL.createObjectURL(file)}
-                          alt={`Preview ${index}`}
+                          alt={`Preview ${i}`}
                         />
 
                         <IconButton
-                          onClick={() => handleDeleteImg(index)}
+                          onClick={() => handleDeleteImg(index, i)}
                           style={{
                             position: "absolute",
                             top: "-10px",
@@ -432,9 +418,25 @@ const AddLocations: React.FC = () => {
           </Box>
         ))}
 
-        <Button variant="contained" color="secondary" onClick={addLocation} size="small" style={{margin: '20px'}}>
-          Add Another Location
-        </Button>
+        <div className="addSaveLocationButtons">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={addLocationForm}
+            size="medium"
+          >
+            Add Another Location
+          </Button>
+
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={saveLocations}
+            size="medium"
+          >
+            Save Locations and Continue
+          </Button>
+        </div>
       </Box>
     </ThemeProvider>
   );
