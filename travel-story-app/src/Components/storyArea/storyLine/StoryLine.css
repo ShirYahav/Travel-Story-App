@@ -5,12 +5,12 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: var(--darkBrown);
+    background-color: var(--lightGrey);
     margin: 13px;
     border-radius: 8px;
     transition: transform 0.3s ease;
     cursor: pointer;
-    box-shadow: 6px 6px 6px rgba(65, 38, 26, 0.2);
+    box-shadow: 8px 8px 8px rgba(65, 38, 26, 0.2);
 }
 
 .storyLine:hover {
@@ -34,7 +34,7 @@
     margin-left: 20px;
     height: 150px;
     width: 297px;
-    color: var(--lightGrey);
+    color: var(--darkBrown);
 }
 
 .storyTitleLine {

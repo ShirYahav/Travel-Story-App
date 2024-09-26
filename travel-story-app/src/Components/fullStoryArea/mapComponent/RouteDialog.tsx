@@ -10,11 +10,12 @@ interface RouteDialogProps {
   transportType: string;
   time: number;
   note: string;
+  cost: number;
   x: number; // X position of the click
   y: number; // Y position of the click
 }
 
-const RouteDialog: React.FC<RouteDialogProps> = ({ open, onClose,origin, destination, transportType, time, note, x, y }) => {
+const RouteDialog: React.FC<RouteDialogProps> = ({ open, onClose,origin, destination, transportType, time, note, cost, x, y }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   
@@ -50,6 +51,7 @@ const RouteDialog: React.FC<RouteDialogProps> = ({ open, onClose,origin, destina
           <p><strong>Transport Type:</strong> {transportType}</p>
           <p><strong>Time:</strong> {time} minutes</p>
           {note && <p><strong>Note:</strong> {note}</p>}
+          {cost && <p><strong>Cost:</strong> {cost}</p>}
         </div>
       </div>
     </div>

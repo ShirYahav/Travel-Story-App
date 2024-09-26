@@ -1,0 +1,28 @@
+.inputFieldAddForm {
+    margin-top: 20px;
+}
+
+.imagePreview {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+}
+
+.formImageDiv {
+    margin-top: 20px;
+    position: relative;
+}
+
+.formImageDiv img {
+    width: 140px;
+    height: 140px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .formImageDiv img {
+        width: 120px;
+        height: 120px;
+    }
+}

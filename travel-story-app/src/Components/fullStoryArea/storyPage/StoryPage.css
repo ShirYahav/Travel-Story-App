@@ -1,0 +1,44 @@
+.likesSection {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.likesDiv {
+    width: 200px;
+    padding: 10px;
+    border-radius: 6px;
+    background-color: var(--darkBrown);
+    color: var(--lightGrey);
+    margin-left: 10px;
+}
+
+.likeButton {
+    border: 3px solid var(--darkBrown);
+    border-radius: 6px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+.likeButton img {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+    .likesDiv{
+        width: 180px;
+        padding: 7px;
+        margin-left: 5px;
+    }
+
+    .likeButton {
+        height: 31px;
+    }
+
+    .likeButton img {
+        margin-top: 2px;
+    }
+}

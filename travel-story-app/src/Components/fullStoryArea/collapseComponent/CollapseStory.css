@@ -1,0 +1,58 @@
+.collapse-button {
+    color: var(--darkBrown);
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 23px;
+    font-weight: bold;
+    width: 100%;
+    text-align: left;
+    border-top: 2px solid var(--darkerLightBrown);
+    background-color: var(--lightGrey);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family:Georgia, 'Times New Roman', Times, serif
+}
+
+.collapse-button img {
+    width: 25px;
+    height: 25px;
+}
+
+.arrow-icon {
+    width: 24px;
+    height: 24px;
+    margin-left: 10px;
+}
+
+.collapse-button:hover {
+    background-color: var(--lightBrown);
+    color: var(--lightGrey);
+}
+
+.collapse-content {
+    background-color: var(--lightGrey);
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    text-align: start;
+    margin-left: 15px;
+}
+
+.collapse-content p {
+    margin: 0;
+    line-height: 1.8; /* Adjust this value to control the space between lines */
+  }
+
+.location-photos {
+    width: 100%;
+}
+.location-photos img {
+    border-radius: 4px;
+    object-fit: cover;
+    width: 140px !important;
+    height: 140px;
+}

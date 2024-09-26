@@ -4,4 +4,37 @@
     padding: 25px;
     letter-spacing: 9px;
     font-weight: 800;
+    margin-bottom: -10px;
 }
+
+.addStory {
+    width: 139px;
+    padding: 5px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: none;
+    background-color: var(--lightBrown);
+    color: var(--lightGrey);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 25px;
+}
+
+.addStory:hover {
+    background-color: var(--darkerLightBrown);
+}
+
+.whitePlusIcon {
+    width: 26px;
+    height: 26px;
+}
+
+@media (max-width: 768px) {
+    .countryHeadline {
+        margin-bottom: 5px;
+    }
+}
+
+

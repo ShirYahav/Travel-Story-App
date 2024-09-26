@@ -6,7 +6,7 @@ import './Map.css';
 
 import story from '../FakeStory.json';  
 
-type Location = {
+interface Location {
   city: string;
   country: string;
   lat: number;
@@ -15,6 +15,7 @@ type Location = {
   endDate: string;
   story: string;
   photos: string[];
+  cost: number
 };
 
 const MapComponent: FunctionComponent<Record<string, unknown>> = () => {
@@ -74,6 +75,7 @@ const MapComponent: FunctionComponent<Record<string, unknown>> = () => {
                   )}{" "}
                   days
                 </p>
+                <p>Cost: {selectedLocation.cost}</p>
               </div>
             </div>
           </InfoWindow>

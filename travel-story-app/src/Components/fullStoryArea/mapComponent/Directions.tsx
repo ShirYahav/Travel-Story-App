@@ -8,6 +8,7 @@ interface Route {
   wayOfTransport: string;
   note:string;
   time: number;
+  cost: number;
 }
 
 export function Directions({ routesData }: { routesData: Route[] }) {
@@ -82,6 +83,7 @@ export function Directions({ routesData }: { routesData: Route[] }) {
         transportType={selectedRoute.wayOfTransport}
         time={selectedRoute.time}
         note={selectedRoute.note}
+        cost={selectedRoute.cost}
         x={clickPosition.x} 
         y={clickPosition.y} 
       />
