@@ -21,10 +21,6 @@
 }
 
 .addSaveLocationButtons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-left: 48px;
     margin-top: 15px;
     margin-bottom: 30px;
 }
@@ -44,9 +40,7 @@
     }
 
     .addSaveLocationButtons button {
-        margin-top: 10px;
-        width: 91%;
-        margin-left: 20px;
+        width: 74%;
         font-size: 12px;
         padding: 3px;
     }

@@ -62,19 +62,12 @@ const currencies = [
   },
 ];
 
-const AddLocations: React.FC = () => {
-  const [locations, setLocations] = useState<LocationModel[]>([
-    {
-      country: "",
-      city: "",
-      startDate: null,
-      endDate: null,
-      story: "",
-      cost: 0,
-      currency: "",
-      photos: [],
-    },
-  ]);
+interface AddLocationsProps {
+  locations: LocationModel[];
+  setLocations: (locations: LocationModel[]) => void;
+}
+
+const AddLocations: React.FC<AddLocationsProps>= ({ locations, setLocations }) => {
 
   const [countries, setCountries] = useState<{ name: string; code: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -187,10 +180,6 @@ const AddLocations: React.FC = () => {
     handleLocationChange(locationIndex, "photos", updatedPhotos);
   };
 
-  const saveLocations = () => {
-    console.log("Saved Locations:", locations);
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <Box>
@@ -278,6 +267,7 @@ const AddLocations: React.FC = () => {
                     slotProps={{
                       textField: { fullWidth: true, size: "small" },
                     }}
+                    format="dd/MM/yyyy"
                   />
                 </LocalizationProvider>
               </div>
@@ -294,6 +284,7 @@ const AddLocations: React.FC = () => {
                     slotProps={{
                       textField: { fullWidth: true, size: "small" },
                     }}
+                    format="dd/MM/yyyy"
                   />
                 </LocalizationProvider>
               </div>
@@ -421,20 +412,11 @@ const AddLocations: React.FC = () => {
         <div className="addSaveLocationButtons">
           <Button
             variant="contained"
-            color="secondary"
+            color="primary"
             onClick={addLocationForm}
             size="medium"
           >
             Add Another Location
-          </Button>
-
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={saveLocations}
-            size="medium"
-          >
-            Save Locations and Continue
           </Button>
         </div>
       </Box>

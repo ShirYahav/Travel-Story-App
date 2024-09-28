@@ -1,0 +1,23 @@
+.inputFieldAddForm {
+    margin-top: 20px;
+}
+
+.addRoutesButtons {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .addRoutesButtons{
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .addRoutesButtons button {
+        width: 91%;
+        margin-left: 20px;
+    }
+}

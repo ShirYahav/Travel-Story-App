@@ -1,0 +1,20 @@
+.step2Buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.step3Buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .step2Buttons{
+        flex-direction: column;
+        width: 91%;
+        margin-left: 20px;
+    }
+}
