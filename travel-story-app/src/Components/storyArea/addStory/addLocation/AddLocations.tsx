@@ -89,13 +89,11 @@ const AddLocations: React.FC<AddLocationsProps>= ({ locations, setLocations }) =
         setIsLoading(false);
       }
     };
-
     getCountries();
   }, []);
 
   const handleFetchCities = debounce(async (countryCode: string, query: string) => {
     if (!query) return;
-
     try {
       setIsLoadingCities(true);
       const cityNames = await fetchCitiesAPI(countryCode, query);

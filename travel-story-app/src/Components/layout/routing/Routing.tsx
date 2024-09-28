@@ -4,6 +4,7 @@ import Home from '../../home/Home';
 import StoriesByCountry from '../../storyArea/storiesByCountry/StoriesByCountry';
 import StoryPage from '../../fullStoryArea/storyPage/StoryPage';
 import AddStory from '../../storyArea/addStory/AddStory';
+import UpdateStory from '../../storyArea/updateStory/UpdateStory';
 
 
 const Routing: React.FC = () => {
@@ -14,6 +15,7 @@ const Routing: React.FC = () => {
           <Route path="/country-stories" element={<StoriesByCountry />} />
           <Route path="/story" element={<StoryPage />} />
           <Route path="/add-story" element={<AddStory />} />
+          <Route path="/update-story" element={<UpdateStory />} />
         </Routes>
       </>
     );

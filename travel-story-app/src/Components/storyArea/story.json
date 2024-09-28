@@ -1,0 +1,53 @@
+{
+    "user": "john_doe",
+    "countries": ["Japan"],
+    "title": "Exploring Japan",
+    "description": "An unforgettable journey through the heart of Japan, visiting Kyoto and Tokyo, experiencing culture, history, and modern life.",
+    "startDate": "2024-03-15T00:00:00.000Z",
+    "endDate": "2024-03-22T00:00:00.000Z",
+    "budget": 2500,
+    "currency": "JPY",
+    "locations": [
+      {
+        "country": "Japan",
+        "city": "Kyoto",
+        "startDate": "2024-03-15T00:00:00.000Z",
+        "endDate": "2024-03-18T00:00:00.000Z",
+        "story": "Kyoto was a serene city with beautiful temples and gardens. The Fushimi Inari Shrine hike was one of the highlights of my trip.",
+        "cost": 800,
+        "currency": "JPY",
+        "photos": []
+      },
+      {
+        "country": "Japan",
+        "city": "Tokyo",
+        "startDate": "2024-03-18T00:00:00.000Z",
+        "endDate": "2024-03-22T00:00:00.000Z",
+        "story": "Tokyo was an amazing blend of tradition and technology. The Shibuya Crossing and visiting the Tokyo Tower were unforgettable experiences.",
+        "cost": 1200,
+        "currency": "JPY",
+        "photos": []
+      }
+    ],
+    "routes": [
+      {
+        "origin": "Kyoto",
+        "destination": "Tokyo",
+        "transportType": "train",
+        "duration": 150,
+        "note": "Smooth and comfortable ride on the Shinkansen, took around 2.5 hours.",
+        "cost": 500,
+        "currency": "JPY"
+      },
+      {
+        "origin": "Tokyo",
+        "destination": "Nikko",
+        "transportType": "bus",
+        "duration": 180,
+        "note": "A scenic bus ride to the mountain town of Nikko, known for its historical sites and natural beauty.",
+        "cost": 300,
+        "currency": "JPY"
+      }
+    ]
+  }
+  
