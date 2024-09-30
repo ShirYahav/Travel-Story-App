@@ -1,11 +1,24 @@
-import express from 'express';
-const app = express();
-const port = 3000;
+import express, { Request, Response } from "express";
+import dal from "./src/dal";
+import cors from "cors";
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+import storiesController from './src/controllers/story-controller';
+
+const port: number = 3000; 
+
+dal.connect();
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use("/api" ,storiesController);
+
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('Welcome to my server!');
 });
 
 app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
