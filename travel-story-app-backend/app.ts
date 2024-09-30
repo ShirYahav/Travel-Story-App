@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import dal from "./src/dal";
 import cors from "cors";
+import dal from "./src/dal";
 
 import storiesController from './src/controllers/story-controller';
 

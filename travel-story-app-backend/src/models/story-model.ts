@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
+import mongoose, { Document, Schema, Model, Types } from "mongoose";
 import { ILocation } from "./location-model";
 import { IRoute } from "./route-model";
 
@@ -11,8 +11,8 @@ export interface IStory extends Document {
     endDate: Date;
     budget: number;
     currency: string;
-    locations: ILocation[];
-    routes: IRoute[]; 
+    locations: Types.ObjectId[];
+    routes: Types.ObjectId[]; 
     likes: number;
 }
 
