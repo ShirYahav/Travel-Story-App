@@ -5,21 +5,10 @@ import arrowDownWhite from "../../../assets/SVGs/arrow-down-circle-white.png";
 import arrowDownBrown from "../../../assets/SVGs/arrow-down-circle-brown.png";
 import arrowUpWhite from "../../../assets/SVGs/arrow-up-circle-white.png";
 import arrowUpBrown from "../../../assets/SVGs/arrow-up-circle-brown.png";
-
-interface Location {
-  city: string;
-  country: string;
-  lat: number;
-  lng: number;
-  startDate: string;
-  endDate: string;
-  story: string;
-  photos: string[];
-  cost: number;
-}
+import LocationModel from "../../../models/LocationModel";
 
 interface CollapseStoryProps {
-  location: Location;
+  location: LocationModel;
 }
 
 const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
@@ -73,7 +62,7 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
             {location.photos.map((photo, index) => (
               <img
                 key={index}
-                src={photo}
+                // src={photo}
                 alt={`${location.city} photo ${index}`}
                 style={{ width: "100px", margin: "5px" }}
               />

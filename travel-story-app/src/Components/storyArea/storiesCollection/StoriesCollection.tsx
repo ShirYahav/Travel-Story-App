@@ -1,24 +1,10 @@
 import React from 'react';
 import StoryLine from '../storyLine/StoryLine';
 import './storiesCollection.css';
-
-interface Story {
-  username: string;
-  title: string;
-  description: string;
-  locations: {
-    city: string;
-    country: string;
-    lat: number;
-    lng: number;
-    startDate: string;
-    endDate: string;
-    photos: string[];
-  }[];
-}
+import StoryModel from '../../../models/StoryModel';
 
 interface StoriesCollectionProps {
-  stories: Story[];
+  stories: StoryModel[];
 }
 
 const StoriesCollection: React.FC<StoriesCollectionProps> = ({ stories }) => {
@@ -31,12 +17,7 @@ const StoriesCollection: React.FC<StoriesCollectionProps> = ({ stories }) => {
 
         return (
           <div key={index}>
-            <StoryLine
-              title={story.title}
-              description={story.description}
-              username={story.username}
-              photo={firstPhoto}
-            />
+            <StoryLine story={stories[index]}/>
           </div>
         );
       })}

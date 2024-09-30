@@ -57,4 +57,25 @@ export const extractCountriesFromLocations = (locations: LocationModel[]): strin
 
   return countries;
 };
+
+export async function getCityCoordinatesGoogle(city: string): Promise<{ lat: number; lng: number } | null> {
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'Your_API_Key_Here';
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(city)}&key=${apiKey}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.results && data.results.length > 0) {
+      const { lat, lng } = data.results[0].geometry.location;
+      return { lat, lng };
+    } else {
+      console.error(`No results found for city: ${city}`);
+      return null;
+    }
+  } catch (error) {
+    console.error(`Error fetching coordinates for city: ${city}`, error);
+    return null;
+  }
+}
   

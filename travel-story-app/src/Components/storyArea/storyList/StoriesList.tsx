@@ -1,27 +1,13 @@
-import React from 'react';
+import React from "react";
 import Slider from "react-slick";
-import StoryCard from '../storyCard/StoryCard';
-import "slick-carousel/slick/slick.css"; 
+import StoryCard from "../storyCard/StoryCard";
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import './StoriesList.css';
-
-interface Story {
-  username: string;
-  title: string;
-  description: string;
-  locations: {
-    city: string;
-    country: string;
-    lat: number;
-    lng: number;
-    startDate: string;
-    endDate: string;
-    photos: string[];
-  }[];
-}
+import "./StoriesList.css";
+import StoryModel from "../../../models/StoryModel";
 
 interface StoriesListProps {
-  stories: Story[];
+  stories: StoryModel[];
 }
 
 const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
@@ -45,7 +31,7 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
           dots: true,
           autoplay: true,
           autoplaySpeed: 8000,
-        }
+        },
       },
       {
         breakpoint: 1024,
@@ -56,7 +42,7 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
           dots: true,
           autoplay: true,
           autoplaySpeed: 6000,
-        }
+        },
       },
       {
         breakpoint: 780,
@@ -66,38 +52,29 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
           initialSlide: 2,
           autoplay: true,
           autoplaySpeed: 6000,
-        }
+        },
       },
       {
         breakpoint: 520,
         settings: {
           slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
 
   return (
     <div className="sliderContainer">
-    <Slider {...settings} className="storyCardsContainer">
-      {stories.map((story, index) => {
-        const firstPhoto = story.locations.length > 0 && story.locations[0].photos.length > 0
-          ? story.locations[0].photos[0]
-          : 'https://via.placeholder.com/150'; 
-
-        return (
-          <div key={index}>
-            <StoryCard
-              title={story.title}
-              description={story.description}
-              username={story.username}
-              photo={firstPhoto}
-            />
-          </div>
-        );
-      })}
-    </Slider>
+      <Slider {...settings} className="storyCardsContainer">
+        {stories.map((story, index) => {
+          return (
+            <div key={index}>
+              <StoryCard story={stories[index]} />
+            </div>
+          );
+        })}
+      </Slider>
     </div>
   );
 };

@@ -1,24 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './RouteDialog.css';
-import closeSvg from '../../../assets/SVGs/close-svgrepo-com.png'
+import closeSvg from '../../../assets/SVGs/close-svgrepo-com.png';
+import RouteModel from '../../../models/RouteModel';
 
 interface RouteDialogProps {
-  origin: string;
-  destination:string;
+  route: RouteModel; // Use RouteModel for route information
   open: boolean;
   onClose: () => void;
-  transportType: string;
-  time: number;
-  note: string;
-  cost: number;
   x: number; // X position of the click
   y: number; // Y position of the click
 }
 
-const RouteDialog: React.FC<RouteDialogProps> = ({ open, onClose,origin, destination, transportType, time, note, cost, x, y }) => {
+const RouteDialog: React.FC<RouteDialogProps> = ({ route, open, onClose, x, y }) => {
   const [isMobile, setIsMobile] = useState(false);
 
-  
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -46,12 +41,12 @@ const RouteDialog: React.FC<RouteDialogProps> = ({ open, onClose,origin, destina
       <div className="dialogContent" onClick={(e) => e.stopPropagation()}>
         <h4>Transportation Information</h4>
         <div className="dialogInfo">
-          <p><strong>Origin:</strong> {origin}</p>
-          <p><strong>Destination:</strong> {destination}</p>
-          <p><strong>Transport Type:</strong> {transportType}</p>
-          <p><strong>Time:</strong> {time} minutes</p>
-          {note && <p><strong>Note:</strong> {note}</p>}
-          {cost && <p><strong>Cost:</strong> {cost}</p>}
+          <p><strong>Origin:</strong> {route.origin}</p>
+          <p><strong>Destination:</strong> {route.destination}</p>
+          <p><strong>Transport Type:</strong> {route.transportType}</p>
+          <p><strong>Time:</strong> {route.duration} minutes</p>
+          {route.note && <p><strong>Note:</strong> {route.note}</p>}
+          {route.cost && <p><strong>Cost:</strong> {route.cost} {route.currency}</p>}
         </div>
       </div>
     </div>
@@ -59,4 +54,3 @@ const RouteDialog: React.FC<RouteDialogProps> = ({ open, onClose,origin, destina
 };
 
 export default RouteDialog;
-

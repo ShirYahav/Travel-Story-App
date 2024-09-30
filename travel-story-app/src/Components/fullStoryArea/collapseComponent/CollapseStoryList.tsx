@@ -1,12 +1,18 @@
 import React from 'react';
-import CollapseStory from './CollapseStory';  // Import your component
-import story from '../FakeStory.json';  // Assuming you have a JSON file for locations
+import CollapseStory from './CollapseStory';
 import './CollapseStoryList.css'
+import LocationModel from '../../../models/LocationModel';
 
-const CollapseStoryList: React.FC = () => {
+// story from '../FakeStory.json';  // Assuming you have a JSON file for locations
+
+interface StoriesCollectionProps {
+  locations: LocationModel[];
+}
+
+const CollapseStoryList: React.FC <StoriesCollectionProps>= ({locations}) => {
   return (
     <div className='collapseStories'>
-      {story.locations.map((location, index) => (
+      {locations.map((location, index) => (
         <CollapseStory key={index} location={location} />
       ))}
     </div>

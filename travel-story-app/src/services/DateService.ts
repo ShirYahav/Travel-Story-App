@@ -1,12 +1,14 @@
 import LocationModel from "../models/LocationModel";
+import StoryModel from "../models/StoryModel";
 
-export function calculateDaysDifference(startDate: string, endDate: string): number {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const timeDifference = end.getTime() - start.getTime();    
-    const daysDifference = timeDifference / (1000 * 3600 * 24);
-    return Math.round(daysDifference); 
+export function calculateDaysDifference(startDate: Date | string, endDate: Date | string): number {
+  const start = typeof startDate === 'string' ? new Date(startDate) : startDate;
+  const end = typeof endDate === 'string' ? new Date(endDate) : endDate;
+  const timeDifference = end.getTime() - start.getTime();    
+  const daysDifference = timeDifference / (1000 * 3600 * 24);
+  return Math.round(daysDifference); 
 }
+
 
 export const formatDate = (date: Date): string => {
     const day = date.getDate(); // Get day (1-31)
@@ -30,4 +32,17 @@ export const getDateRangeFromLocations = (locations: LocationModel[]) => {
       }
     });
     return { earliestDate, latestDate };
+};
+
+export const convertStoryData = (stories: any[]): StoryModel[] => {
+  return stories.map((story) => ({
+    ...story,
+    startDate: new Date(story.startDate),  // Convert startDate string to Date
+    endDate: new Date(story.endDate),      // Convert endDate string to Date
+    locations: story.locations.map((location:LocationModel) => ({
+      ...location,
+      startDate: new Date(location.startDate),  // Convert location startDate
+      endDate: new Date(location.endDate),      // Convert location endDate
+    })),
+  }));
 };

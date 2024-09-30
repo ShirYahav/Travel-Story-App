@@ -1,28 +1,18 @@
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import RouteDialog from "./RouteDialog";
+import RouteModel from "../../../models/RouteModel"; // Import RouteModel
 
-interface Route {
-  origin: string;
-  destination: string;
-  wayOfTransport: string;
-  note:string;
-  time: number;
-  cost: number;
-}
-
-export function Directions({ routesData }: { routesData: Route[] }) {
-
+export function Directions({ routesData }: { routesData: RouteModel[] }) {
   const map = useMap();
-
   const routesLibrary = useMapsLibrary("routes");
   const [directionsService, setDirectionsService] = useState<google.maps.DirectionsService>();
   const [directionsRenderers, setDirectionsRenderers] = useState<google.maps.DirectionsRenderer[]>([]);
 
-    // Dialog control
-    const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 }); 
+  // Dialog control
+  const [selectedRoute, setSelectedRoute] = useState<RouteModel | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 }); 
 
   useEffect(() => {
     if (!routesLibrary || !map) return;
@@ -30,7 +20,6 @@ export function Directions({ routesData }: { routesData: Route[] }) {
     const newRenderers = routesData.map(() => new routesLibrary.DirectionsRenderer({ map }));
     setDirectionsRenderers(newRenderers); 
   }, [routesLibrary, map]);
-
 
   useEffect(() => {
     if (!directionsService || directionsRenderers.length === 0 || !map) return; 
@@ -40,7 +29,7 @@ export function Directions({ routesData }: { routesData: Route[] }) {
         const response = await directionsService.route({
           origin: route.origin,
           destination: route.destination,
-          travelMode: getTravelMode(route.wayOfTransport),
+          travelMode: getTravelMode(route.transportType),
           provideRouteAlternatives: false,
         });
 
@@ -52,12 +41,11 @@ export function Directions({ routesData }: { routesData: Route[] }) {
         });
 
         polyline.addListener("click", (event: google.maps.MapMouseEvent) => {
-          setSelectedRoute(route); 
+          setSelectedRoute(route);  // Set the clicked route as the selected route
           setDialogOpen(true); 
         
           const { x, y } = event.domEvent as MouseEvent;
-          console.log(`Click position - x: ${x}, y: ${y}`); 
-          setClickPosition({ x, y }); 
+          setClickPosition({ x, y });  // Capture the click position
         });
 
         directionsRenderers[index].setMap(map);
@@ -71,29 +59,24 @@ export function Directions({ routesData }: { routesData: Route[] }) {
     };
 
   }, [directionsService, directionsRenderers, routesData, map]);
-  
+
   return (
     <>
-    {selectedRoute && (
-      <RouteDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        origin={selectedRoute.origin}
-        destination={selectedRoute.destination}
-        transportType={selectedRoute.wayOfTransport}
-        time={selectedRoute.time}
-        note={selectedRoute.note}
-        cost={selectedRoute.cost}
-        x={clickPosition.x} 
-        y={clickPosition.y} 
-      />
-    )}
-  </>
+      {selectedRoute && (
+        <RouteDialog
+          route={selectedRoute}  // Pass the selected route here
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          x={clickPosition.x} 
+          y={clickPosition.y} 
+        />
+      )}
+    </>
   );
 }
 
-const getTravelMode = (wayOfTransport: string) => {
-  switch (wayOfTransport.toLowerCase()) {
+const getTravelMode = (transportType: string) => {
+  switch (transportType.toLowerCase()) {
     case "car":
       return google.maps.TravelMode.DRIVING;
     case "bus":

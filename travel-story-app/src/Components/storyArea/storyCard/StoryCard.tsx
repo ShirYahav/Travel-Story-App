@@ -1,26 +1,24 @@
 import React from 'react';
 import './StoryCard.css'
+import StoryModel from '../../../models/StoryModel';
 
 interface StoryCardProps {
-    title: string;
-    description: string;
-    username: string;
-    photo: string;
+  story: StoryModel;
 }
 
-const StoryCard: React.FC<StoryCardProps> = ({title, description, username, photo }) => {
+const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
     return (
       <>
       <div className="storyCard">
         <div
           className="imageOverlayContainer"
-          style={{ backgroundImage: `url(${photo})` }} // Dynamically set the image
+          style={{ backgroundImage: `url(${story.locations[0].photos[0]})` }} // Dynamically set the image
         >
-          <div className="imageOverlay"></div> {/* Milky overlay */}
+          <div className="imageOverlay"></div>
           <div className="textContainer">
-            <h3 className="storyTitle">{title}</h3>
-            <p className="storyDescription">{description}</p>
-            <p className="byUser">By: {username}</p>
+            <h3 className="storyTitle">{story.title}</h3>
+            <p className="storyDescription">{story.description}</p>
+            <p className="byUser">By: {story.user}</p>
           </div>
         </div>
       </div>
