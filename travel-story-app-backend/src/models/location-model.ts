@@ -43,7 +43,6 @@ const LocationSchema: Schema = new Schema({
     },
     videos: {
         type: [String],
-        required: false
     }
 }, {
     versionKey: false,

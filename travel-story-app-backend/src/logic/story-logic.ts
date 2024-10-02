@@ -1,6 +1,9 @@
 import StoryModel, { IStory } from "../models/story-model";
 import LocationModel, { ILocation } from "../models/location-model";
 import RouteModel, { IRoute } from "../models/route-model";
+import locationLogic from './location-logic';
+import routeLogic from "./route-logic";
+import { Types } from "mongoose";
 
 async function getAllStories(): Promise<IStory[]> {
   return StoryModel.find()
@@ -16,18 +19,22 @@ async function getStoriesByCountry(country: string): Promise<IStory[]> {
     .exec();
 }
 
-async function addStory(
-  user: string,
-  title: string,
-  description: string,
-  countries: string[],
-  startDate: Date,
-  endDate: Date,
-  budget: number,
-  currency: string,
-  locations: ILocation[],
-  routes: IRoute[]
-): Promise<IStory> {
+async function getStoriesByUserId(userId: string): Promise<IStory[]> {
+  const stories = await StoryModel.find({ user: userId })
+  .populate({ path: "locations", model: LocationModel })
+  .populate({ path: "routes", model: RouteModel })
+  .exec();
+  
+  if (!stories || stories.length === 0) {
+    throw new Error("No stories found for this user.");
+  }
+
+  return stories;
+}
+
+async function addStory(story: IStory): Promise<IStory> {
+  const { locations, routes } = story;
+
   if (locations.length === 0) {
     throw new Error("A story must have at least one location.");
   }
@@ -47,20 +54,18 @@ async function addStory(
   }
 
   const newStory = new StoryModel({
-    user: user,
-    title,
-    description,
-    countries,
-    startDate,
-    endDate,
-    budget,
-    currency,
-    locations: savedLocations.map((loc) => loc._id),
-    routes: savedRoutes.map((route) => route._id),
+    ...story, 
+    locations: savedLocations.map((loc) => loc._id), 
+    routes: savedRoutes.map((route) => route._id), 
   });
 
   return newStory.save();
 }
+
+
+
+
+
 
 async function updateStory(
   storyId: string,
@@ -74,58 +79,15 @@ async function updateStory(
   locations: ILocation[],
   routes: IRoute[]
 ): Promise<IStory | null> {
-  // Find the existing story by ID
+ 
   const existingStory = await StoryModel.findById(storyId);
   if (!existingStory) {
     throw new Error("Story not found.");
   }
 
-    // Step 1: Find and delete locations that are no longer in the updated locations list
-  const existingLocationIds = existingStory.locations.map((loc: any) => loc._id.toString());
-  const updatedLocationIds = locations.map((loc) => loc._id?.toString());
-  
-    // Identify locations to delete (those in existingStory but not in updated locations)
-  const locationsToDelete = existingLocationIds.filter(id => !updatedLocationIds.includes(id));
-  await LocationModel.deleteMany({ _id: { $in: locationsToDelete } });
-  
-  // Update Locations: either update or add new locations
-  const updatedLocations = [];
-  for (const locationData of locations) {
-    if (locationData._id) {
-      // Update existing location
-      const updatedLocation = await LocationModel.findByIdAndUpdate(locationData._id, locationData, { new: true });
-      updatedLocations.push(updatedLocation);
-    } else {
-      // Add new location
-      const newLocation = new LocationModel(locationData);
-      const savedLocation = await newLocation.save();
-      updatedLocations.push(savedLocation);
-    }
-  }
+  const updatedLocations = await locationLogic.updateLocations(existingStory, locations);
+  const updatedRoutes = await routeLogic.updateRoutes(existingStory, routes);
 
-  const existingRouteIds = existingStory.routes.map((route: any) => route._id.toString());
-  const updatedRouteIds = routes.map((route) => route._id?.toString());
-
-  // Identify routes to delete (those in existingStory but not in updated routes)
-  const routesToDelete = existingRouteIds.filter(id => !updatedRouteIds.includes(id));
-  await RouteModel.deleteMany({ _id: { $in: routesToDelete } });
-
-  // Update Routes: either update or add new routes
-  const updatedRoutes = [];
-  for (const routeData of routes) {
-    if (routeData._id) {
-      // Update existing route
-      const updatedRoute = await RouteModel.findByIdAndUpdate(routeData._id, routeData, { new: true });
-      updatedRoutes.push(updatedRoute);
-    } else {
-      // Add new route
-      const newRoute = new RouteModel(routeData);
-      const savedRoute = await newRoute.save();
-      updatedRoutes.push(savedRoute);
-    }
-  }
-
-  // Update the story with new data
   existingStory.title = title;
   existingStory.description = description;
   existingStory.countries = countries;
@@ -133,16 +95,34 @@ async function updateStory(
   existingStory.endDate = endDate;
   existingStory.budget = budget;
   existingStory.currency = currency;
-  existingStory.locations = updatedLocations.map((loc) => loc._id);
-  existingStory.routes = updatedRoutes.map((route) => route._id);
+  existingStory.locations = updatedLocations.map((loc) => loc._id as Types.ObjectId);
+  existingStory.routes = updatedRoutes.map((route) => route._id as Types.ObjectId);
 
-  // Save the updated story
   return existingStory.save();
 }
+
+async function deleteStory(storyId: string): Promise<void> {
+  
+  const existingStory = await StoryModel.findById(storyId);
+  if (!existingStory) {
+    throw new Error("Story not found.");
+  }
+
+  const locationIds = existingStory.locations;
+  await LocationModel.deleteMany({ _id: { $in: locationIds } });
+
+  const routeIds = existingStory.routes;
+  await RouteModel.deleteMany({ _id: { $in: routeIds } });
+
+  await StoryModel.findByIdAndDelete(storyId);
+}
+
 
 export default {
   getAllStories,
   getStoriesByCountry,
+  getStoriesByUserId,
   addStory,
-  updateStory
+  updateStory,
+  deleteStory,
 };

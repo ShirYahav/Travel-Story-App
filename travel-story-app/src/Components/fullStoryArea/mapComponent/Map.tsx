@@ -31,6 +31,8 @@ const MapComponent: React.FC = () => {
         if (coordinates) {
           updatedLocations.push({
             ...location,
+            _id:'',
+            videos: [],
             lat: coordinates.lat,
             lng: coordinates.lng,
             startDate: new Date(location.startDate),

@@ -20,7 +20,7 @@ const StorySchema: Schema = new Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId, 
         ref: "User",
-        required: [true, "User is required"]
+        //required: [true, "User is required"]
     },
     countries: {
         type: [String],
@@ -61,7 +61,7 @@ const StorySchema: Schema = new Schema({
     routes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "routes",
-        required: [true, "Routes are required"]
+        //required: [true, "Routes are required"]
     }],
     likes: {
         type: Number,

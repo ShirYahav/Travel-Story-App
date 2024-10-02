@@ -115,6 +115,7 @@ const UpdateLocations: React.FC <UpdateLocationsProps> = ({locations, setLocatio
     setLocations([
       ...locations,
       {
+        _id:'',
         country: "",
         city: "",
         startDate: null,
@@ -123,6 +124,7 @@ const UpdateLocations: React.FC <UpdateLocationsProps> = ({locations, setLocatio
         cost: 0,
         currency: "",
         photos: [],
+        videos:[],
       },
     ]);
   };

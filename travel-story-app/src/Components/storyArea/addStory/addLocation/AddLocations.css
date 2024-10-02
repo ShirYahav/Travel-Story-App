@@ -2,17 +2,24 @@
     margin-top: 20px;
 }
 
+.videoPreview,
 .imagePreview {
     display: flex;
     justify-content: space-around;
     flex-direction: row;
+    overflow-x: auto;
 }
 
+.formVideoDiv,
 .formImageDiv {
     margin-top: 20px;
     position: relative;
+    width: 140px;
+    padding: 7px;
 }
 
+
+.formVideoDiv video ,
 .formImageDiv img {
     width: 140px;
     height: 140px;

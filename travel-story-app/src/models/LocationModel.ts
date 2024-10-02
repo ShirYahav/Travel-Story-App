@@ -1,4 +1,5 @@
 class LocationModel {
+    public _id: string;
     public country: string;
     public city: string;
     public startDate: Date;
@@ -7,6 +8,7 @@ class LocationModel {
     public cost: number;
     public currency: string;
     public photos: File[];
+    public videos: File[];
 }
 
 export default LocationModel;

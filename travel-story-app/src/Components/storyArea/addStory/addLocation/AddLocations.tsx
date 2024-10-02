@@ -14,7 +14,11 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import debounce from "lodash.debounce";
 import "./AddLocations.css";
-import { fetchCitiesAPI, fetchCountriesAPI } from "../../../../services/CountriesCitiesService";
+import {
+  fetchCitiesAPI,
+  fetchCountriesAPI,
+} from "../../../../services/CountriesCitiesService";
+import CloseIcon from '@mui/icons-material/Close';
 import LocationModel from "../../../../models/LocationModel";
 
 //const rapidApiKey = process.env.RAPIDAPI_KEY;
@@ -67,22 +71,24 @@ interface AddLocationsProps {
   setLocations: (locations: LocationModel[]) => void;
 }
 
-const AddLocations: React.FC<AddLocationsProps>= ({ locations, setLocations }) => {
-
-  const [countries, setCountries] = useState<{ name: string; code: string }[]>([]);
+const AddLocations: React.FC<AddLocationsProps> = ({
+  locations,
+  setLocations,
+}) => {
+  const [countries, setCountries] = useState<{ name: string; code: string }[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   const [cities, setCities] = useState<string[]>([]);
   const [isLoadingCities, setIsLoadingCities] = useState(false);
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
   useEffect(() => {
     const getCountries = async () => {
       try {
         setIsLoading(true);
-        const countryData = await fetchCountriesAPI(); 
-        setCountries(countryData); 
+        const countryData = await fetchCountriesAPI();
+        setCountries(countryData);
       } catch (error) {
         console.error("Error fetching countries: ", error);
       } finally {
@@ -92,18 +98,21 @@ const AddLocations: React.FC<AddLocationsProps>= ({ locations, setLocations }) =
     getCountries();
   }, []);
 
-  const handleFetchCities = debounce(async (countryCode: string, query: string) => {
-    if (!query) return;
-    try {
-      setIsLoadingCities(true);
-      const cityNames = await fetchCitiesAPI(countryCode, query);
-      setCities(cityNames);
-    } catch (error) {
-      console.error("Error fetching cities in the component: ", error);
-    } finally {
-      setIsLoadingCities(false);
-    }
-  }, 300);
+  const handleFetchCities = debounce(
+    async (countryCode: string, query: string) => {
+      if (!query) return;
+      try {
+        setIsLoadingCities(true);
+        const cityNames = await fetchCitiesAPI(countryCode, query);
+        setCities(cityNames);
+      } catch (error) {
+        console.error("Error fetching cities in the component: ", error);
+      } finally {
+        setIsLoadingCities(false);
+      }
+    },
+    300
+  );
 
   const handleCountryChange = async (index: number, countryName: string) => {
     const selectedCountry = countries.find((c) => c.name === countryName);
@@ -136,6 +145,7 @@ const AddLocations: React.FC<AddLocationsProps>= ({ locations, setLocations }) =
     setLocations([
       ...locations,
       {
+        _id: "",
         country: "",
         city: "",
         startDate: null,
@@ -144,39 +154,66 @@ const AddLocations: React.FC<AddLocationsProps>= ({ locations, setLocations }) =
         cost: 0,
         currency: "",
         photos: [],
+        videos: [],
       },
     ]);
   };
 
   const handleFileChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    const files = event.target.files;
-    if (files) {
-      const fileArray = Array.from(files);
-      if (
-        locations[index].photos &&
-        locations[index].photos.length + fileArray.length > 3
-      ) {
-        setErrorMessage("You can only upload up to 3 images.");
-      } else {
-        const newFiles = [
-          ...(locations[index].photos || []),
-          ...fileArray,
-        ].slice(0, 3);
-        handleLocationChange(index, "photos", newFiles);
-        setErrorMessage(null);
-      }
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+
+      const newPhotos = filesArray.filter((file) =>
+        file.type.startsWith("image/")
+      );
+      const newVideos = filesArray.filter((file) =>
+        file.type.startsWith("video/")
+      );
+
+      const updatedLocations = [...locations];
+      updatedLocations[index].photos = [
+        ...(updatedLocations[index].photos || []),
+        ...newPhotos,
+      ];
+      updatedLocations[index].videos = [
+        ...(updatedLocations[index].videos || []),
+        ...newVideos,
+      ];
+
+      setLocations(updatedLocations);
     }
   };
 
-  const handleDeleteImg = (locationIndex: number, imgIndex: number) => {
-    const updatedPhotos = locations[locationIndex].photos.filter(
-      (_, i) => i !== imgIndex
-    );
-    handleLocationChange(locationIndex, "photos", updatedPhotos);
+  const handleDeleteFile = (
+    locationIndex: number,
+    fileIndex: number,
+    fileType: "photos" | "videos"
+  ) => {
+    const updatedLocations = [...locations];
+
+    if (fileType === "photos") {
+      const updatedPhotos = updatedLocations[locationIndex].photos.filter(
+        (_, i) => i !== fileIndex
+      );
+      updatedLocations[locationIndex].photos = updatedPhotos;
+    } else if (fileType === "videos") {
+      const updatedVideos = updatedLocations[locationIndex].videos.filter(
+        (_, i) => i !== fileIndex
+      );
+      updatedLocations[locationIndex].videos = updatedVideos;
+    }
+
+    setLocations(updatedLocations);
   };
+
+  const deleteLocation = (index: number) => {
+    const updatedLocations = locations.filter((_, i) => i !== index);
+    setLocations(updatedLocations);
+  };
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -200,11 +237,23 @@ const AddLocations: React.FC<AddLocationsProps>= ({ locations, setLocations }) =
               },
               margin: "0 auto",
               marginTop: "30px",
+              position: "relative",
             }}
           >
             <Typography variant="h6" color="secondary">
               Location {index + 1}
             </Typography>
+
+            {index > 0 && (
+            <IconButton
+              aria-label="delete"
+              onClick={() => deleteLocation(index)}
+              sx={{ position: 'absolute', top: 5, right: 5 , color:'#473D3A'}}
+            >
+              <CloseIcon />
+            </IconButton>
+            )}
+
             <div>
               <div className="inputFieldAddForm">
                 <Autocomplete
@@ -344,7 +393,7 @@ const AddLocations: React.FC<AddLocationsProps>= ({ locations, setLocations }) =
               <Box>
                 <div className="inputFieldAddForm">
                   <input
-                    accept="image/*"
+                    accept="image/*, video/*"
                     type="file"
                     multiple
                     onChange={(e) => handleFileChange(e, index)}
@@ -359,37 +408,55 @@ const AddLocations: React.FC<AddLocationsProps>= ({ locations, setLocations }) =
                       component="span"
                       size="small"
                     >
-                      Upload Images
+                      Upload Images/Videos
                     </Button>
                   </label>
-
-                  {errorMessage && (
-                    <Typography
-                      variant="body2"
-                      color="error"
-                      sx={{ marginTop: "5px", fontSize: "12px" }}
-                    >
-                      {errorMessage}
-                    </Typography>
-                  )}
                 </div>
 
                 <div className="imagePreview">
-                  {locations[index].photos &&
-                    locations[index].photos.length > 0 &&
+                  {locations[index].photos.length > 0 &&
                     locations[index].photos.map((file, i) => (
                       <div key={i} className="formImageDiv">
                         <img
                           src={URL.createObjectURL(file)}
                           alt={`Preview ${i}`}
                         />
-
                         <IconButton
-                          onClick={() => handleDeleteImg(index, i)}
+                          onClick={() => handleDeleteFile(index, i, "photos")}
                           style={{
                             position: "absolute",
-                            top: "-10px",
-                            right: "-10px",
+                            top: "0px",
+                            right: "0px",
+                            backgroundColor: "white",
+                            borderRadius: "50%",
+                            padding: "2px",
+                          }}
+                        >
+                          <DeleteIcon
+                            style={{ fontSize: "16px", color: "#B25E39" }}
+                          />
+                        </IconButton>
+                      </div>
+                    ))}
+                </div>
+
+                <div className="videoPreview">
+                  {locations[index].videos.length > 0 &&
+                    locations[index].videos.map((file, i) => (
+                      <div key={i} className="formVideoDiv">
+                        <video width="200" controls>
+                          <source
+                            src={URL.createObjectURL(file)}
+                            type="video/mp4"
+                          />
+                          Your browser does not support the video tag.
+                        </video>
+                        <IconButton
+                          onClick={() => handleDeleteFile(index, i, "videos")}
+                          style={{
+                            position: "absolute",
+                            top: "0px",
+                            right: "0px",
                             backgroundColor: "white",
                             borderRadius: "50%",
                             padding: "2px",

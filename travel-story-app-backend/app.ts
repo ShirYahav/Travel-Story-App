@@ -3,8 +3,9 @@ import cors from "cors";
 import dal from "./src/dal";
 
 import storiesController from './src/controllers/story-controller';
+import imageController from './src/controllers/images-controller';
 
-const port: number = 3000; 
+const port: number = 3001; 
 
 dal.connect();
 
@@ -13,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api" ,storiesController);
+app.use("/api", imageController);
 
 
 app.get('/', (req: Request, res: Response) => {
