@@ -10,8 +10,11 @@ import Galapagos from "../../assets/slideshowPhotos/Galapagos.jpg";
 import Vietnam from "../../assets/slideshowPhotos/Vietnam.jpg";
 import Peru from "../../assets/slideshowPhotos/Peru.jpg";
 import { fetchCountriesAPI } from "../../services/CountriesCitiesService";
+import { useNavigate } from 'react-router-dom';
+
 import {
   Autocomplete,
+  Button,
   createTheme,
   TextField,
   ThemeProvider,
@@ -44,9 +47,11 @@ const Slideshow: React.FC = () => {
   };
 
   const images = [cambodia, Japan, Galapagos, Vietnam, Peru];
-
+  
+  const navigate = useNavigate();
   const [countries, setCountries] = useState<{ name: string; code: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [chosenCountry, setChosenCountry] = useState<string>("");
 
   useEffect(() => {
     const getCountries = async () => {
@@ -63,35 +68,67 @@ const Slideshow: React.FC = () => {
     getCountries();
   }, []);
 
+  const handleCountryChange = (event: any, value: string | null) => {
+    if (value) {
+      setChosenCountry(value);
+    }
+  };
+
+  const submitCountry = () => {
+    navigate(`/stories/${chosenCountry}`);
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <div className="slideshowContainer">
-        <div className="searchBarContainer">
-          <h2 className="getInspired">Get Inspired...</h2>
-          <Autocomplete
-            options={countries.map((c) => c.name)}
-            getOptionLabel={(option) => option}
-            loading={isLoading}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Country"
-                size="small"
-                color="secondary"
-                sx={{
-                  width: {
-                    xs: "100%", 
-                    sm: "48%",
-                  },
-                  fontSize: "14px",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                  backgroundColor: "rgba(255, 255, 255, 0.5)",
-                  marginTop: '0px',
-                }}
+        <div className="slideshowContainer">
+          <form
+            className="searchBarContainer"
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <h2 className="getInspired">Get Inspired...</h2>
+            <div className="inputAndButton">
+              <Autocomplete
+                options={countries.map((c) => c.name)}
+                getOptionLabel={(option) => option}
+                loading={isLoading}
+                onChange={handleCountryChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Country"
+                    size="small"
+                    color="secondary"
+                    sx={{
+                      width: {
+                        xs: "200px",
+                        sm: "500px",
+                      },
+                      fontSize: "14px",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                      backgroundColor: "rgba(255, 255, 255, 0.5)",
+                    }}  
+                  />
+                )}
               />
-            )}
-          />
+              <Button
+                type="submit"
+                variant="contained"
+                color="secondary"
+                onClick={submitCountry}
+                sx={{
+                  height: '40px',
+                  borderRadius: "6px",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                }}
+              >
+                Submit
+              </Button>
+            </div>
+          </form>
         </div>
 
         <Slider {...settings}>

@@ -1,6 +1,5 @@
 import { IStory } from "../models/story-model";
 import LocationModel, { ILocation } from "../models/location-model";
-import { Types } from "mongoose";
 
 async function updateLocations(existingStory: IStory, locations: ILocation[]): Promise<ILocation[]> {
   
@@ -36,11 +35,6 @@ async function updateLocations(existingStory: IStory, locations: ILocation[]): P
   return updatedLocations;
 }
 
-// async function saveLocations(locations: ILocation[]): Promise<> {
-    
-// }
-
 export default {
   updateLocations,
-  //saveLocations
 };

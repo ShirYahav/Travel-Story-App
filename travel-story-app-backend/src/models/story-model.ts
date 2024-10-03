@@ -1,9 +1,10 @@
 import mongoose, { Document, Schema, Model, Types } from "mongoose";
 import { ILocation } from "./location-model";
 import { IRoute } from "./route-model";
+import { IUser } from "./user-model";
 
 export interface IStory extends Document {
-    user: string;
+    user: Types.ObjectId | IUser; 
     countries: string[];
     title: string;
     description: string;
@@ -19,7 +20,7 @@ export interface IStory extends Document {
 const StorySchema: Schema = new Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: "User",
+        ref: "user",
         //required: [true, "User is required"]
     },
     countries: {

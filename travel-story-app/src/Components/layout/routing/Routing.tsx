@@ -12,7 +12,7 @@ const Routing: React.FC = () => {
       <>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/country-stories" element={<StoriesByCountry />} />
+          <Route path="/stories/:country" element={<StoriesByCountry />} />
           <Route path="/story" element={<StoryPage />} />
           <Route path="/add-story" element={<AddStory />} />
           <Route path="/update-story" element={<UpdateStory />} />

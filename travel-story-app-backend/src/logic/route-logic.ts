@@ -33,18 +33,7 @@ async function updateRoutes(existingStory: IStory, routes: IRoute[]): Promise<IR
   }
   return updatedRoutes;
 }
-
-async function saveRoutes(routes: IRoute[]): Promise<IRoute[]> {
-    const savedRoutes: IRoute[] = [];
-    for (const routeData of routes) {
-      const route = new RouteModel(routeData);
-      const savedRoute = await route.save();
-      savedRoutes.push(savedRoute);
-    }
-    return savedRoutes;
-}
   
 export default {
   updateRoutes,
-  saveRoutes
 };

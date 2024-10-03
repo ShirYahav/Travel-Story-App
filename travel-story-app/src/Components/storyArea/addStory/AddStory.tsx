@@ -93,7 +93,7 @@ const AddStory: React.FC = () => {
     },
   ]);
   const [story, setStory] = useState<StoryModel>({
-    user: "",
+    user: null,
     countries: [],
     title: "",
     description: "",

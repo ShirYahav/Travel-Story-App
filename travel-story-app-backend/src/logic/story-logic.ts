@@ -4,6 +4,7 @@ import RouteModel, { IRoute } from "../models/route-model";
 import locationLogic from './location-logic';
 import routeLogic from "./route-logic";
 import { Types } from "mongoose";
+import UserModel from "../models/user-model";
 
 async function getAllStories(): Promise<IStory[]> {
   return StoryModel.find()
@@ -16,6 +17,7 @@ async function getStoriesByCountry(country: string): Promise<IStory[]> {
   return StoryModel.find({ countries: { $in: [country] } })
     .populate({ path: "locations", model: LocationModel })
     .populate({ path: "routes", model: RouteModel })
+    .populate({ path: "user", model: UserModel })
     .exec();
 }
 
@@ -30,6 +32,25 @@ async function getStoriesByUserId(userId: string): Promise<IStory[]> {
   }
 
   return stories;
+}
+
+async function getStoryById(storyId: string): Promise<IStory | null> {
+  try {
+    
+    const story = await StoryModel.findById(storyId)
+      .populate({ path: "locations", model: LocationModel })
+      .populate({ path: "routes", model: RouteModel })
+      .exec();
+
+    if (!story) {
+      throw new Error("Story not found");
+    }
+
+    return story;
+  } catch (error) {
+    console.error(`Error fetching story with ID ${storyId}:`, error);
+    throw new Error("Unable to fetch story");
+  }
 }
 
 async function addStory(story: IStory): Promise<IStory> {
@@ -61,11 +82,6 @@ async function addStory(story: IStory): Promise<IStory> {
 
   return newStory.save();
 }
-
-
-
-
-
 
 async function updateStory(
   storyId: string,
@@ -122,6 +138,7 @@ export default {
   getAllStories,
   getStoriesByCountry,
   getStoriesByUserId,
+  getStoryById,
   addStory,
   updateStory,
   deleteStory,

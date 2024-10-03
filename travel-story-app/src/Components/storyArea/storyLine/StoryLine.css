@@ -1,16 +1,17 @@
 .storyLine {
     position: relative;
     width: 470px;
-    height: 150px;
+    height: 170px;
     display: flex;
     flex-direction: row;
     align-items: center;
     background-color: var(--lightGrey);
     margin: 13px;
-    border-radius: 8px;
+    border-radius: 12px;
     transition: transform 0.3s ease;
     cursor: pointer;
     box-shadow: 8px 8px 8px rgba(65, 38, 26, 0.2);
+    border: 7px solid var(--darkBrown);
 }
 
 .storyLine:hover {
@@ -19,10 +20,10 @@
 
 .storyImgLine>img {
     width: 135px;
-    height: 140px;
+    height: 166px;
     object-fit: cover;
-    margin-left: 5px;
-    margin-top: 5px;
+    margin-left: 3px;
+    margin-top: 3px;
     border-radius: 5px;
 }
 
@@ -31,52 +32,61 @@
     justify-content: flex-start;
     flex-direction: column;
     text-align: start;
-    margin-left: 20px;
-    height: 150px;
-    width: 297px;
+    margin-left: 11px;
+    height: 171px;
+    width: 323px;
     color: var(--darkBrown);
 }
 
 .storyTitleLine {
     letter-spacing: 1px;
-    margin-top: 22px;
+    margin-top: 17px;
 }
 
 .hrStoryTitleLine {
-    width: 301px;
+    width: 315px;
     margin-top: -10px;
     border: none;
     border-top: 2px solid var(--lightBrown);
+    margin-right: 8px;
 }
 
-.duration,
 .storyDescriptionLine {
-    font-weight: lighter;
+    font-weight: 400;
     margin-top: -3px;
     font-size: 14px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .byUserLine {
-    top: -10px;
+    bottom: -8px;
     position: absolute;
-    right: 6px;
+    right: 9px;
     font-size: 13px;
     color: var(--lightBrown);
 }
 
+.budget {
+    margin-bottom: -6px;
+}
+
+.budget,
 .duration {
     display: flex;
     flex-direction: row;
     align-items: center;
     position: absolute;
-    bottom: -5px;
+    bottom: 12px;
+    font-size: 14px;
+    color: var(--darkBrown);
+    font-weight: 500;
 }
 
+.budget > img,
 .duration > img {
     width: 15px;
     height: 15px;
@@ -93,15 +103,36 @@
     }
 
     .hrStoryTitleLine {
-        width: 202px;
-        margin-right: 13px;
+        width: 217px;
+        margin-right: 17px;
     }
 
     .storyTitleLine {
         font-size: 17px;
     }
 
+    .storyDescriptionLine {
+        font-size: 13px;
+    }
+
     .duration{
-        bottom: -3px;
+        bottom: 8px;
+        font-size: 13px;
+    }
+
+    .budget {
+        margin-bottom: -8px;
+        font-size: 13px;
+    }
+
+    .budget > img,
+    .duration > img {
+    width: 13px;
+    height: 13px;
+    margin-right: 5px;
+    }
+
+    .byUserLine {
+        right: 6px;
     }
 }

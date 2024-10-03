@@ -2,16 +2,16 @@
     margin-top: 1px;
     width: 100%;
     height: 500px;
-    object-fit :cover;
+    object-fit: cover;
 }
 
 .searchBarContainer {
     position: absolute;
     top: 35%;
     left: 50%;
-    transform: translate(-50%, -50%); /* Center the search bar horizontally and vertically */
-    z-index: 10; /* Ensure the search bar is above the images */
-    width: 80%; /* Adjust width as necessary */
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    width: 80%;
     display: flex;
     flex-direction: column;
     text-align: start;
@@ -23,21 +23,37 @@
     margin-bottom: 8px;
 }
 
+.inputAndButton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 @media (max-width: 768px) {
 
     .searchBarContainer {
         top: 24%;
-        text-align: center;
+        left: 33%;
         width: 45%;
+        display: flex;
+        justify-content: flex-start;
     }
 
     .getInspired {
-      font-size: 25px; 
-      margin-bottom: 6px; 
+        font-size: 25px;
+        margin-bottom: 6px;
     }
 
     .slideshowImage {
         height: 400px;
     }
 
+    .inputAndButton {
+        gap: 6px;
+        align-items: center;
+    }
+
+    .inputAndButton button {
+        font-size: 11px;
+    }
 }
