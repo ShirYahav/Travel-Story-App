@@ -5,6 +5,7 @@ import budgetIcon from '../../../assets/SVGs/money-bag.png';
 import StoryModel from '../../../models/StoryModel';
 import { calculateDaysDifference } from '../../../services/DateService';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface StoryLineProps {
   story: StoryModel;
@@ -12,8 +13,8 @@ interface StoryLineProps {
 
 const StoryLine: React.FC<StoryLineProps> = ({story}) => {
 
+    const navigate = useNavigate();
     const duration = calculateDaysDifference(story.startDate, story.endDate);
-    
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     useEffect(() => {
@@ -21,7 +22,7 @@ const StoryLine: React.FC<StoryLineProps> = ({story}) => {
         try {
 
           const firstPhotoFileName = story?.locations?.[0]?.photos?.[0];
-          const response = await axios.get(`http://localhost:3001/api/story/photos/${firstPhotoFileName}`, { responseType: "blob" });
+          const response = await axios.get(`http://localhost:3001/api/story/photo/${firstPhotoFileName}`, { responseType: "blob" });
           const imageObjectUrl = URL.createObjectURL(response.data);
           setImageUrl(imageObjectUrl);
         
@@ -32,9 +33,13 @@ const StoryLine: React.FC<StoryLineProps> = ({story}) => {
       fetchFirstPhoto();
     },[]);
 
+    const storyClicked = () => {
+      navigate(`/story/${story._id}`);
+    }
+
     return (
       <>
-        <div className="storyLine">
+        <div className="storyLine" onClick={storyClicked}>
           <div className="storyImgLine">
             <img src={imageUrl} alt="Story location photo" />
           </div>

@@ -130,4 +130,14 @@ router.get('/stories-by-user/:userId', async (req: Request, res: Response) => {
   }
 });
 
+router.get('/story/:storyId', async (req: Request, res: Response) => {
+  const { storyId } = req.params;
+
+  try {
+    const story = await logic.getStoryById(storyId);
+    res.status(200).json(story);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 export default router;

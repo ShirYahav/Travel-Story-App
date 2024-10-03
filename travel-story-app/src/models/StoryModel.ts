@@ -3,6 +3,7 @@ import RouteModel from "./RouteModel";
 import UserModel from "./UserModel";
 
 class StoryModel {
+    _id: string;
     user: UserModel;
     countries: string[];
     title: string;

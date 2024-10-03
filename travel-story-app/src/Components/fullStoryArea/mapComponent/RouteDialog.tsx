@@ -4,11 +4,11 @@ import closeSvg from '../../../assets/SVGs/close-svgrepo-com.png';
 import RouteModel from '../../../models/RouteModel';
 
 interface RouteDialogProps {
-  route: RouteModel; // Use RouteModel for route information
+  route: RouteModel; 
   open: boolean;
   onClose: () => void;
-  x: number; // X position of the click
-  y: number; // Y position of the click
+  x: number; 
+  y: number; 
 }
 
 const RouteDialog: React.FC<RouteDialogProps> = ({ route, open, onClose, x, y }) => {

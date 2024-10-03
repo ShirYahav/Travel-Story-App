@@ -1,3 +1,6 @@
+.storyPageDiv {
+    margin-bottom: 20px;
+}
 .likesSection {
     display: flex;
     justify-content: flex-start;
@@ -25,6 +28,29 @@
     width: 20px;
     height: 20px;
     margin-top: 5px;
+}
+
+.collapseStoryPageDiv {
+    text-align: start;
+    margin-left: 20px;
+}
+
+.collapseStoryPageDiv h3 {
+    font-size: 40px;
+    color: var(--darkBrown);
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+.collapseStoryPageDiv p {
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+}
+
+.collapseStoryPageDiv img {
+    width:19px;
+    height: 19px;
 }
 
 @media (max-width: 768px) {

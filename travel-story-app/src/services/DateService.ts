@@ -14,7 +14,7 @@ export const formatDate = (date: Date): string => {
     const day = date.getDate(); // Get day (1-31)
     const month = date.getMonth() + 1; // Get month (0-11), add 1 to make it 1-12
     const year = date.getFullYear(); // Get full year (e.g., 2023)
-    return `${day}.${month}.${year}`;
+    return `${day}/${month}/${year}`;
 };
 
 export const getDateRangeFromLocations = (locations: LocationModel[]) => {

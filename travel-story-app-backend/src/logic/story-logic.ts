@@ -40,6 +40,7 @@ async function getStoryById(storyId: string): Promise<IStory | null> {
     const story = await StoryModel.findById(storyId)
       .populate({ path: "locations", model: LocationModel })
       .populate({ path: "routes", model: RouteModel })
+      .populate({ path: "user", model: UserModel })
       .exec();
 
     if (!story) {

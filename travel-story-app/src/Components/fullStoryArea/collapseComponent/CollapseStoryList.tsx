@@ -3,8 +3,6 @@ import CollapseStory from './CollapseStory';
 import './CollapseStoryList.css'
 import LocationModel from '../../../models/LocationModel';
 
-// story from '../FakeStory.json';  // Assuming you have a JSON file for locations
-
 interface StoriesCollectionProps {
   locations: LocationModel[];
 }

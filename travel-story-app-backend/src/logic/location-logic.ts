@@ -1,6 +1,20 @@
 import { IStory } from "../models/story-model";
 import LocationModel, { ILocation } from "../models/location-model";
 
+async function findLocationById (locationId: string): Promise<ILocation>{
+
+  const location = await LocationModel.findById(locationId).exec();
+  if (!location) {
+    throw new Error("Location not found");
+  }
+  return location;
+}
+
+
+
+
+
+
 async function updateLocations(existingStory: IStory, locations: ILocation[]): Promise<ILocation[]> {
   
   const existingLocationIds = existingStory.locations.map((loc: any) =>
@@ -37,4 +51,5 @@ async function updateLocations(existingStory: IStory, locations: ILocation[]): P
 
 export default {
   updateLocations,
+  findLocationById
 };

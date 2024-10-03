@@ -5,6 +5,7 @@ import LocationModel from "../models/location-model";
 import fs from 'fs';
 import StoryModel from "../models/story-model";
 import storyLogic from '../logic/story-logic';
+import locationLogic from '../logic/location-logic'
 
 const router = express.Router();
 
@@ -111,7 +112,7 @@ router.post("/upload/:locationId", upload.fields([
 //   }
 // });
 
-router.get("/story/photos/:imageName" ,async (request, response) => {
+router.get("/story/photo/:imageName" ,async (request, response) => {
   try {
       const imageName = request.params.imageName;
       const absolutePath = path.join(__dirname, "..", "assets", "stories", "photos", imageName);
@@ -122,6 +123,52 @@ router.get("/story/photos/:imageName" ,async (request, response) => {
   }
 });
 
+router.get("/story/photos/:locationId", async (request: Request, response: Response) => {
+  try {
+    const { locationId } = request.params;
+    const location = await locationLogic.findLocationById(locationId);  
+
+
+    const base64Photos: string[] = [];
+
+    for (const photoName of location.photos) {
+      const absolutePath = path.join(__dirname, "..", "assets", "stories", "photos", photoName);
+
+      const fileData = fs.readFileSync(absolutePath);
+      const base64Photo = fileData.toString("base64");
+
+      base64Photos.push(`data:image/jpeg;base64,${base64Photo}`);
+    }
+
+    response.json({ photos: base64Photos });
+  } catch (err) {
+    console.error("Error fetching photos:", err);
+    response.status(400).json(err);
+  }
+});
+
+router.get("/story/videos/:locationId", async (request: Request, response: Response) => {
+  try {
+    const { locationId } = request.params;
+    const location = await locationLogic.findLocationById(locationId);
+
+    const base64Videos: string[] = [];
+
+    for (const videoName of location.videos) {
+      const absolutePath = path.join(__dirname, "..", "assets", "stories", "videos", videoName);
+
+      const fileData = fs.readFileSync(absolutePath);
+      const base64Video = fileData.toString("base64");
+
+      base64Videos.push(`data:video/mp4;base64,${base64Video}`);
+    }
+
+    response.json({ videos: base64Videos });
+  } catch (err) {
+    console.error("Error fetching videos:", err);
+    response.status(400).json(err);
+  }
+});
 
 
 export default router;

@@ -1,62 +1,100 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   APIProvider,
   Map,
   AdvancedMarker,
   InfoWindow,
-} from "@vis.gl/react-google-maps"; // Removed `useMap` since it's unnecessary
-import { calculateDaysDifference } from "../../../services/DateService";
+} from "@vis.gl/react-google-maps";
+import {
+  calculateDaysDifference,
+  formatDate,
+} from "../../../services/DateService";
 import { Directions } from "./Directions";
 import LocationModel from "../../../models/LocationModel";
 import "./Map.css";
-import story from "../FakeStory.json";
 import { getCityCoordinatesGoogle } from "../../../services/CountriesCitiesService";
+import axios from "axios";
+import StoryModel from "../../../models/StoryModel";
+import Slider from "react-slick";
+import durationIcon from "../../../assets/SVGs/flight-date.png";
+import budgetIcon from "../../../assets/SVGs/money-bag.png";
 
-interface LocationWithCoordinates extends LocationModel {
+// Interface for locations with coordinates
+interface LocationWithCoordinates
+  extends Omit<LocationModel, "photos" | "videos"> {
   lat: number;
   lng: number;
+  photos: string[];
+  videos: string[];
 }
 
-const MapComponent: React.FC = () => {
+interface MapComponentProps {
+  story: StoryModel | undefined;
+}
+
+const MapComponent: React.FC<MapComponentProps> = ({ story }) => {
   const [locations, setLocations] = useState<LocationWithCoordinates[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<LocationWithCoordinates | null>(null);
-  const [center, setCenter] = useState<{ lat: number, lng: number }>({ lat: 35.6762, lng: 139.6503 }); // Default center: Tokyo
+  const [selectedLocation, setSelectedLocation] =
+    useState<LocationWithCoordinates | null>(null);
+  const [center, setCenter] = useState<{ lat: number; lng: number }>({
+    lat: 35.6762,
+    lng: 139.6503,
+  });
 
   useEffect(() => {
-    const updateLocations = async () => {
-      const updatedLocations: LocationWithCoordinates[] = [];
+    if (story) {
+      updateLocations(story);
+    }
+  }, [story]);
 
-      for (const location of story.locations) {
-        const coordinates = await getCityCoordinatesGoogle(location.city);
-        if (coordinates) {
-          updatedLocations.push({
-            ...location,
-            _id:'',
-            videos: [],
-            lat: coordinates.lat,
-            lng: coordinates.lng,
-            startDate: new Date(location.startDate),
-            endDate: new Date(location.endDate),
-          });
-        }
+  const updateLocations = async (story: StoryModel) => {
+
+    const updatedLocations: LocationWithCoordinates[] = [];
+
+    for (const location of story.locations) {
+      const coordinates = await getCityCoordinatesGoogle(location.city);
+      if (coordinates) {
+        const photosResponse = await axios.get(
+          `http://localhost:3001/api/story/photos/${location._id}`
+        );
+        const videosResponse = await axios.get(
+          `http://localhost:3001/api/story/videos/${location._id}`
+        );
+
+        updatedLocations.push({
+          ...location,
+          lat: coordinates.lat,
+          lng: coordinates.lng,
+          photos: photosResponse.data.photos,
+          videos: videosResponse.data.videos,
+          startDate: new Date(location.startDate),
+          endDate: new Date(location.endDate),
+        });
       }
+    }
 
-      setLocations(updatedLocations);
+    setLocations(updatedLocations);
 
-      // Update center to the first location's coordinates, if any locations were fetched
-      if (updatedLocations.length > 0) {
-        setCenter({ lat: updatedLocations[0].lat, lng: updatedLocations[0].lng });
-      }
-    };
+    if (updatedLocations.length > 0) {
+      setCenter({ lat: updatedLocations[0].lat, lng: updatedLocations[0].lng });
+    }
+  };
 
-    updateLocations();
-  }, []); // Only runs once on mount
+  const sliderSettings = {
+    dots: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
 
   return (
-    <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "Your_API_Key_Here"}>
+    <APIProvider
+      apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "Your_API_Key_Here"}
+    >
       <Map
         defaultZoom={6}
-        defaultCenter={center} // Use `defaultCenter` for initial map load
+        defaultCenter={center}
         mapId={process.env.REACT_APP_GOOGLE_MAPS_ID}
         colorScheme="DARK"
         className="storyMap"
@@ -71,7 +109,7 @@ const MapComponent: React.FC = () => {
               {location.photos && location.photos.length > 0 && (
                 <img
                   className="pinImage"
-                  src={URL.createObjectURL(location.photos[0])} // Assuming photos are `Blob` or `File`
+                  src={location.photos[0]}
                   alt={location.city}
                 />
               )}
@@ -85,35 +123,62 @@ const MapComponent: React.FC = () => {
             onCloseClick={() => setSelectedLocation(null)}
           >
             <div className="infoWindow">
+              <Slider {...sliderSettings}>
+                {selectedLocation?.videos?.map((video, index) => (
+                  <div
+                    key={`${selectedLocation.city}-video-${index}`}
+                    className="mapVideosDiv"
+                  >
+                    <video
+                      id={`video-${selectedLocation.city}-${index}`}
+                      autoPlay
+                      muted
+                      loop
+                      controls
+                    >
+                      <source src={video} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                ))}
+              </Slider>
+              <div className="mapInformation">
+                <h2 className="mapStoryTitle">{selectedLocation.city}</h2>
+                <hr className="mapHr"></hr>
+                <p className="mapStoryPar">{selectedLocation.story}</p>
+                <p className="durationInfoWindow">
+                  <img src={durationIcon} />
+                  &nbsp;
+                  {formatDate(selectedLocation.startDate)} -{" "}
+                  {formatDate(selectedLocation.endDate)}
+                  &nbsp; (
+                  {calculateDaysDifference(
+                    selectedLocation.startDate,
+                    selectedLocation.endDate
+                  )}{" "}
+                  days)
+                </p>
+                <p className="budgetInfoWindow">
+                  <img src={budgetIcon} />
+                  &nbsp; Cost: {selectedLocation.cost}{" "}
+                  {selectedLocation.currency}
+                </p>
+              </div>
               <div className="mapPhotosDiv">
                 {selectedLocation.photos.map((photo, index) => (
                   <img
                     key={index}
-                    src={URL.createObjectURL(photo)} // Assuming photos are `Blob` or `File`
+                    src={photo}
                     alt={selectedLocation.city}
                     className="mapPhoto"
                   />
                 ))}
               </div>
-              <div className="mapInformation">
-                <h2 className="mapStoryTitle">{selectedLocation.city}</h2>
-                <hr className="mapHr"></hr>
-                <p className="mapStoryPar">{selectedLocation.story}</p>
-                <p>
-                  Duration:{" "}
-                  {calculateDaysDifference(
-                    selectedLocation.startDate,
-                    selectedLocation.endDate
-                  )}{" "}
-                  days
-                </p>
-                <p>Cost: {selectedLocation.cost}</p>
-              </div>
             </div>
           </InfoWindow>
         )}
 
-        <Directions routesData={story.routes} />
+        {story && story.routes && <Directions routesData={story.routes} />}
       </Map>
     </APIProvider>
   );
