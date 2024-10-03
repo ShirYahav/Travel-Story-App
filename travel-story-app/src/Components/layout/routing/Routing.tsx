@@ -15,7 +15,7 @@ const Routing: React.FC = () => {
           <Route path="/stories/:country" element={<StoriesByCountry />} />
           <Route path="/story/:storyId" element={<StoryPage />} />
           <Route path="/add-story" element={<AddStory />} />
-          <Route path="/update-story" element={<UpdateStory />} />
+          <Route path="/update-story/:storyId" element={<UpdateStory />} />
         </Routes>
       </>
     );
