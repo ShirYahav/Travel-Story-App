@@ -1,4 +1,5 @@
 class RouteModel {
+    _id: string;
     origin: string;
     destination:string;
     transportType: string;

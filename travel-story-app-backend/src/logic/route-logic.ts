@@ -1,39 +1,44 @@
-import { IStory } from "../models/story-model";
+import StoryModel, { IStory } from "../models/story-model";
 import RouteModel, { IRoute } from "../models/route-model";
 
-async function updateRoutes(existingStory: IStory, routes: IRoute[]): Promise<IRoute[]> {
+async function updateRouteById(routeId: string, updatedData: Partial<IRoute>): Promise<IRoute | null> {
 
-  const existingRouteIds = existingStory.routes.map((route: any) =>
-    route._id.toString()
+  const updatedRoute = await RouteModel.findByIdAndUpdate(
+    routeId,
+    updatedData,
+    { new: true } 
   );
-  const updatedRouteIds = routes.map((route) => route._id?.toString());
 
-  const routesToDelete = existingRouteIds.filter(
-    (id) => !updatedRouteIds.includes(id)
-  );
-  await RouteModel.deleteMany({ _id: { $in: routesToDelete } });
-
-  const updatedRoutes: IRoute[] = [];
-  for (const routeData of routes) {
-    if (routeData._id) {
-      
-      const updatedRoute = await RouteModel.findByIdAndUpdate(
-        routeData._id,
-        routeData,
-        { new: true }
-      );
-      if (updatedRoute) {
-        updatedRoutes.push(updatedRoute);
-      }
-    } else {
-      const newRoute = new RouteModel(routeData);
-      const savedRoute = await newRoute.save();
-      updatedRoutes.push(savedRoute);
-    }
+  if (!updatedRoute) {
+    throw new Error("Route not found.");
   }
-  return updatedRoutes;
+  return updatedRoute;
+}
+
+async function addRouteToStory(storyId: string, routeData: Partial<IRoute>): Promise<IRoute> {
+  const newRoute = new RouteModel(routeData);
+  const savedRoute = await newRoute.save();
+
+  await StoryModel.findByIdAndUpdate(
+    storyId,
+    { $push: { routes: savedRoute._id } },
+    { new: true }
+  );
+  return savedRoute;
+}
+
+async function deleteRouteById(routeId: string): Promise<void> {
+
+  await StoryModel.updateMany(
+    { routes: routeId },
+    { $pull: { routes: routeId } }
+  );
+
+  await RouteModel.findByIdAndDelete(routeId);
 }
   
 export default {
-  updateRoutes,
+  updateRouteById,
+  addRouteToStory,
+  deleteRouteById
 };

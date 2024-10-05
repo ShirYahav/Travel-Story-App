@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 
 export interface ILocation extends Document {
+    _id: string;
     country: string;
     city: string;
     startDate: Date;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -17,8 +17,10 @@ import StoryModel from "../../../models/StoryModel";
 import RouteModel from "../../../models/RouteModel";
 import { getDateRangeFromLocations } from "../../../services/DateService";
 import { extractCountriesFromLocations } from "../../../services/CountriesCitiesService";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { calculateTotalBudget } from "../../../services/CurrencyCostService";
 
-import fakeStory from "../story.json"; // Example JSON with date strings
 
 const theme = createTheme({
   palette: {
@@ -75,27 +77,48 @@ const convertStory = (story: any): StoryModel => {
   };
 };
 
-
 const UpdateStory: React.FC = () => {
+  
   const [step, setStep] = useState(1);
+  const { storyId } = useParams<{ storyId: string }>();
+  const [story, setStory] = useState<StoryModel | undefined>();
+  const [locations, setLocations] = useState<LocationModel[]>([]);
+  const [routes, setRoutes] = useState<RouteModel[]>([]); 
 
-  const [locations, setLocations] = useState<LocationModel[]>(
-    convertLocations(fakeStory.locations)
-  );
+  useEffect(() => {
+    const fetchStory = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/api/story/${storyId}`);
+        const fetchedStory = convertStory(response.data); // Convert fetched story
+        setStory(fetchedStory);
+        setLocations(fetchedStory.locations); // Set the locations based on the story
+        setRoutes(fetchedStory.routes || []); // Set routes if available
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchStory();
+  }, [storyId]);
 
-  const [routes, setRoutes] = useState<RouteModel[]>(fakeStory.routes);
-
-  const [story, setStory] = useState<StoryModel>(convertStory(fakeStory));
+  useEffect(() => {
+    if (story) {
+      setStory({
+        ...story,
+        locations: [...locations], // Update the story with the new locations
+      });
+    }
+  }, [locations]);
 
   const handleNext = () => {
     setStep(step + 1);
   };
-
+  
   const handleBack = () => {
     setStep(step - 1);
-
+    
     if (routes.length === 0) {
       setRoutes([{
+        _id: "",
         origin: "",
         destination: "",
         transportType: "",
@@ -106,10 +129,50 @@ const UpdateStory: React.FC = () => {
       }]);
     } 
   };
-
-  const handleUpdateStory = () => {
-    console.log(story);
+  
+  const handleUpdateStory = async () => {
+    try {
+      const { user, _id, ...storyWithoutIdAndUser } = story;
+  
+      const storyToUpdate = {
+        ...storyWithoutIdAndUser,
+        startDate: story.startDate ? new Date(story.startDate).toISOString() : null,
+        endDate: story.endDate ? new Date(story.endDate).toISOString() : null,
+        
+        locations: locations.map((location) => {
+          const { _id, photos, videos, ...locationWithoutId } = location;
+  
+          return {
+            ...(location._id && location._id !== '' ? { _id: location._id } : {}),
+            ...locationWithoutId,
+            startDate: location.startDate ? new Date(location.startDate).toISOString() : null,
+            endDate: location.endDate ? new Date(location.endDate).toISOString() : null,
+          };
+        }),
+  
+        routes: routes.map((route) => {
+          const { _id, ...routeWithoutId } = route;
+          return {
+            ...(route._id && route._id !== '' ? { _id: route._id } : {}),
+            ...routeWithoutId,
+          };
+        })
+      };
+  
+      const response = await axios.put(
+        `http://localhost:3001/api/update-story/${storyId}`,
+        storyToUpdate
+      );
+  
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
+  
+  if (!story) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -122,12 +185,14 @@ const UpdateStory: React.FC = () => {
               onClick={() => {
                 handleNext();
                 const dateRange = getDateRangeFromLocations(locations);
+                console.log(dateRange);
                 setStory({
                   ...story,
                   countries: extractCountriesFromLocations(locations),
                   startDate: dateRange.earliestDate,
                   endDate: dateRange.latestDate,
                 });
+                console.log(story)
               }}
               color="secondary"
             >
@@ -145,7 +210,15 @@ const UpdateStory: React.FC = () => {
               </Button>
               <Button
                 variant="contained"
-                onClick={handleNext}
+                onClick={() => {
+                  handleNext();
+                  const budgetDetails = calculateTotalBudget(locations, routes);
+                  setStory({
+                    ...story,
+                    budget: budgetDetails.totalBudget,
+                    currency: budgetDetails.currency,
+                  });
+                }}
                 color="secondary"
               >
                 Save Routes and continue

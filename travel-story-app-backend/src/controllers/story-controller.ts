@@ -30,42 +30,39 @@ router.post('/add-story', async (req: Request, res: Response) => {
   try {
     const { user, title, description, countries, startDate, endDate, budget, currency, locations, routes } = req.body;
 
-    // Save each location first
     const savedLocations = [];
     for (const location of locations) {
       const newLocation = new LocationModel(location);
       const savedLocation = await newLocation.save();
-      savedLocations.push(savedLocation._id); // Save the ObjectId reference
+      savedLocations.push(savedLocation._id);
     }
 
-    // Save each route first
     const savedRoutes = [];
     for (const route of routes) {
       const newRoute = new RouteModel(route);
       const savedRoute = await newRoute.save();
-      savedRoutes.push(savedRoute._id); // Save the ObjectId reference
+      savedRoutes.push(savedRoute._id);
     }
 
-    // Now create the story, passing the ObjectId references for locations and routes
     const newStory = new StoryModel({
       user,
       title,
       description,
       countries,
-      startDate: new Date(startDate),  // Ensure correct date format
+      startDate: new Date(startDate),  
       endDate: new Date(endDate),
       budget,
       currency,
-      locations: savedLocations,  // Use the saved location ObjectId's
-      routes: savedRoutes,        // Use the saved route ObjectId's
-      likes: 0                    // Default likes to 0
+      locations: savedLocations,  
+      routes: savedRoutes,  
+      likes: 0 
     });
 
     const savedStory = await newStory.save();
     res.status(201).json({
       message: "Story created successfully",
       story: savedStory,
-      locations: savedLocations // Ensure this returns the full locations, not just their IDs.
+      locations: savedLocations 
     });
 
   } catch (err) {
@@ -74,27 +71,25 @@ router.post('/add-story', async (req: Request, res: Response) => {
 });
 
 
-
-
-
-
 router.put('/update-story/:storyId', async (req: Request, res: Response) => {
   try {
     const { storyId } = req.params;
     const { title, description, countries, startDate, endDate, budget, currency, locations, routes } = req.body;
 
-    const updatedStory = await logic.updateStory(
-      storyId,
+    console.log(req.body)
+    const updateData = {
       title,
       description,
       countries,
-      startDate,
-      endDate,
+      startDate: startDate ? new Date(startDate) : undefined, 
+      endDate: endDate ? new Date(endDate) : undefined,       
       budget,
       currency,
       locations,
       routes
-    );
+    };
+
+    const updatedStory = await logic.updateStory(storyId, updateData);
 
     if (!updatedStory) {
       return res.status(404).json({ message: "Story not found" });
@@ -140,4 +135,5 @@ router.get('/story/:storyId', async (req: Request, res: Response) => {
     res.status(400).json({ message: err.message });
   }
 });
+
 export default router;

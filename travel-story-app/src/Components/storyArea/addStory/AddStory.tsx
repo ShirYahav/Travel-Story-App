@@ -83,6 +83,7 @@ const AddStory: React.FC = () => {
   ]);
   const [routes, setRoutes] = useState<RouteModel[]>([
     {
+      _id: "",
       origin: "",
       destination: "",
       transportType: "",
@@ -115,6 +116,7 @@ const AddStory: React.FC = () => {
 
     if (routes.length === 0) {
       setRoutes([{
+        _id: "",
         origin: "",
         destination: "",
         transportType: "",

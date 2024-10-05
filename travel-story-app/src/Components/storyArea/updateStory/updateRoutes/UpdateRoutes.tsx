@@ -128,6 +128,7 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
     setRoutes([
       ...routes,
       {
+        _id: "",
         origin: "",
         destination: "",
         transportType: "",

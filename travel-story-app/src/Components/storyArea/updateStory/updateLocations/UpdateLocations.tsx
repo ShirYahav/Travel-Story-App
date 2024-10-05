@@ -52,8 +52,8 @@ interface UpdateLocationsProps {
   setLocations: (locations: LocationModel[]) => void;
 } 
 
-
 const UpdateLocations: React.FC <UpdateLocationsProps> = ({locations, setLocations}) => {
+
   const [countries, setCountries] = useState<{ name: string; code: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [cities, setCities] = useState<string[]>([]);
@@ -83,18 +83,21 @@ const UpdateLocations: React.FC <UpdateLocationsProps> = ({locations, setLocatio
     getCountries();
   }, []);
 
-  const handleFetchCities = debounce(async (countryCode: string, query: string) => {
-    if (!query) return;
-    try {
-      setIsLoadingCities(true);
-      const cityNames = await fetchCitiesAPI(countryCode, query);
-      setCities(cityNames);
-    } catch (error) {
-      console.error("Error fetching cities: ", error);
-    } finally {
-      setIsLoadingCities(false);
-    }
-  }, 300);
+  const handleFetchCities = debounce(
+    async (countryCode: string, query: string) => {
+      if (!query) return;
+      try {
+        setIsLoadingCities(true);
+        const cityNames = await fetchCitiesAPI(countryCode, query);
+        setCities(cityNames);
+      } catch (error) {
+        console.error("Error fetching cities in the component: ", error);
+      } finally {
+        setIsLoadingCities(false);
+      }
+    },
+    300
+  );
 
   const handleLocationChange = <K extends keyof LocationModel>(
     index: number,
@@ -106,6 +109,23 @@ const UpdateLocations: React.FC <UpdateLocationsProps> = ({locations, setLocatio
     setLocations(updatedLocations);
   };
 
+  const handleCountryChange = async (index: number, countryName: string) => {
+    const selectedCountry = countries.find((c) => c.name === countryName);
+    if (!selectedCountry) return;
+    handleLocationChange(index, "country", countryName);
+    handleLocationChange(index, "city", "");
+  };
+
+  const handleCityInputChange = (
+    index: number,
+    countryName: string,
+    cityQuery: string
+  ) => {
+    const selectedCountry = countries.find((c) => c.name === countryName);
+    if (!selectedCountry) return;
+    handleFetchCities(selectedCountry.code, cityQuery);
+  };
+
   const handleDeleteLocation = (index: number) => {
     const updatedLocations = locations.filter((_, i) => i !== index);
     setLocations(updatedLocations);
@@ -115,7 +135,7 @@ const UpdateLocations: React.FC <UpdateLocationsProps> = ({locations, setLocatio
     setLocations([
       ...locations,
       {
-        _id:'',
+        _id: '',
         country: "",
         city: "",
         startDate: null,
@@ -124,7 +144,7 @@ const UpdateLocations: React.FC <UpdateLocationsProps> = ({locations, setLocatio
         cost: 0,
         currency: "",
         photos: [],
-        videos:[],
+        videos: [],
       },
     ]);
   };
@@ -158,7 +178,6 @@ const UpdateLocations: React.FC <UpdateLocationsProps> = ({locations, setLocatio
               Location {index + 1}
             </Typography>
 
-            {/* Delete Button */}
             {index > 0 && (
              <IconButton
              onClick={() => handleDeleteLocation(index)}
@@ -181,7 +200,7 @@ const UpdateLocations: React.FC <UpdateLocationsProps> = ({locations, setLocatio
                 loading={isLoading}
                 value={location.country}
                 onInputChange={(event, newInputValue) => {
-                  handleLocationChange(index, "country", newInputValue);
+                  handleCountryChange(index, newInputValue);
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Country" fullWidth size="small" />
@@ -201,7 +220,11 @@ const UpdateLocations: React.FC <UpdateLocationsProps> = ({locations, setLocatio
                   handleLocationChange(index, "city", newValue || "");
                 }}
                 onInputChange={(event, newInputValue) => {
-                  handleFetchCities(countries[index]?.code || "", newInputValue);
+                  handleCityInputChange(
+                    index,
+                    locations[index].country,
+                    newInputValue
+                  );
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="City" fullWidth size="small" />

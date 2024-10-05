@@ -1,5 +1,6 @@
-import { IStory } from "../models/story-model";
+import StoryModel from "../models/story-model";
 import LocationModel, { ILocation } from "../models/location-model";
+import mongoose from "mongoose";
 
 async function findLocationById (locationId: string): Promise<ILocation>{
 
@@ -10,46 +11,69 @@ async function findLocationById (locationId: string): Promise<ILocation>{
   return location;
 }
 
+async function updateLocationById(locationId: string, updateData: Partial<ILocation>): Promise<ILocation | null> {
 
-
-
-
-
-async function updateLocations(existingStory: IStory, locations: ILocation[]): Promise<ILocation[]> {
+  const objectId = mongoose.Types.ObjectId.isValid(locationId) ? new mongoose.Types.ObjectId(locationId) : locationId;
+  const existingLocation = await LocationModel.findById(objectId);
   
-  const existingLocationIds = existingStory.locations.map((loc: any) =>
-    loc._id.toString()
-  );
-  const updatedLocationIds = locations.map((loc) => loc._id?.toString());
-
-  const locationsToDelete = existingLocationIds.filter(
-    (id) => !updatedLocationIds.includes(id)
-  );
-  await LocationModel.deleteMany({ _id: { $in: locationsToDelete } });
-
-  const updatedLocations: ILocation[] = [];
-  for (const locationData of locations) {
-    if (locationData._id) {
-
-      const updatedLocation = await LocationModel.findByIdAndUpdate(
-        locationData._id,
-        locationData,
-        { new: true }
-      );
-      if (updatedLocation) {
-        updatedLocations.push(updatedLocation);
-      }
-    } else {
-      
-      const newLocation = new LocationModel(locationData);
-      const savedLocation = await newLocation.save();
-      updatedLocations.push(savedLocation);
-    }
+  if (!existingLocation) {
+    throw new Error(`Location with ID ${locationId} not found.`);
   }
-  return updatedLocations;
+
+  const updatedData = {
+    ...updateData,
+    photos: existingLocation.photos,
+    videos: existingLocation.videos
+  };
+
+  const updatedLocation = await LocationModel.findByIdAndUpdate(
+    objectId,
+    updatedData,
+    { new: true }
+  );
+
+  if (!updatedLocation) {
+    throw new Error(`Failed to update location with ID ${locationId}.`);
+  }
+
+  return updatedLocation;
+}
+
+async function addLocationToStory(storyId: string, locationData: Partial<ILocation>): Promise<ILocation> {
+  const newLocation = new LocationModel(locationData);
+  const savedLocation = await newLocation.save();
+
+  await StoryModel.findByIdAndUpdate(
+    storyId,
+    { $push: { locations: savedLocation._id } },
+    { new: true }
+  );
+
+  return savedLocation;
+}
+
+async function deleteLocationById(locationId: string): Promise<void> {
+  try {
+
+    if (!mongoose.Types.ObjectId.isValid(locationId)) {
+      throw new Error(`Invalid location ID format: ${locationId}`);
+    }
+    const objectId = new mongoose.Types.ObjectId(locationId);
+
+    const deletedLocation = await LocationModel.findByIdAndDelete(objectId);
+    if (!deletedLocation) {
+      throw new Error(`Location with ID ${locationId} not found`);
+    }
+    
+  } catch (error) {
+    console.error(`Error deleting location with ID ${locationId}:`, error);
+    throw error;
+  }
 }
 
 export default {
-  updateLocations,
-  findLocationById
+  findLocationById,
+  updateLocationById,
+  addLocationToStory,
+  deleteLocationById
 };

@@ -4,6 +4,7 @@ import { IRoute } from "./route-model";
 import { IUser } from "./user-model";
 
 export interface IStory extends Document {
+    _id: string;
     user: Types.ObjectId | IUser; 
     countries: string[];
     title: string;
