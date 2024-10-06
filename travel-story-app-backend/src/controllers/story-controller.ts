@@ -76,7 +76,6 @@ router.put('/update-story/:storyId', async (req: Request, res: Response) => {
     const { storyId } = req.params;
     const { title, description, countries, startDate, endDate, budget, currency, locations, routes } = req.body;
 
-    console.log(req.body)
     const updateData = {
       title,
       description,

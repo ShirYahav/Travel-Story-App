@@ -3,8 +3,6 @@ import multer from "multer";
 import path from "path";
 import LocationModel from "../models/location-model";
 import fs from 'fs';
-import StoryModel from "../models/story-model";
-import storyLogic from '../logic/story-logic';
 import locationLogic from '../logic/location-logic'
 
 const router = express.Router();

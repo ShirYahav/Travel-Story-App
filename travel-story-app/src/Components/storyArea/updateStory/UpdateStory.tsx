@@ -17,10 +17,10 @@ import StoryModel from "../../../models/StoryModel";
 import RouteModel from "../../../models/RouteModel";
 import { getDateRangeFromLocations } from "../../../services/DateService";
 import { extractCountriesFromLocations } from "../../../services/CountriesCitiesService";
-import { useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { calculateTotalBudget } from "../../../services/CurrencyCostService";
-
+import './UpdateStory.css';
 
 const theme = createTheme({
   palette: {
@@ -79,6 +79,7 @@ const convertStory = (story: any): StoryModel => {
 
 const UpdateStory: React.FC = () => {
   
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const { storyId } = useParams<{ storyId: string }>();
   const [story, setStory] = useState<StoryModel | undefined>();
@@ -89,10 +90,10 @@ const UpdateStory: React.FC = () => {
     const fetchStory = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/api/story/${storyId}`);
-        const fetchedStory = convertStory(response.data); // Convert fetched story
+        const fetchedStory = convertStory(response.data);
         setStory(fetchedStory);
-        setLocations(fetchedStory.locations); // Set the locations based on the story
-        setRoutes(fetchedStory.routes || []); // Set routes if available
+        setLocations(fetchedStory.locations); 
+        setRoutes(fetchedStory.routes || []);
       } catch (error) {
         console.error(error);
       }
@@ -104,7 +105,7 @@ const UpdateStory: React.FC = () => {
     if (story) {
       setStory({
         ...story,
-        locations: [...locations], // Update the story with the new locations
+        locations: [...locations], 
       });
     }
   }, [locations]);
@@ -149,7 +150,6 @@ const UpdateStory: React.FC = () => {
             endDate: location.endDate ? new Date(location.endDate).toISOString() : null,
           };
         }),
-  
         routes: routes.map((route) => {
           const { _id, ...routeWithoutId } = route;
           return {
@@ -158,13 +158,9 @@ const UpdateStory: React.FC = () => {
           };
         })
       };
-  
-      const response = await axios.put(
-        `http://localhost:3001/api/update-story/${storyId}`,
-        storyToUpdate
-      );
-  
-      console.log(response.data);
+
+      const response = await axios.put(`http://localhost:3001/api/update-story/${storyId}`,storyToUpdate);
+      navigate(`/story/${story._id}`);
     } catch (error) {
       console.error(error);
     }
@@ -176,23 +172,24 @@ const UpdateStory: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <Link className='backLink' to={`/story/${storyId}`}>Back</Link>
+
+
       <Box sx={{ p: 3 }}>
         {step === 1 && (
           <Box>
-            <UpdateLocations  locations={locations} setLocations={setLocations}/>
+            <UpdateLocations  locations={locations} setLocations={setLocations} />
             <Button
               variant="contained"
               onClick={() => {
                 handleNext();
                 const dateRange = getDateRangeFromLocations(locations);
-                console.log(dateRange);
                 setStory({
                   ...story,
                   countries: extractCountriesFromLocations(locations),
                   startDate: dateRange.earliestDate,
                   endDate: dateRange.latestDate,
                 });
-                console.log(story)
               }}
               color="secondary"
             >
