@@ -135,4 +135,26 @@ router.get('/story/:storyId', async (req: Request, res: Response) => {
   }
 });
 
+router.post("/story/:storyId/like", async (req: Request, res: Response) => {
+  const { storyId } = req.params;
+
+  try {
+    const updatedStory = await logic.likeStory(storyId);
+    res.status(200).json({ success: true, likes: updatedStory.likes });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/story/:storyId/unlike", async (req: Request, res: Response) => {
+  const { storyId } = req.params;
+
+  try {
+    const updatedStory = await logic.unlikeStory(storyId);
+    res.status(200).json({ success: true, likes: updatedStory.likes });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

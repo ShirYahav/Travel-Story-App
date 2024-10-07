@@ -17,6 +17,9 @@
 
 .menu-right {
     margin-right: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 a {
@@ -27,7 +30,8 @@ a {
  a.active {
     color: white; 
     background-color: var(--lightBrown); 
-  }
+}
   
-/* a:hover {
-} */
+.menuRightLink {
+    font-size: 16px;
+}

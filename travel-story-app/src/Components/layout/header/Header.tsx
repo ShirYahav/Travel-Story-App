@@ -1,6 +1,6 @@
 import React from 'react';
 import './Header.css'; 
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 
 const HeaderMenu: React.FC = () => {
@@ -11,7 +11,9 @@ const HeaderMenu: React.FC = () => {
       </div>
       
       <div className="menu-right">
-        My Profile
+        <Link className="menuRightLink" to={'/add-story'}> Add story </Link>
+        <div>&nbsp;|&nbsp;</div>
+        <Link className="menuRightLink" to={'/'}> My Profile</Link>
       </div>
     </header>
   );

@@ -15,11 +15,12 @@ import LocationModel from "../../../models/LocationModel";
 import StoryModel from "../../../models/StoryModel";
 import RouteModel from "../../../models/RouteModel";
 import "./AddStory.css";
-import { formatDate, getDateRangeFromLocations } from "../../../services/DateService";
+import { getDateRangeFromLocations } from "../../../services/DateService";
 import { extractCountriesFromLocations } from "../../../services/CountriesCitiesService";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { calculateTotalBudget } from "../../../services/CurrencyCostService";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme({
   palette: {
@@ -66,6 +67,7 @@ const currencies = [
 
 const AddStory: React.FC = () => {
 
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [locations, setLocations] = useState<LocationModel[]>([
     {
@@ -105,6 +107,7 @@ const AddStory: React.FC = () => {
     currency: "",
     locations: [],
     routes: [],
+    likes:0,
   });
 
   const handleNext = () => {
@@ -130,7 +133,15 @@ const AddStory: React.FC = () => {
 
   const handleSkipRoutes = () => {
     setStep(step + 1);
-    setRoutes([]);
+    if (routes.length === 0) {
+      setRoutes([]);
+    }
+    const budgetDetails = calculateTotalBudget(locations, routes);
+    setStory({
+      ...story,
+      budget: budgetDetails.totalBudget,
+      currency: budgetDetails.currency,
+    });
   };
 
   const handleUpload = async (locationId: string, locationPhotos: File[], locationVideos: File[]) => {
@@ -168,15 +179,15 @@ const AddStory: React.FC = () => {
             endDate: location.endDate ? new Date(location.endDate).toISOString() : null,
           };
         }),
-        routes: routes.map((route) => ({
-          ...route,
-          duration: route.duration,
+        routes: routes.map(({ _id, ...routeWithoutId }) => ({
+          ...routeWithoutId,
+          duration: routeWithoutId.duration,
         })),
       };
   
   
       const storyResponse = await axios.post("http://localhost:3001/api/add-story", storyToAdd);
-      const savedStory = storyResponse.data;
+      const savedStory = storyResponse.data.story;
   
       if (savedStory.locations && savedStory.locations.length > 0) {
 
@@ -196,6 +207,8 @@ const AddStory: React.FC = () => {
       } else {
         throw new Error("No locations found in saved story");
       }
+
+      navigate(`/story/${savedStory._id}`);
 
     } catch (error) {
       console.error("Error adding story or uploading files:", error);

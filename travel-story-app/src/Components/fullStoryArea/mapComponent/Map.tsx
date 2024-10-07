@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   APIProvider,
   Map,
@@ -19,7 +19,6 @@ import Slider from "react-slick";
 import durationIcon from "../../../assets/SVGs/flight-date.png";
 import budgetIcon from "../../../assets/SVGs/money-bag.png";
 
-// Interface for locations with coordinates
 interface LocationWithCoordinates
   extends Omit<LocationModel, "photos" | "videos"> {
   lat: number;
@@ -30,16 +29,13 @@ interface LocationWithCoordinates
 
 interface MapComponentProps {
   story: StoryModel | undefined;
+  center: { lat: number; lng: number };
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ story }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
+
   const [locations, setLocations] = useState<LocationWithCoordinates[]>([]);
-  const [selectedLocation, setSelectedLocation] =
-    useState<LocationWithCoordinates | null>(null);
-  const [center, setCenter] = useState<{ lat: number; lng: number }>({
-    lat: 35.6762,
-    lng: 139.6503,
-  });
+  const [selectedLocation, setSelectedLocation] = useState<LocationWithCoordinates | null>(null);
 
   useEffect(() => {
     if (story) {
@@ -74,10 +70,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ story }) => {
     }
 
     setLocations(updatedLocations);
-
-    if (updatedLocations.length > 0) {
-      setCenter({ lat: updatedLocations[0].lat, lng: updatedLocations[0].lng });
-    }
   };
 
   const sliderSettings = {
@@ -93,7 +85,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ story }) => {
       apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "Your_API_Key_Here"}
     >
       <Map
-        defaultZoom={6}
+        defaultZoom={5}
         defaultCenter={center}
         mapId={process.env.REACT_APP_GOOGLE_MAPS_ID}
         colorScheme="DARK"

@@ -14,6 +14,7 @@ class StoryModel {
     currency: string;
     locations: LocationModel[];
     routes:RouteModel[];
+    likes:number;
 }
 
 export default StoryModel;

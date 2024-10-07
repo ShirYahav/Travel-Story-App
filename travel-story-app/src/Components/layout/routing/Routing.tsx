@@ -5,6 +5,8 @@ import StoriesByCountry from '../../storyArea/storiesByCountry/StoriesByCountry'
 import StoryPage from '../../fullStoryArea/storyPage/StoryPage';
 import AddStory from '../../storyArea/addStory/AddStory';
 import UpdateStory from '../../storyArea/updateStory/UpdateStory';
+import Login from '../../auth/login/Login';
+import Register from '../../auth/register/Register';
 
 
 const Routing: React.FC = () => {
@@ -16,6 +18,8 @@ const Routing: React.FC = () => {
           <Route path="/story/:storyId" element={<StoryPage />} />
           <Route path="/add-story" element={<AddStory />} />
           <Route path="/update-story/:storyId" element={<UpdateStory />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </>
     );

@@ -4,6 +4,7 @@ import dal from "./src/dal";
 
 import storiesController from './src/controllers/story-controller';
 import imageController from './src/controllers/images-controller';
+import authController from './src/controllers/auth-controller';
 import path from "path";
 
 const port: number = 3001; 
@@ -16,6 +17,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api" ,storiesController);
 app.use("/api", imageController);
+app.use("/api", authController);
 app.use('/photos', express.static(path.join(__dirname, 'assets/stories/photos')));
 app.use('/videos', express.static(path.join(__dirname, 'assets/stories/videos')));
 

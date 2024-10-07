@@ -6,19 +6,12 @@ const conversionRates: { [key: string]: { [key: string]: number } } = {
   USD: { EUR: 0.91, USD: 1 },
 };
 
-const convertCurrency = (
-  amount: number,
-  fromCurrency: string,
-  toCurrency: string
-): number => {
+const convertCurrency = (amount: number,fromCurrency: string,toCurrency: string): number => {
   if (fromCurrency === toCurrency) return amount;
   return amount * (conversionRates[fromCurrency][toCurrency] || 1);
 };
 
-export const calculateTotalBudget = (
-  locations: LocationModel[],
-  routes: RouteModel[]
-): { totalBudget: number; currency: string } => {
+export const calculateTotalBudget = (locations: LocationModel[],routes: RouteModel[] = []): { totalBudget: number; currency: string } => {
   const currencyCount: { [key: string]: number } = {};
   const totalCosts: { [key: string]: number } = {};
 
@@ -30,13 +23,15 @@ export const calculateTotalBudget = (
     totalCosts[currency] = (totalCosts[currency] || 0) + cost;
   });
 
-  routes.forEach((route) => {
-    const { cost, currency } = route;
-    if (!currency) return;
+  if (routes.length > 0) {
+    routes.forEach((route) => {
+      const { cost, currency } = route;
+      if (!currency) return;
 
-    currencyCount[currency] = (currencyCount[currency] || 0) + 1;
-    totalCosts[currency] = (totalCosts[currency] || 0) + cost;
-  });
+      currencyCount[currency] = (currencyCount[currency] || 0) + 1;
+      totalCosts[currency] = (totalCosts[currency] || 0) + cost;
+    });
+  }
 
   const mostFrequentCurrency = Object.keys(currencyCount).reduce((a, b) =>
     currencyCount[a] > currencyCount[b] ? a : b
@@ -53,3 +48,4 @@ export const calculateTotalBudget = (
 
   return { totalBudget, currency: mostFrequentCurrency };
 };
+

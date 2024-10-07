@@ -189,6 +189,48 @@ async function updateStory(storyId: string, updateData: IUpdateStoryData): Promi
   return updatedStory;
 }
 
+interface UpdatedStoryResponse {
+  likes: number;
+}
+
+// Logic to increment likes
+const likeStory = async (storyId: string): Promise<UpdatedStoryResponse> => {
+  try {
+    const updatedStory = await StoryModel.findByIdAndUpdate(
+      storyId,
+      { $inc: { likes: 1 } },
+      { new: true } // Return the updated story
+    ).exec();
+
+    if (!updatedStory) {
+      throw new Error("Story not found");
+    }
+
+    return { likes: updatedStory.likes };
+  } catch (error) {
+    throw new Error("Error liking the story: " + error.message);
+  }
+};
+
+// Logic to decrement likes
+const unlikeStory = async (storyId: string): Promise<UpdatedStoryResponse> => {
+  try {
+    const updatedStory = await StoryModel.findByIdAndUpdate(
+      storyId,
+      { $inc: { likes: -1 } },
+      { new: true } // Return the updated story
+    ).exec();
+
+    if (!updatedStory) {
+      throw new Error("Story not found");
+    }
+
+    return { likes: updatedStory.likes };
+  } catch (error) {
+    throw new Error("Error unliking the story: " + error.message);
+  }
+};
+
 export default {
   getAllStories,
   getStoriesByCountry,
@@ -197,4 +239,6 @@ export default {
   addStory,
   updateStory,
   deleteStory,
+  likeStory,
+  unlikeStory,
 };

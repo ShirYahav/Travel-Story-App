@@ -26,7 +26,7 @@
 .inputAndButton {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 4px;
 }
 
 @media (max-width: 768px) {
