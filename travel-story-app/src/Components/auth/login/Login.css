@@ -1,0 +1,5 @@
+.registerLink {
+    color: var(--darkBrown);
+    font-size: 13px;
+    text-decoration: underline;
+}

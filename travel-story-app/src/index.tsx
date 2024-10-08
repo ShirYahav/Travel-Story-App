@@ -5,15 +5,18 @@ import './index.css';
 
 import reportWebVitals from './reportWebVitals';
 import Layout from './Components/layout/layout/Layout';
+import { UserProvider } from './Components/Context/UserContext';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Layout />
-    </BrowserRouter>
+    <UserProvider>
+      <BrowserRouter>
+        <Layout />
+      </BrowserRouter>
+    </UserProvider>
   </React.StrictMode>
 );
 

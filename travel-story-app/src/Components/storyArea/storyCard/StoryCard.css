@@ -41,10 +41,11 @@
     flex-direction: column;
     padding: 15px;
     z-index: 2;
-    border: 3px solid white;
-    background-color: rgba(178, 94, 67, 0.6);
+    border: 3px solid var(--darkerBrown);
+    background-color: rgba(178, 94, 67, 0.7);
 }
 
+.likeCard,
 .byUser {
     position: absolute;
     bottom: -8px;
@@ -55,19 +56,29 @@
     border-radius: 5px;
 }
 
+.likeCard {
+    right: -142px;
+}
+
 .storyTitle {
     color: var(--lightGrey);
-    font-size: 21px;
+    font-size: 16px;
     margin-top: 7px;
-    height: 70px;
+    height: 38px;
 }
 
 .storyDescription {
     font-size: 13px;
     text-align: start;
-    border: 1px solid white;
-    height: 87px;
+    border: 1px solid var(--darkerBrown);
+    height: 118px;
     padding: 5px;
     border-radius: 6px;
     color: var(--lightGrey);
+    overflow-y: auto;
 }
+
+.storyDescription::-webkit-scrollbar {
+    width: 0px;
+}
+

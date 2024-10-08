@@ -1,14 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Slideshow from "./Slideshow";
 import StoriesList from "../storyArea/storyList/StoriesList";
-import { convertStoryData } from "../../services/DateService";
 import "./Home.css";
-
-import storiesData from './FakeDataStories.json'; // Temporary
+import StoryModel from "../../models/StoryModel";
+import axios from "axios";
 
 const Home: React.FC = () => {
   
-  const stories = convertStoryData(storiesData);
+  const [stories, setStories] = useState<StoryModel[]>([]);
+
+  useEffect(() => {
+      const fetchStories = async () => {
+        try {
+          const response = await axios.get(`http://localhost:3001/api/top-stories`);
+          setStories(response.data);
+          
+        } catch (error) {
+          console.log(error);
+        }
+      };
+        
+      fetchStories(); 
+  }, []); 
 
   return (
     <>
@@ -28,7 +41,7 @@ const Home: React.FC = () => {
           <h3 className="peopleTell">People Tell</h3>
           <hr className="underlinePeopleTell"></hr>
           <div>
-            <StoriesList stories={stories} />
+            {stories && <StoriesList stories={stories} />}
           </div>
         </div>
       </div>

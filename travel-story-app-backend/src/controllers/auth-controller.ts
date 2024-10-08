@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import UserModel from "../models/user-model";
 import logic from '../logic/auth-logic';
 import { CredentialsModel } from "../models/credentials-model";
+import cyber from '../utils/cyber';
 
 const router = express.Router();
 
@@ -26,6 +27,18 @@ router.post("/auth/login", async (request: Request, response: Response, next: Ne
         console.log("something went wrong with login")
         next(err);
     }
+});
+
+router.get('/auth/me', (req: Request, res: Response) => {
+    const authorizationHeader = req.headers['authorization'] || '';
+
+    const user = cyber.getUserFromToken(authorizationHeader);
+
+    if (!user) {
+        return res.status(401).json({ message: 'Unauthorized: Invalid token or user not found' });
+    }
+
+    res.json({ user });
 });
 
 export default router;

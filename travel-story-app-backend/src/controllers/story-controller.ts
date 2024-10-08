@@ -157,4 +157,13 @@ router.post("/story/:storyId/unlike", async (req: Request, res: Response) => {
   }
 });
 
+router.get('/top-stories', async (req: Request, res: Response) => {
+  try {
+    const stories = await logic.getTopStories();
+    res.json(stories);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch top vacations" });
+  }
+});
+
 export default router;

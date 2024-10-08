@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, createTheme, ThemeProvider } from '@mui/material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import './Login.css';
+import { useUser } from '../../Context/UserContext';
 
 const theme = createTheme({
   palette: {
@@ -29,6 +31,8 @@ const theme = createTheme({
 
 const Login: React.FC = () => {
 
+  const { setUser } = useUser();
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -46,6 +50,13 @@ const Login: React.FC = () => {
       const response = await axios.post('http://localhost:3001/api/auth/login', formData);
       const token = response.data;
       localStorage.setItem('token', token);
+
+      const responseUser = await axios.get('http://localhost:3001/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setUser(responseUser.data.user);
+
       navigate('/');
     }
     catch (error) {
@@ -69,7 +80,7 @@ const Login: React.FC = () => {
           width: {
             xs: '90%',
             sm: '45%',
-            md: '38%',
+            md: '30%',
           },
           margin: '0 auto',
           marginTop: '40px  ',
@@ -114,6 +125,7 @@ const Login: React.FC = () => {
         </form>
       </Box>
     </Box>
+    <Link to={'/register'} className='registerLink'>Don't have an account? Click here to register</Link>
     </ThemeProvider>
   );
   

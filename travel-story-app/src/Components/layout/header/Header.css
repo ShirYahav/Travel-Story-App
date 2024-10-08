@@ -35,3 +35,12 @@ a {
 .menuRightLink {
     font-size: 16px;
 }
+
+.logoutButton {
+    color: var(--lightGrey);
+    background-color: transparent;
+    border: none;
+    font-family:'Times New Roman', Times, serif;
+    font-size: 17px;
+    cursor: pointer;
+}

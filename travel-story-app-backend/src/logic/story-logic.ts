@@ -193,13 +193,12 @@ interface UpdatedStoryResponse {
   likes: number;
 }
 
-// Logic to increment likes
 const likeStory = async (storyId: string): Promise<UpdatedStoryResponse> => {
   try {
     const updatedStory = await StoryModel.findByIdAndUpdate(
       storyId,
       { $inc: { likes: 1 } },
-      { new: true } // Return the updated story
+      { new: true } 
     ).exec();
 
     if (!updatedStory) {
@@ -212,7 +211,6 @@ const likeStory = async (storyId: string): Promise<UpdatedStoryResponse> => {
   }
 };
 
-// Logic to decrement likes
 const unlikeStory = async (storyId: string): Promise<UpdatedStoryResponse> => {
   try {
     const updatedStory = await StoryModel.findByIdAndUpdate(
@@ -231,6 +229,24 @@ const unlikeStory = async (storyId: string): Promise<UpdatedStoryResponse> => {
   }
 };
 
+async function getTopStories(): Promise<any> {
+  try {
+    const topVacations = await StoryModel
+      .find() 
+      .populate({ path: "locations", model: LocationModel })
+      .populate({ path: "routes", model: RouteModel })
+      .populate({ path: "user", model: UserModel })
+      .sort({ likes: -1 }) 
+      .limit(10) 
+      .exec();
+
+    return topVacations;
+  } catch (error) {
+    console.error("Error fetching top vacations:", error);
+    throw new Error("Failed to fetch top vacations.");
+  }
+}
+
 export default {
   getAllStories,
   getStoriesByCountry,
@@ -241,4 +257,5 @@ export default {
   deleteStory,
   likeStory,
   unlikeStory,
+  getTopStories,
 };

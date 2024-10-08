@@ -11,6 +11,7 @@ interface StoriesListProps {
 }
 
 const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
+
   const settings = {
     dots: true,
     infinite: true,
@@ -30,7 +31,7 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
           infinite: true,
           dots: true,
           autoplay: true,
-          autoplaySpeed: 8000,
+          autoplaySpeed: 10000,
         },
       },
       {
@@ -41,7 +42,7 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
           infinite: true,
           dots: true,
           autoplay: true,
-          autoplaySpeed: 6000,
+          autoplaySpeed: 10000,
         },
       },
       {
@@ -51,7 +52,7 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
           slidesToScroll: 2,
           initialSlide: 2,
           autoplay: true,
-          autoplaySpeed: 6000,
+          autoplaySpeed: 8000,
         },
       },
       {
@@ -70,7 +71,7 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
         {stories.map((story, index) => {
           return (
             <div key={index}>
-              <StoryCard story={stories[index]} />
+              <StoryCard story={story} />
             </div>
           );
         })}

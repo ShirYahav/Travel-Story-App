@@ -17,11 +17,8 @@ function hash(plainText: string): string {
 const secretKey = "StevieTheTV";
 
 function getNewToken(user: IUser): string {
-
     const payload = { user };
-
     const token = jwt.sign(payload, secretKey, { expiresIn: "2h" });
-
     return token;
 }
 
@@ -55,16 +52,18 @@ function verifyToken(authorizationHeader: string): Promise<boolean> {
     
 }
 
-
-function getUserFromToken(authorizationHeader: string): IUser {
+function getUserFromToken(authorizationHeader: string): Omit<IUser, 'password'> | null {
+    if (!authorizationHeader) return null;
 
     const token = authorizationHeader.split(" ")[1];
+    if (!token) return null;
 
     const payload: any = jwt.decode(token);
+    if (!payload || !payload.user) return null;
 
-    const user = payload.user;
-
-    return user;
+    const { password, ...userWithoutPassword } = payload.user;
+    
+    return userWithoutPassword; 
 }
 
 export default {
