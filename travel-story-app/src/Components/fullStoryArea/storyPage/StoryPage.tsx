@@ -22,10 +22,8 @@ const StoryPage: React.FC = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(0);
   const [center, setCenter] = useState<{ lat: number; lng: number } | null>(null);
-  const isOwner = true;
   const navigate = useNavigate();
   const { user } = useUser();
-
 
   useEffect(() => {
     const fetchStory = async () => {
@@ -35,7 +33,6 @@ const StoryPage: React.FC = () => {
         setStory(fetchedStory);
         setLikes(fetchedStory.likes);
 
-        console.log(user);
         if (user && user?.likedStories) {
           const liked = user.likedStories.some((likedStoryId: string) => likedStoryId === storyId);
           setIsLiked(liked);
@@ -118,7 +115,7 @@ const StoryPage: React.FC = () => {
             />
           </button>
         </div>
-        {isOwner && <button className="updateStoryButton" onClick={handleUpdateStory}>Update Story</button>}
+        {story?.user?._id === user?._id && <button className="updateStoryButton" onClick={handleUpdateStory}>Update Story</button>}
       </div>
     </div>
   );
