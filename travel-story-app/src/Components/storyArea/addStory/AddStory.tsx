@@ -21,6 +21,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { calculateTotalBudget } from "../../../Services/CurrencyCostService";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../../Context/UserContext';
 
 const theme = createTheme({
   palette: {
@@ -68,7 +69,11 @@ const currencies = [
 const AddStory: React.FC = () => {
 
   const navigate = useNavigate();
+
+  const { user } = useUser();
+
   const [step, setStep] = useState(1);
+
   const [locations, setLocations] = useState<LocationModel[]>([
     {
       _id:'',
@@ -168,7 +173,7 @@ const AddStory: React.FC = () => {
     try {
       const storyToAdd = {
         ...story,
-        user: "66fa6ffc84ca4d30b8864a7c",  // Assuming user ID is hardcoded for now
+        user: user._id,  
         startDate: story.startDate ? new Date(story.startDate).toISOString() : null,
         endDate: story.endDate ? new Date(story.endDate).toISOString() : null,
         locations: locations.map((location) => {

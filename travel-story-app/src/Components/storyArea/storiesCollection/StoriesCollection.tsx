@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import StoryLine from '../storyLine/StoryLine';
 import './storiesCollection.css';
 import StoryModel from '../../../Models/StoryModel';
@@ -8,12 +8,24 @@ interface StoriesCollectionProps {
 }
 
 const StoriesCollection: React.FC<StoriesCollectionProps> = ({ stories }) => {
+  const [storyList, setStoryList] = useState<StoryModel[]>([]);
+
+  useEffect(() => {
+    if (stories) {
+      setStoryList(stories); 
+    }
+  }, [stories]);
+
+  const handleDeleteStory = (storyId: string) => {
+    setStoryList((prevStories) => prevStories.filter((story) => story._id !== storyId));
+  };
+
   return (
     <div className="storyLinesContainer">
-      {stories.map((story, index) => {
+      {storyList.map((story, index) => {
         return (
-          <div key={index}>
-            <StoryLine story={stories[index]}/>
+          <div key={story._id}>
+            <StoryLine key={story._id} story={story} onDeleteStory={handleDeleteStory}/>
           </div>
         );
       })}

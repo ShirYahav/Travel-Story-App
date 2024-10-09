@@ -6,54 +6,80 @@ import StoryModel from '../../../Models/StoryModel';
 import { calculateDaysDifference } from '../../../Services/DateService';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../../Context/UserContext';
+import brownTrash from '../../../assets/SVGs/trash-bin-trash-brown.png';
 
 interface StoryLineProps {
   story: StoryModel;
+  onDeleteStory: (storyId: string) => void;
 }
 
-const StoryLine: React.FC<StoryLineProps> = ({story}) => {
+const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
 
-    const navigate = useNavigate();
-    const duration = calculateDaysDifference(story.startDate, story.endDate);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const duration = calculateDaysDifference(story.startDate, story.endDate);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
-    useEffect(() => {
-      const fetchFirstPhoto = async () => {
-        try {
+  useEffect(() => {
+    const fetchFirstPhoto = async () => {
+      try {
 
-          const firstPhotoFileName = story?.locations?.[0]?.photos?.[0];
-          const response = await axios.get(`http://localhost:3001/api/story/photo/${firstPhotoFileName}`, { responseType: "blob" });
-          const imageObjectUrl = URL.createObjectURL(response.data);
-          setImageUrl(imageObjectUrl);
-        
-        } catch (error) {
-          console.log(error); 
-        }
+        const firstPhotoFileName = story?.locations?.[0]?.photos?.[0];
+        const response = await axios.get(`http://localhost:3001/api/story/photo/${firstPhotoFileName}`, { responseType: "blob" });
+        const imageObjectUrl = URL.createObjectURL(response.data);
+        setImageUrl(imageObjectUrl);
+
+      } catch (error) {
+        console.log(error);
       }
-      fetchFirstPhoto();
-    },[]);
-
-    const storyClicked = () => {
-      navigate(`/story/${story._id}`);
     }
+    fetchFirstPhoto();
+  }, []);
 
-    return (
-      <>
-        <div className="storyLine" onClick={storyClicked}>
-          <div className="storyImgLine">
-            <img src={imageUrl} alt="Story location photo" />
-          </div>
-          <div className="textContainerLine">
-            <h3 className="storyTitleLine">{story.title}</h3>
-            <hr className="hrStoryTitleLine"></hr>
-            <p className="storyDescriptionLine">{story.description}</p>
-            <p className="budget"><img src={budgetIcon} />Budget: {story.budget} {story.currency}</p>
-            <p className="duration"> <img src={plane} />Duration: {duration} days</p>
-          </div>
-          <p className="byUserLine">By: {story.user.firstName} {story.user.lastName}</p>
+  const storyClicked = () => {
+    navigate(`/story/${story._id}`);
+  }
+
+  const deleteStoryLine = async (event: React.MouseEvent) => {
+
+    event.stopPropagation();
+    
+    const confirmation = window.confirm("Are you sure you want to delete this story?");
+
+    if (confirmation) {
+      try {
+        await axios.delete(`http://localhost:3001/api/delete-story/${story._id}`);
+        onDeleteStory(story._id);
+      } catch (error) {
+        console.error("Error deleting story:", error);
+      }
+    }
+  }
+
+  return (
+    <>
+      <div className="storyLine" onClick={storyClicked}>
+        <div className="storyImgLine">
+          <img src={imageUrl} alt="Story location photo" />
         </div>
-      </>
-    );
+        <div className="textContainerLine">
+          <h3 className="storyTitleLine">{story.title}</h3>
+          <hr className="hrStoryTitleLine"></hr>
+          <p className="storyDescriptionLine">{story.description}</p>
+          <p className="budget"><img src={budgetIcon} />Budget: {story.budget} {story.currency}</p>
+          <p className="duration"> <img src={plane} />Duration: {duration} days</p>
+        </div>
+        <div className='lineBottomRight'>
+          <p className="byUserLine">By: {story.user.firstName} {story.user.lastName}</p>
+          {story?.user?._id === user?._id &&
+            <button className="deleteStoryLineButton" onClick={deleteStoryLine}>
+              <img className="deleteStoryLineIcon" src={brownTrash} />
+            </button>}
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default StoryLine;

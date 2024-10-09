@@ -13,16 +13,24 @@ import { useNavigate } from 'react-router-dom';
 import "./StoryPage.css";
 import { getCityCoordinatesGoogle } from "../../../Services/CountriesCitiesService";
 import { useUser } from '../../../Context/UserContext';
+import brownTrash from '../../../assets/SVGs/trash-bin-trash-brown.png';
+import whiteTrash from '../../../assets/SVGs/trash-bin-trash-white.png';
 
 
 const StoryPage: React.FC = () => {
   
   const { storyId } = useParams<{ storyId: string }>();
   const [story, setStory] = useState<StoryModel | undefined>(); 
+
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(0);
+
   const [center, setCenter] = useState<{ lat: number; lng: number } | null>(null);
+
+  const [isHovered, setIsHovered] = useState(false);
+  
   const navigate = useNavigate();
+
   const { user } = useUser();
 
   useEffect(() => {
@@ -86,6 +94,24 @@ const StoryPage: React.FC = () => {
     navigate(`/update-story/${storyId}`);
   };
 
+  const getTrashIcon = () => {
+    return isHovered ? whiteTrash : brownTrash;
+  };
+
+  const deleteStory = async () => {
+
+    const confirmation = window.confirm("Are you sure you want to delete this story?");
+
+    if (confirmation) {
+      try {
+        await axios.delete(`http://localhost:3001/api/delete-story/${storyId}`);
+        navigate("/");
+      } catch (error) {
+        console.error("Error deleting story:", error);
+      }
+    }
+  }
+
   return (
     <div className="storyPageDiv">
       {center && story && <MapComponent story={story} center={center} />}
@@ -115,7 +141,13 @@ const StoryPage: React.FC = () => {
             />
           </button>
         </div>
-        {story?.user?._id === user?._id && <button className="updateStoryButton" onClick={handleUpdateStory}>Update Story</button>}
+        <div className="updateDeleteStory">
+          {story?.user?._id === user?._id && <button className="updateStoryButton" onClick={handleUpdateStory}>Update Story</button>}
+          {story?.user?._id === user?._id && 
+            <button className="deleteStoryButton" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={deleteStory}>
+              <img className="deleteStoryIcon" src={getTrashIcon()}/>
+            </button>}
+        </div>
       </div>
     </div>
   );

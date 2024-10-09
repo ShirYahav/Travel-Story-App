@@ -28,7 +28,7 @@
     cursor: pointer;
     font-family: 'Times New Roman', Times, serif;
     font-size: 18px;
-    margin-right: 20px;
+    margin-right: 7px;
 }
 
 .updateStoryButton:hover {
@@ -45,7 +45,7 @@
 .likeButton {
     border: 3px solid var(--darkBrown);
     border-radius: 6px;
-    margin-left: 10px;
+    margin-left: 7px;
     cursor: pointer;
 }
 .likeButton img {
@@ -75,6 +75,35 @@
 .collapseStoryPageDiv img {
     width:19px;
     height: 19px;
+}
+
+.updateDeleteStory {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.deleteStoryButton {
+    width: 42px;
+    height: 38px;
+    border-radius: 6px;
+    background-color: var(--lightGrey);
+    color: var(--darkBrown);
+    border: 3px solid var(--darkBrown);
+    cursor: pointer;
+    margin-right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.deleteStoryButton:hover {
+    background-color: var(--darkBrown);
+}
+
+.deleteStoryIcon {
+    width: 25px;
+    height: 25px;
 }
 
 @media (max-width: 768px) {

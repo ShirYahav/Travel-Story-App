@@ -63,9 +63,9 @@
 }
 
 .byUserLine {
-    bottom: -8px;
+    bottom: -10px;
     position: absolute;
-    right: 9px;
+    right: 33px;
     font-size: 13px;
     color: var(--lightBrown);
 }
@@ -93,6 +93,30 @@
     margin-right: 5px;
 }
 
+.lineBottomRight {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.deleteStoryLineButton {
+    width: 20px;
+    height: 20px;
+    bottom: 1px;
+    position: absolute;
+    right: 9px;
+    color: var(--lightBrown);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.deleteStoryLineIcon {
+    width: 17px;
+    height: 17px;
+}
 @media (max-width: 768px) {
     .storyLine {
         width: 373px;
