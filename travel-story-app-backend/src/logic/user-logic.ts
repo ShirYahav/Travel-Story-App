@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import StoryModel from "../models/story-model";
 import UserModel from "../models/user-model";
+import LocationModel from "../models/location-model";
+import RouteModel from "../models/route-model";
 
 const likeStory = async (userId: string, storyId: string) => {
   try {
@@ -10,7 +12,6 @@ const likeStory = async (userId: string, storyId: string) => {
       throw new Error("User not found");
     }
 
-    // Cast storyId to ObjectId
     const objectIdStory: any = new mongoose.Types.ObjectId(storyId);
 
     if ((user.likedStories as any[]).some((id: any) => id.toString() === objectIdStory.toString())) {
@@ -46,7 +47,6 @@ const dislikeStory = async (userId: string, storyId: string) => {
       throw new Error("Story not liked yet");
     }
 
-    
     await StoryModel.findByIdAndUpdate(
       storyId,
       { $inc: { likes: -1 } }, 
@@ -63,7 +63,16 @@ const dislikeStory = async (userId: string, storyId: string) => {
 };
 
 const getLikedStoriesByUser = async (userId: string) => {
-  const user = await UserModel.findById(userId).populate("likedStories");
+  const user = await UserModel.findById(userId)
+    .populate({
+      path: 'likedStories',
+      model: StoryModel,
+      populate: [
+        { path: 'locations', model: LocationModel },
+        { path: 'routes', model: RouteModel },
+        { path: 'user', model: UserModel }
+      ]
+    });
 
   if (!user) {
     throw new Error("User not found");

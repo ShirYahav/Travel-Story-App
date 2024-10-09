@@ -24,6 +24,7 @@ async function getStoriesByUserId(userId: string): Promise<IStory[]> {
   const stories = await StoryModel.find({ user: userId })
     .populate({ path: "locations", model: LocationModel })
     .populate({ path: "routes", model: RouteModel })
+    .populate({ path: "user", model: UserModel })
     .exec();
 
   if (!stories || stories.length === 0) {

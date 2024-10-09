@@ -71,7 +71,7 @@
 }
 
 .budget {
-    margin-bottom: -6px;
+    margin-bottom: -3px;
 }
 
 .budget,
@@ -80,7 +80,7 @@
     flex-direction: row;
     align-items: center;
     position: absolute;
-    bottom: 12px;
+    bottom: 6px;
     font-size: 14px;
     color: var(--darkBrown);
     font-weight: 500;
@@ -119,33 +119,41 @@
 }
 @media (max-width: 768px) {
     .storyLine {
-        width: 373px;
+        width: 335px;
+        height: 190px;
+
+    }
+
+    .storyImgLine>img {
+        width: 135px;
+        height: 183px;
     }
 
     .textContainerLine {
-        width: 267px;
+        width: 196px;
+        height: 202px;
     }
 
     .hrStoryTitleLine {
-        width: 217px;
+        width: 181px;
         margin-right: 17px;
     }
 
     .storyTitleLine {
-        font-size: 17px;
+        font-size: 16px;
     }
 
     .storyDescriptionLine {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .duration{
-        bottom: 8px;
+        bottom: 26px;
         font-size: 13px;
     }
 
     .budget {
-        margin-bottom: -8px;
+        margin-bottom: 10px;
         font-size: 13px;
     }
 
@@ -157,6 +165,6 @@
     }
 
     .byUserLine {
-        right: 6px;
+        left: 128px;
     }
 }

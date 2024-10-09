@@ -1,0 +1,14 @@
+.shareYourFirstStory {
+    color: var(--darkBrown);
+    font-size: 25px;
+    text-align: start;
+    margin-left: 28px;
+    margin-bottom: 10px;
+}
+
+.youreStoriesH4 {
+    color: var(--darkBrown);
+    font-size: 30px;
+    margin-bottom: 10px; 
+    text-decoration: underline;
+}

@@ -56,7 +56,7 @@ router.post('/story/:storyId/dislike', async (req: Request, res: Response) => {
     }
 });
 
-router.get('/get-likes-stories/:userId', async (req: Request, res: Response) => {
+router.get('/get-liked-stories/:userId', async (req: Request, res: Response) => {
     const { userId } = req.params;
 
     try {

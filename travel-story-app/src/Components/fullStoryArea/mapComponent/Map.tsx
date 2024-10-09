@@ -80,6 +80,13 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
     slidesToScroll: 1,
   };
 
+  const WORLD_BOUNDS = {
+    north: 85,
+    south: -85,
+    west: -360,
+    east: 360,
+  }; 
+
   return (
     <APIProvider
       apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "Your_API_Key_Here"}
@@ -90,6 +97,11 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
         mapId={process.env.REACT_APP_GOOGLE_MAPS_ID}
         colorScheme="DARK"
         className="storyMap"
+        gestureHandling= "greedy"
+        restriction={{
+          latLngBounds: WORLD_BOUNDS,  
+          strictBounds: true,
+        }} 
       >
         {locations.map((location, index) => (
           <AdvancedMarker

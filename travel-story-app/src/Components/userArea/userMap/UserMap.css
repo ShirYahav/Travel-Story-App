@@ -1,0 +1,11 @@
+.userStoriesMap {
+    height: 600px;
+    width: 100%;
+    margin-top: 1px;
+}
+
+@media (max-width: 768px) {
+    .userStoriesMap{
+        height: 300px;
+    }
+}

@@ -47,8 +47,9 @@ const UserSchema: Schema<IUser> = new Schema({
         default: "user"
     },
     likedStories: [{
-        type: mongoose.Schema.Types.ObjectId, // Array of ObjectIds referencing Story
-        default: [] // Ensure it starts as an empty array
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'StoryModel',
+        default: [] 
     }]
 }, {
     versionKey: false,
