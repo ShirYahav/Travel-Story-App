@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './StoryCard.css'
-import StoryModel from '../../../models/StoryModel';
+import StoryModel from '../../../Models/StoryModel';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface StoryCardProps {
   story: StoryModel;
@@ -10,6 +11,7 @@ interface StoryCardProps {
 const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFirstPhoto = async () => {
@@ -26,10 +28,14 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
     };
     fetchFirstPhoto();
   }, []);
+
+  const handleStoryCardClick = () => {
+    navigate(`story/${story._id}`)
+  }
   
     return (
       <>
-      <div className="storyCard">
+      <div className="storyCard" onClick={handleStoryCardClick}>
       <div
         className="imageOverlayContainer"
         style={{ backgroundImage: `url(${imageUrl})` }}

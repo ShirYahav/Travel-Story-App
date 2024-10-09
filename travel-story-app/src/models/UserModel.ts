@@ -5,6 +5,7 @@ class UserModel {
     email: string;
     password: string;
     role?: string; 
+    likedStories: string[];
 }
 
 export default UserModel;

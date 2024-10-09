@@ -8,13 +8,13 @@ import {
 import {
   calculateDaysDifference,
   formatDate,
-} from "../../../services/DateService";
+} from "../../../Services/DateService";
 import { Directions } from "./Directions";
-import LocationModel from "../../../models/LocationModel";
+import LocationModel from "../../../Models/LocationModel";
 import "./Map.css";
-import { getCityCoordinatesGoogle } from "../../../services/CountriesCitiesService";
+import { getCityCoordinatesGoogle } from "../../../Services/CountriesCitiesService";
 import axios from "axios";
-import StoryModel from "../../../models/StoryModel";
+import StoryModel from "../../../Models/StoryModel";
 import Slider from "react-slick";
 import durationIcon from "../../../assets/SVGs/flight-date.png";
 import budgetIcon from "../../../assets/SVGs/money-bag.png";

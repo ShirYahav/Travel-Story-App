@@ -1,5 +1,5 @@
 import axios from "axios";
-import LocationModel from "../models/LocationModel";
+import LocationModel from "../Models/LocationModel";
 
 export const fetchCountriesAPI = async () => {
     const response = await axios.get("https://restcountries.com/v3.1/all");

@@ -6,6 +6,7 @@ export interface IUser extends Document {
     email: string;
     password: string;
     role?: string; 
+    likedStories: mongoose.Schema.Types.ObjectId[];
 }
 
 const UserSchema: Schema<IUser> = new Schema({
@@ -44,7 +45,11 @@ const UserSchema: Schema<IUser> = new Schema({
     role: {
         type: String,
         default: "user"
-    }
+    },
+    likedStories: [{
+        type: mongoose.Schema.Types.ObjectId, // Array of ObjectIds referencing Story
+        default: [] // Ensure it starts as an empty array
+    }]
 }, {
     versionKey: false,
     toJSON: { virtuals: true },

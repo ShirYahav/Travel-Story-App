@@ -1,7 +1,7 @@
 import React from 'react';
 import StoryLine from '../storyLine/StoryLine';
 import './storiesCollection.css';
-import StoryModel from '../../../models/StoryModel';
+import StoryModel from '../../../Models/StoryModel';
 
 interface StoriesCollectionProps {
   stories: StoryModel[];

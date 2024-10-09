@@ -12,14 +12,14 @@ import UpdateLocations from "./updateLocations/UpdateLocations";
 import UpdateRoutes from "./updateRoutes/UpdateRoutes";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import LocationModel from "../../../models/LocationModel";
-import StoryModel from "../../../models/StoryModel";
-import RouteModel from "../../../models/RouteModel";
-import { getDateRangeFromLocations } from "../../../services/DateService";
-import { extractCountriesFromLocations } from "../../../services/CountriesCitiesService";
+import LocationModel from "../../../Models/LocationModel";
+import StoryModel from "../../../Models/StoryModel";
+import RouteModel from "../../../Models/RouteModel";
+import { getDateRangeFromLocations } from "../../../Services/DateService";
+import { extractCountriesFromLocations } from "../../../Services/CountriesCitiesService";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { calculateTotalBudget } from "../../../services/CurrencyCostService";
+import { calculateTotalBudget } from "../../../Services/CurrencyCostService";
 import './UpdateStory.css';
 
 const theme = createTheme({

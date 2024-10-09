@@ -1,7 +1,7 @@
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import RouteDialog from "./RouteDialog";
-import RouteModel from "../../../models/RouteModel"; 
+import RouteModel from "../../../Models/RouteModel"; 
 
 interface DirectionsProps {
   routesData: RouteModel[];  

@@ -5,7 +5,10 @@ import './index.css';
 
 import reportWebVitals from './reportWebVitals';
 import Layout from './Components/layout/layout/Layout';
-import { UserProvider } from './Components/Context/UserContext';
+import { UserProvider } from './Context/UserContext';
+import interceptorsService from './Services/InterceptorService';
+
+interceptorsService.createInterceptors();
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

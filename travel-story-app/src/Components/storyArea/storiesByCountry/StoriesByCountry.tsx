@@ -4,7 +4,7 @@ import whitePlus from '../../../assets/SVGs/white-plus.png'
 import StoriesCollection from '../storiesCollection/StoriesCollection';
 import { useParams } from "react-router-dom";
 import axios from 'axios';
-import StoryModel from '../../../models/StoryModel';
+import StoryModel from '../../../Models/StoryModel';
 
 const StoriesByCountry: React.FC = () => {
     const { country } = useParams<{ country: string }>();

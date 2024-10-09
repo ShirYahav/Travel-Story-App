@@ -11,14 +11,14 @@ import {
 import AddLocations from "./addLocation/AddLocations";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import AddRoutes from "./addRoutes/AddRoutes";
-import LocationModel from "../../../models/LocationModel";
-import StoryModel from "../../../models/StoryModel";
-import RouteModel from "../../../models/RouteModel";
+import LocationModel from "../../../Models/LocationModel";
+import StoryModel from "../../../Models/StoryModel";
+import RouteModel from "../../../Models/RouteModel";
 import "./AddStory.css";
-import { getDateRangeFromLocations } from "../../../services/DateService";
-import { extractCountriesFromLocations } from "../../../services/CountriesCitiesService";
+import { getDateRangeFromLocations } from "../../../Services/DateService";
+import { extractCountriesFromLocations } from "../../../Services/CountriesCitiesService";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { calculateTotalBudget } from "../../../services/CurrencyCostService";
+import { calculateTotalBudget } from "../../../Services/CurrencyCostService";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 

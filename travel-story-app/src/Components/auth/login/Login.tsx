@@ -3,7 +3,7 @@ import { Box, Button, TextField, Typography, createTheme, ThemeProvider } from '
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
-import { useUser } from '../../Context/UserContext';
+import { useUser } from '../../../Context/UserContext';
 
 const theme = createTheme({
   palette: {
@@ -51,10 +51,7 @@ const Login: React.FC = () => {
       const token = response.data;
       localStorage.setItem('token', token);
 
-      const responseUser = await axios.get('http://localhost:3001/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
+      const responseUser = await axios.get('http://localhost:3001/api/auth/me')
       setUser(responseUser.data.user);
 
       navigate('/');

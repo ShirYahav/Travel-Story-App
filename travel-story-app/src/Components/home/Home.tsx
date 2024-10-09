@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Slideshow from "./Slideshow";
 import StoriesList from "../storyArea/storyList/StoriesList";
 import "./Home.css";
-import StoryModel from "../../models/StoryModel";
+import StoryModel from "../../Models/StoryModel";
 import axios from "axios";
 
 const Home: React.FC = () => {

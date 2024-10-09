@@ -11,9 +11,9 @@ import {
 import DeleteIcon from "@mui/icons-material/Cancel";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CloseIcon from '@mui/icons-material/Close';
-import RouteModel from "../../../../models/RouteModel";
+import RouteModel from "../../../../Models/RouteModel";
 import debounce from "lodash.debounce";
-import { fetchCitiesAPIWithoutCountry } from "../../../../services/CountriesCitiesService";
+import { fetchCitiesAPIWithoutCountry } from "../../../../Services/CountriesCitiesService";
 
 const theme = createTheme({
   palette: {

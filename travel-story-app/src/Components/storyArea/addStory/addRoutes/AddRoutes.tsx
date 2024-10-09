@@ -10,9 +10,9 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CloseIcon from '@mui/icons-material/Close';
-import RouteModel from "../../../../models/RouteModel";
+import RouteModel from "../../../../Models/RouteModel";
 import debounce from "lodash.debounce";
-import { fetchCitiesAPIWithoutCountry } from "../../../../services/CountriesCitiesService";
+import { fetchCitiesAPIWithoutCountry } from "../../../../Services/CountriesCitiesService";
 import './AddRoutes.css';
 
 const theme = createTheme({

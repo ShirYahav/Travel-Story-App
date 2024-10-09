@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import axios from 'axios';
-import UserModel from '../../models/UserModel';
+import UserModel from '../Models/UserModel';
 
 type SafeUser = Omit<UserModel, 'password'>;
 
@@ -33,7 +33,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       
       axios.get('http://localhost:3001/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
         .then(response => {
-          console.log(response.data.user)
           setUser(response.data.user);
         })
         .catch(() => {

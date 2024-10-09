@@ -4,7 +4,7 @@ import StoryCard from "../storyCard/StoryCard";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./StoriesList.css";
-import StoryModel from "../../../models/StoryModel";
+import StoryModel from "../../../Models/StoryModel";
 
 interface StoriesListProps {
   stories: StoryModel[];

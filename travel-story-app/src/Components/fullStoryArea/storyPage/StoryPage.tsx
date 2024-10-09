@@ -5,13 +5,15 @@ import filledHeart from "../../../assets/SVGs/brown-filled-heart.png";
 import CollapseStoryList from "../collapseComponent/CollapseStoryList";
 import durationIcon from '../../../assets/SVGs/flight-date.png';
 import budgetIcon from '../../../assets/SVGs/money-bag.png';
-import { formatDate } from "../../../services/DateService";
+import { formatDate } from "../../../Services/DateService";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import StoryModel from "../../../models/StoryModel";
+import StoryModel from "../../../Models/StoryModel";
 import { useNavigate } from 'react-router-dom';
 import "./StoryPage.css";
-import { getCityCoordinatesGoogle } from "../../../services/CountriesCitiesService";
+import { getCityCoordinatesGoogle } from "../../../Services/CountriesCitiesService";
+import { useUser } from '../../../Context/UserContext';
+
 
 const StoryPage: React.FC = () => {
   
@@ -22,6 +24,8 @@ const StoryPage: React.FC = () => {
   const [center, setCenter] = useState<{ lat: number; lng: number } | null>(null);
   const isOwner = true;
   const navigate = useNavigate();
+  const { user } = useUser();
+
 
   useEffect(() => {
     const fetchStory = async () => {
@@ -31,8 +35,11 @@ const StoryPage: React.FC = () => {
         setStory(fetchedStory);
         setLikes(fetchedStory.likes);
 
-        const likedStories = JSON.parse(localStorage.getItem("likedStories") || "[]");
-        setIsLiked(likedStories.includes(storyId));
+        console.log(user);
+        if (user && user?.likedStories) {
+          const liked = user.likedStories.some((likedStoryId: string) => likedStoryId === storyId);
+          setIsLiked(liked);
+        }
 
         if (fetchedStory.locations.length > 0) {
           const coordinates = await getCityCoordinatesGoogle(fetchedStory.locations[0].city);
@@ -46,31 +53,35 @@ const StoryPage: React.FC = () => {
     };
 
     fetchStory();
-  }, [storyId]);
+  }, [storyId, user]);
 
   const toggleLike = async () => {
-    const likedStories = JSON.parse(localStorage.getItem("likedStories") || "[]");
+    if (!user) return;
+    try {
+      if (isLiked) {
+        setLikes((prevLikes) => prevLikes - 1);
+        setIsLiked(false);
 
-    if (isLiked) {
-      
-      setLikes((prevLikes) => prevLikes - 1);
-      setIsLiked(false);
+        if (user.likedStories) {
+          const updatedLikedStories = user.likedStories.filter((likedStoryId: string) => likedStoryId !== storyId);
+          user.likedStories = updatedLikedStories; 
+        }
 
-      
-      const updatedLikedStories = likedStories.filter((id: string) => id !== storyId);
-      localStorage.setItem("likedStories", JSON.stringify(updatedLikedStories));
+        await axios.post(`http://localhost:3001/api/story/${storyId}/dislike`);
+      } else {
+        setLikes((prevLikes) => prevLikes + 1);
+        setIsLiked(true);
 
-      
-      await axios.post(`http://localhost:3001/api/story/${storyId}/unlike`, { userId: story?.user._id });
-    } else {
-      
-      setLikes((prevLikes) => prevLikes + 1);
-      setIsLiked(true);
+        if (user.likedStories) {
+          user.likedStories.push(storyId as string); 
+        } else {
+          user.likedStories = [storyId as string]; 
+        }
 
-      const updatedLikedStories = [...likedStories, storyId as string];
-      localStorage.setItem("likedStories", JSON.stringify(updatedLikedStories));
-
-      await axios.post(`http://localhost:3001/api/story/${storyId}/like`, { userId: story?.user._id });
+        await axios.post(`http://localhost:3001/api/story/${storyId}/like`);
+      }
+    } catch (error) {
+      console.error("Error liking/unliking story:", error);
     }
   };
 

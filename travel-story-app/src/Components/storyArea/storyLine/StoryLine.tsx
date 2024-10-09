@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import './StoryLine.css';
 import plane from '../../../assets/SVGs/flight-date.png';
 import budgetIcon from '../../../assets/SVGs/money-bag.png';
-import StoryModel from '../../../models/StoryModel';
-import { calculateDaysDifference } from '../../../services/DateService';
+import StoryModel from '../../../Models/StoryModel';
+import { calculateDaysDifference } from '../../../Services/DateService';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 

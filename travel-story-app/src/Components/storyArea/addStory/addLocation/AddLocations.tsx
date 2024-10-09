@@ -17,9 +17,9 @@ import "./AddLocations.css";
 import {
   fetchCitiesAPI,
   fetchCountriesAPI,
-} from "../../../../services/CountriesCitiesService";
+} from "../../../../Services/CountriesCitiesService";
 import CloseIcon from '@mui/icons-material/Close';
-import LocationModel from "../../../../models/LocationModel";
+import LocationModel from "../../../../Models/LocationModel";
 
 //const rapidApiKey = process.env.RAPIDAPI_KEY;
 

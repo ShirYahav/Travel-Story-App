@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, Container, Paper, createTheme, ThemeProvider } from '@mui/material';
+import { Box, Button, TextField, Typography, createTheme, ThemeProvider } from '@mui/material';
 import axios from 'axios';
+import { useUser } from '../../../Context/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme({
   palette: {
@@ -28,6 +30,9 @@ const theme = createTheme({
 
 const Register: React.FC = () => {
 
+  const { setUser } = useUser();
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -45,6 +50,11 @@ const Register: React.FC = () => {
       const response = await axios.post('http://localhost:3001/api/auth/register', formData);
       const token = response.data;
       localStorage.setItem('token', token);
+
+      const responseUser = await axios.get('http://localhost:3001/api/auth/me')
+      setUser(responseUser.data.user);
+
+      navigate('/');
     }
     catch (error) {
       console.error(error)

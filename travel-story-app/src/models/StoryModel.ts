@@ -2,6 +2,7 @@ import LocationModel from "./LocationModel";
 import RouteModel from "./RouteModel";
 import UserModel from "./UserModel";
 
+
 class StoryModel {
     _id: string;
     user: UserModel;

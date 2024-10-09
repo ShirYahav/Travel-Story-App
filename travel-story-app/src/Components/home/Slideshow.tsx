@@ -9,7 +9,7 @@ import Japan from "../../assets/slideshowPhotos/Japan.jpg";
 import Galapagos from "../../assets/slideshowPhotos/Galapagos.jpg";
 import Vietnam from "../../assets/slideshowPhotos/Vietnam.jpg";
 import Peru from "../../assets/slideshowPhotos/Peru.jpg";
-import { fetchCountriesAPI } from "../../services/CountriesCitiesService";
+import { fetchCountriesAPI } from "../../Services/CountriesCitiesService";
 import { useNavigate } from 'react-router-dom';
 
 import {
