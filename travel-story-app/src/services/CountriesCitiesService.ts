@@ -16,7 +16,7 @@ export const fetchCitiesAPI = async (countryCode: string, query: string) => {
     "https://wft-geo-db.p.rapidapi.com/v1/geo/cities",
     {
       headers: {
-        "X-RapidAPI-Key": "cd2f1c50f7msh3684719070c89f5p1862a9jsnd05c79a916a5", 
+        "X-RapidAPI-Key": process.env.REACT_APP_RAPIDAPI_KEY, 
         "X-RapidAPI-Host": "wft-geo-db.p.rapidapi.com",
       },
       params: {
@@ -37,7 +37,7 @@ export const fetchCitiesAPIWithoutCountry = async (query: string) => {
     "https://wft-geo-db.p.rapidapi.com/v1/geo/cities",
     {
       headers: {
-        "X-RapidAPI-Key": "cd2f1c50f7msh3684719070c89f5p1862a9jsnd05c79a916a5",
+        "X-RapidAPI-Key": process.env.REACT_APP_RAPIDAPI_KEY, 
         "X-RapidAPI-Host": "wft-geo-db.p.rapidapi.com",
       },
       params: {
