@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import { useUser } from '../../../Context/UserContext';
+import toast from 'react-hot-toast';
 
 const theme = createTheme({
   palette: {
@@ -54,10 +55,12 @@ const Login: React.FC = () => {
       const responseUser = await axios.get('http://localhost:3001/api/auth/me')
       setUser(responseUser.data.user);
 
+      toast.success('You are logged in')
       navigate('/');
+      
     }
     catch (error) {
-      console.error(error)
+      toast.error('Wrong email or password')  
     }
   };
 

@@ -15,7 +15,7 @@ import { getCityCoordinatesGoogle } from "../../../Services/CountriesCitiesServi
 import { useUser } from '../../../Context/UserContext';
 import brownTrash from '../../../assets/SVGs/trash-bin-trash-brown.png';
 import whiteTrash from '../../../assets/SVGs/trash-bin-trash-white.png';
-
+import toast from 'react-hot-toast';
 
 const StoryPage: React.FC = () => {
   
@@ -53,7 +53,7 @@ const StoryPage: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error(error);
+        toast.error("failed fetching story");
       }
     };
 
@@ -86,7 +86,7 @@ const StoryPage: React.FC = () => {
         await axios.post(`http://localhost:3001/api/story/${storyId}/like`);
       }
     } catch (error) {
-      console.error("Error liking/unliking story:", error);
+      toast.error("Error liking/disliking story");
     }
   };
 
@@ -105,9 +105,10 @@ const StoryPage: React.FC = () => {
     if (confirmation) {
       try {
         await axios.delete(`http://localhost:3001/api/delete-story/${storyId}`);
+        toast.success("story deleted successfully");
         navigate("/");
       } catch (error) {
-        console.error("Error deleting story:", error);
+        toast.error("Error deleting story");
       }
     }
   }

@@ -2,28 +2,31 @@
     color: var(--darkBrown);
     font-size: 50px;
     padding: 25px;
-    letter-spacing: 9px;
+    letter-spacing: 6px;
     font-weight: 800;
     margin-bottom: -10px;
 }
 
+.noStoriesMessage {
+    color: var(--darkBrown);
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
 .addStory {
-    width: 139px;
     padding: 5px;
+    padding-right: 14px;
     font-size: 15px;
     border-radius: 6px;
-    border: none;
-    background-color: var(--lightBrown);
+    border: 1px solid var(--lightGrey);
+    background-color: var(--darkBrown);
     color: var(--lightGrey);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 25px;
-}
-
-.addStory:hover {
-    background-color: var(--darkerLightBrown);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .whitePlusIcon {

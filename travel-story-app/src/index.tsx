@@ -7,6 +7,7 @@ import reportWebVitals from './reportWebVitals';
 import Layout from './Components/layout/layout/Layout';
 import { UserProvider } from './Context/UserContext';
 import interceptorsService from './Services/InterceptorService';
+import { Toaster } from 'react-hot-toast';
 
 interceptorsService.createInterceptors();
 
@@ -17,6 +18,7 @@ root.render(
   <React.StrictMode>
     <UserProvider>
       <BrowserRouter>
+        <Toaster />
         <Layout />
       </BrowserRouter>
     </UserProvider>

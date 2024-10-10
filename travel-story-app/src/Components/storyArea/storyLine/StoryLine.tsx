@@ -8,6 +8,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../Context/UserContext';
 import brownTrash from '../../../assets/SVGs/trash-bin-trash-brown.png';
+import defaultStoryImg from '../../../assets/defaults/default-story-img.jpg';
+import toast from 'react-hot-toast';
 
 interface StoryLineProps {
   story: StoryModel;
@@ -19,7 +21,7 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
   const { user } = useUser();
   const navigate = useNavigate();
   const duration = calculateDaysDifference(story.startDate, story.endDate);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(defaultStoryImg);
 
   useEffect(() => {
     const fetchFirstPhoto = async () => {
@@ -31,7 +33,7 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
         setImageUrl(imageObjectUrl);
 
       } catch (error) {
-        console.log(error);
+        toast.error('Something went wrong'); 
       }
     }
     fetchFirstPhoto();
@@ -51,8 +53,9 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
       try {
         await axios.delete(`http://localhost:3001/api/delete-story/${story._id}`);
         onDeleteStory(story._id);
+        toast.success("story deleted successfully")
       } catch (error) {
-        console.error("Error deleting story:", error);
+        toast.error('Something went wrong'); 
       }
     }
   }
@@ -61,7 +64,7 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
     <>
       <div className="storyLine" onClick={storyClicked}>
         <div className="storyImgLine">
-          <img src={imageUrl} alt="Story location photo" />
+          <img src={imageUrl || defaultStoryImg} alt="Story location photo" />
         </div>
         <div className="textContainerLine">
           <h3 className="storyTitleLine">{story.title}</h3>

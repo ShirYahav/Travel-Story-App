@@ -11,6 +11,7 @@ import Vietnam from "../../assets/slideshowPhotos/Vietnam.jpg";
 import Peru from "../../assets/slideshowPhotos/Peru.jpg";
 import { fetchCountriesAPI } from "../../Services/CountriesCitiesService";
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 import {
   Autocomplete,
@@ -60,7 +61,7 @@ const Slideshow: React.FC = () => {
         const countryData = await fetchCountriesAPI();
         setCountries(countryData);
       } catch (error) {
-        console.error("Error fetching countries: ", error);
+        toast.error("Error fetching countries");
       } finally {
         setIsLoading(false);
       }

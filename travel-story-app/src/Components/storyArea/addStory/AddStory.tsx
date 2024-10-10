@@ -22,6 +22,7 @@ import { calculateTotalBudget } from "../../../Services/CurrencyCostService";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../Context/UserContext';
+import toast from 'react-hot-toast';
 
 const theme = createTheme({
   palette: {
@@ -164,7 +165,7 @@ const AddStory: React.FC = () => {
       });
   
     } catch (error) {
-      console.error(`Error uploading files for location ${locationId}:`, error);
+      toast.error(`Error uploading files for location`);
     }
   };
   
@@ -194,6 +195,7 @@ const AddStory: React.FC = () => {
       const storyResponse = await axios.post("http://localhost:3001/api/add-story", storyToAdd);
       const savedStory = storyResponse.data.story;
   
+      toast.success("Added Story Successfully")
       if (savedStory.locations && savedStory.locations.length > 0) {
 
         for (let i = 0; i < savedStory.locations.length; i++) {

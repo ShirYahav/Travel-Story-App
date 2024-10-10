@@ -13,6 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import RouteModel from "../../../../Models/RouteModel";
 import debounce from "lodash.debounce";
 import { fetchCitiesAPIWithoutCountry } from "../../../../Services/CountriesCitiesService";
+import toast from 'react-hot-toast';
 import './AddRoutes.css';
 
 const theme = createTheme({
@@ -104,7 +105,7 @@ const AddRoutes: React.FC <AddRoutesProps> = ({routes, setRoutes}) => {
       const cityNames = await fetchCitiesAPIWithoutCountry(query);
       setCities(cityNames);
     } catch (error) {
-      console.error("Error fetching cities: ", error);
+      //console.error("Error fetching cities");
     } finally {
       setIsLoadingCities(false);
     }

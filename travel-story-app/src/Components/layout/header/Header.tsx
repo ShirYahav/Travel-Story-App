@@ -2,7 +2,7 @@ import React from 'react';
 import './Header.css'; 
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useUser } from '../../../Context/UserContext';
-
+import toast from 'react-hot-toast';
 
 const HeaderMenu: React.FC = () => {
 
@@ -12,6 +12,7 @@ const HeaderMenu: React.FC = () => {
   const handleLogout = () =>{
     localStorage.removeItem('token');
     setUser(null);
+    toast.success("Logged out successfully")
     navigate("/");
   }
 
@@ -26,7 +27,7 @@ const HeaderMenu: React.FC = () => {
           <>
             <Link className="menuRightLink" to={'/add-story'}> Add Story </Link>
             <div>&nbsp;|&nbsp;</div>
-            <Link className="menuRightLink" to={'/my-stories'}> My Stories </Link>
+            <Link className="menuRightLink" to={'/my-profile'}> My Stories </Link>
             <div>&nbsp;|&nbsp;</div>
             <button onClick={handleLogout} className='logoutButton'>Logout</button>
           </>

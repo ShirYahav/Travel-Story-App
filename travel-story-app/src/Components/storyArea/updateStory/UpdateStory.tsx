@@ -20,6 +20,7 @@ import { extractCountriesFromLocations } from "../../../Services/CountriesCities
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { calculateTotalBudget } from "../../../Services/CurrencyCostService";
+import toast from 'react-hot-toast';
 import './UpdateStory.css';
 
 const theme = createTheme({
@@ -160,7 +161,9 @@ const UpdateStory: React.FC = () => {
       };
 
       const response = await axios.put(`http://localhost:3001/api/update-story/${storyId}`,storyToUpdate);
+      toast.success("Story Updated successfully")
       navigate(`/story/${story._id}`);
+      
     } catch (error) {
       console.error(error);
     }

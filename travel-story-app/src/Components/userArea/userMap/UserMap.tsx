@@ -73,7 +73,7 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
   return (
     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'Your_API_Key_Here'}>
       <Map
-        defaultZoom={2}
+        defaultZoom={1}
         defaultCenter={{ lat: 0, lng: 0 }}
         mapId={process.env.REACT_APP_GOOGLE_MAPS_ID}
         className="userStoriesMap"

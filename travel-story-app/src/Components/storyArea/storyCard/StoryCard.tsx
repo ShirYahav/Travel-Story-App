@@ -3,6 +3,8 @@ import './StoryCard.css'
 import StoryModel from '../../../Models/StoryModel';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import defaultStoryImg from '../../../assets/defaults/default-story-img.jpg';
+import toast from 'react-hot-toast';
 
 interface StoryCardProps {
   story: StoryModel;
@@ -10,7 +12,7 @@ interface StoryCardProps {
 
 const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
 
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(defaultStoryImg);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,10 +22,12 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
         if (firstPhotoFileName) {
           const response = await axios.get(`http://localhost:3001/api/story/photo/${firstPhotoFileName}`, { responseType: "blob" });
           const imageObjectUrl = URL.createObjectURL(response.data);
-          setImageUrl(imageObjectUrl);
+          setImageUrl(imageObjectUrl); 
+        } else {
+          setImageUrl(defaultStoryImg);
         }
       } catch (error) {
-        console.error(error); 
+        toast.error('Something went wrong'); 
       }
     };
     fetchFirstPhoto();

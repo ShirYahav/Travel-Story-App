@@ -128,7 +128,7 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
             </p>
             <p>{locationMedia.story}</p>
             <div className="media-container">
-              {locationMedia.photos.length > 0 ? (
+              {locationMedia.photos.length > 0 && (
                 locationMedia.photos.map((photo, index) => (
                   <img
                     key={index}
@@ -138,11 +138,9 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
                     onClick={() => openModal(index)}
                   />
                 ))
-              ) : (
-                <p>No photos available</p>
               )}
 
-              {locationMedia.videos.length > 0 ? (
+              {locationMedia.videos.length > 0 && (
                 locationMedia.videos.map((video, index) => (
                   <video
                     key={index}
@@ -154,8 +152,6 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
                     Your browser does not support the video tag.
                   </video>
                 ))
-              ) : (
-                <p>No videos available</p>
               )}
             </div>
           </div>

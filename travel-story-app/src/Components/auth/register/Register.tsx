@@ -3,6 +3,7 @@ import { Box, Button, TextField, Typography, createTheme, ThemeProvider } from '
 import axios from 'axios';
 import { useUser } from '../../../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const theme = createTheme({
   palette: {
@@ -54,9 +55,11 @@ const Register: React.FC = () => {
       const responseUser = await axios.get('http://localhost:3001/api/auth/me')
       setUser(responseUser.data.user);
 
+      toast.success('You are registered :)')
       navigate('/');
     }
     catch (error) {
+      toast.error('Something went wrong')
       console.error(error)
     }
   };

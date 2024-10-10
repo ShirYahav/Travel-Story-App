@@ -1,14 +1,16 @@
 import { ICredentials } from "../models/credentials-model";
+import ErrorModel from "../models/error-model";
 import UserModel, { IUser } from "../models/user-model";
 import cyber from "../utils/cyber";
 
 async function register(user: IUser): Promise<string> {
 
     const errors = user.validateSync();
+    if (errors) throw new ErrorModel(400, errors.message);
 
     const isTaken = await isEmailTaken(user);
     if(isTaken) {
-        console.log("email is taken")
+        throw new ErrorModel(400, `email ${user.email} already taken`);
     }
 
     user.password = cyber.hash(user.password);
@@ -25,13 +27,14 @@ async function register(user: IUser): Promise<string> {
 async function login(credentials: ICredentials): Promise<string> {
 
     const errors = credentials.validateSync();
-    
+    if (errors) throw new ErrorModel(400, errors.message);
+
     credentials.password = cyber.hash(credentials.password);
 
     const existingUser = await UserModel.findOne({ email: credentials.email, password: credentials.password}).exec();
 
     if(!existingUser) {
-        console.log("Incorrect email or password");
+        throw new ErrorModel(401, "Incorrect email or password");
     }
 
     delete existingUser.password;

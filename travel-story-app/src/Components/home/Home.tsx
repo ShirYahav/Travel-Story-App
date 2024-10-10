@@ -4,6 +4,7 @@ import StoriesList from "../storyArea/storyList/StoriesList";
 import "./Home.css";
 import StoryModel from "../../Models/StoryModel";
 import axios from "axios";
+import toast from 'react-hot-toast';
 
 const Home: React.FC = () => {
   
@@ -16,7 +17,7 @@ const Home: React.FC = () => {
           setStories(response.data);
           
         } catch (error) {
-          console.log(error);
+          toast.error("error fetching stories");
         }
       };
         
