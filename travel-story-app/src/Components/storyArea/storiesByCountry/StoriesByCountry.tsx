@@ -18,7 +18,7 @@ const StoriesByCountry: React.FC = () => {
         const response = await axios.get(`http://localhost:3001/api/stories-by-country/${country}`);
         setStories(response.data);
       } catch (error) {
-        toast.error("something went wrong")
+        console.error(error)
       }
     };
     if (country) {

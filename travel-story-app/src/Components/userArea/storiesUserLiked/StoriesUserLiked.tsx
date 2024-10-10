@@ -35,7 +35,7 @@ const LikedStories: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className='storiesUserLikedDiv'>
       {likedStories.length > 0 ? (
         <>
         <h4 className='youreStoriesH4'>Stories You've Liked</h4>

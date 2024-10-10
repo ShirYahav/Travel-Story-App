@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import StoryModel from '../../../Models/StoryModel';
-import axios from 'axios';
-import { useUser } from '../../../Context/UserContext';
 import StoriesCollection from '../../storyArea/storiesCollection/StoriesCollection';
 import { useNavigate } from 'react-router-dom';
+import whitePlus from '../../../assets/SVGs/white-plus.png';
 import './UserStories.css';
 
 interface UserStoriesProps {
@@ -27,7 +26,7 @@ const UserStories: React.FC<UserStoriesProps> = ({stories}) => {
       ) : (
         <div>
           <h5 className='shareYourFirstStory'>Share your first story!</h5>
-          <button onClick={handleAddStory} className='addStory'> + Add Story</button>
+          <button onClick={handleAddStory} className='addStoryButton'> <img src={whitePlus}/> Add Story</button>
         </div>
       )}
     </div>

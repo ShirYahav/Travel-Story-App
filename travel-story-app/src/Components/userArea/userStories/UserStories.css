@@ -6,6 +6,26 @@
     margin-bottom: 10px;
 }
 
+.addStoryButton {
+    width: 111px;
+    padding: 5px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: none;
+    background-color: var(--lightBrown);
+    color: var(--lightGrey);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 25px;
+}
+
+.addStoryButton > img {
+    width:25px;
+    height: 25px;
+}
+
 .youreStoriesH4 {
     color: var(--darkBrown);
     font-size: 30px;

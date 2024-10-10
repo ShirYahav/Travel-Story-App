@@ -8,6 +8,7 @@ import Slider from 'react-slick';
 import durationIcon from '../../../assets/SVGs/flight-date.png';
 import budgetIcon from '../../../assets/SVGs/money-bag.png';
 import { calculateDaysDifference, formatDate } from '../../../Services/DateService';
+import pinSharpCircle from '../../../assets/SVGs/pin-sharp-circle.png'; 
 import './UserMap.css';
 
 interface LocationWithCoordinates extends Omit<LocationModel, 'photos' | 'videos'> {
@@ -91,9 +92,11 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
             onClick={() => setSelectedLocation(location)}
           >
             <div className="pinImageDiv">
-              {location.photos.length > 0 && (
-                <img className="pinImage" src={location.photos[0]} alt={location.city} />
-              )}
+              <img
+                className={`pinImage ${location.photos && location.photos.length > 0 ? '' : 'defaultImage'}`}
+                src={location.photos && location.photos.length > 0 ? location.photos[0] : pinSharpCircle}
+                alt={location.city}
+              />
             </div>
           </AdvancedMarker>
         ))}

@@ -26,18 +26,22 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
   useEffect(() => {
     const fetchFirstPhoto = async () => {
       try {
-
         const firstPhotoFileName = story?.locations?.[0]?.photos?.[0];
-        const response = await axios.get(`http://localhost:3001/api/story/photo/${firstPhotoFileName}`, { responseType: "blob" });
-        const imageObjectUrl = URL.createObjectURL(response.data);
-        setImageUrl(imageObjectUrl);
-
+        
+        if (firstPhotoFileName) { 
+          const response = await axios.get(`http://localhost:3001/api/story/photo/${firstPhotoFileName}`, { responseType: "blob" });
+          const imageObjectUrl = URL.createObjectURL(response.data);
+          setImageUrl(imageObjectUrl);
+        } else {
+          setImageUrl(defaultStoryImg);
+        }
       } catch (error) {
-        toast.error('Something went wrong'); 
+        setImageUrl(defaultStoryImg);
       }
-    }
+    };
+
     fetchFirstPhoto();
-  }, []);
+  }, [story]);
 
   const storyClicked = () => {
     navigate(`/story/${story._id}`);
@@ -55,7 +59,7 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
         onDeleteStory(story._id);
         toast.success("story deleted successfully")
       } catch (error) {
-        toast.error('Something went wrong'); 
+        console.error(error)
       }
     }
   }
@@ -64,7 +68,7 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
     <>
       <div className="storyLine" onClick={storyClicked}>
         <div className="storyImgLine">
-          <img src={imageUrl || defaultStoryImg} alt="Story location photo" />
+          <img src={imageUrl} alt="Story location photo" />
         </div>
         <div className="textContainerLine">
           <h3 className="storyTitleLine">{story.title}</h3>

@@ -19,14 +19,12 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
     const fetchFirstPhoto = async () => {
       try {
         const firstPhotoFileName = story?.locations?.[0]?.photos?.[0];
-        if (firstPhotoFileName) {
           const response = await axios.get(`http://localhost:3001/api/story/photo/${firstPhotoFileName}`, { responseType: "blob" });
           const imageObjectUrl = URL.createObjectURL(response.data);
           setImageUrl(imageObjectUrl); 
-        } else {
-          setImageUrl(defaultStoryImg);
-        }
+
       } catch (error) {
+        setImageUrl(defaultStoryImg);
         toast.error('Something went wrong'); 
       }
     };

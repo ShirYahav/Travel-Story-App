@@ -181,7 +181,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
           </InfoWindow>
         )}
 
-        {story && story.routes && <Directions routesData={story.routes} />}
+        {story && story?.routes?.length > 0 && <Directions routesData={story.routes} />}
       </Map>
     </APIProvider>
   );
