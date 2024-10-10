@@ -16,6 +16,15 @@ const HeaderMenu: React.FC = () => {
     navigate("/");
   }
 
+  const handleAddStoryClick = (e: React.MouseEvent) => {
+    if (!user) {  
+      e.preventDefault(); 
+      toast('You must be logged in to add a story', {
+        icon: '✈️',
+      });
+    }
+  };
+
   return (
     <header className="header-menu">
       <div className="menu-left">
@@ -33,6 +42,8 @@ const HeaderMenu: React.FC = () => {
           </>
         ) : (
           <>
+             <Link className="menuRightLink" to={'/add-story'} onClick={handleAddStoryClick}> Add Story </Link>
+             <div>&nbsp;|&nbsp;</div>
             <Link className="menuRightLink" to={'/login'}> Login </Link>
           </>
         )}

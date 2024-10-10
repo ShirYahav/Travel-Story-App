@@ -8,6 +8,7 @@ import UpdateStory from '../../storyArea/updateStory/UpdateStory';
 import Login from '../../auth/login/Login';
 import Register from '../../auth/register/Register';
 import UserProfile from '../../userArea/UserProfile';
+import RouteNotFound from '../routeNotFound/RouteNotFound';
 
 
 const Routing: React.FC = () => {
@@ -22,6 +23,7 @@ const Routing: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/my-profile" element={<UserProfile />} />
+          <Route path="*" element={<RouteNotFound />} />
         </Routes>
       </>
     );

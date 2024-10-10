@@ -1,0 +1,6 @@
+.pageNotFoundMessage {
+    color: var(--darkBrown);
+    font-size: 25px;
+    text-align: center;
+    margin-top: 100px;
+}

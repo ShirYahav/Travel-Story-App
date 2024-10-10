@@ -9,6 +9,16 @@ import Japan from "../../assets/slideshowPhotos/Japan.jpg";
 import Galapagos from "../../assets/slideshowPhotos/Galapagos.jpg";
 import Vietnam from "../../assets/slideshowPhotos/Vietnam.jpg";
 import Peru from "../../assets/slideshowPhotos/Peru.jpg";
+import Bacalar from "../../assets/slideshowPhotos/Bacalar.jpg";
+import Argentina from "../../assets/slideshowPhotos/Argentina.jpg";
+import Tanzania from "../../assets/slideshowPhotos/Tanzania.jpg";
+import SouthAfrica from "../../assets/slideshowPhotos/SouthAfrica.jpg";
+import Lapland from "../../assets/slideshowPhotos/Lapland.jpg";
+import PrettySnow from "../../assets/slideshowPhotos/PrettySnow.jpg";
+import Dunes from "../../assets/slideshowPhotos/Dunes.jpg";
+import Brazil from "../../assets/slideshowPhotos/Brazil.jpg";
+
+
 import { fetchCountriesAPI } from "../../Services/CountriesCitiesService";
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -47,7 +57,7 @@ const Slideshow: React.FC = () => {
     arrows: false,
   };
 
-  const images = [cambodia, Japan, Galapagos, Vietnam, Peru];
+  const images = [Tanzania, cambodia, Japan, Galapagos, Vietnam, Peru, Bacalar, Argentina, SouthAfrica, Lapland, PrettySnow, Dunes, Brazil];
   
   const navigate = useNavigate();
   const [countries, setCountries] = useState<{ name: string; code: string }[]>([]);
