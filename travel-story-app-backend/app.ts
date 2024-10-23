@@ -14,7 +14,13 @@ dal.connect();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',  // Development frontend URL
+    'https://travelog-app.vercel.app'  // Production frontend URL
+  ],
+  credentials: true,  // If you are dealing with cookies or authentication
+}));
 app.use(express.json());
 app.use("/api" ,storiesController);
 app.use("/api", imageController);

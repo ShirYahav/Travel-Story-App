@@ -7,7 +7,7 @@ import logic from '../logic/user-logic';
 
 const router = express.Router();
 
-router.post('/story/:storyId/like', async (req: Request, res: Response) => {
+router.post('/story/like/:storyId', async (req: Request, res: Response) => {
     try {
       const authorizationHeader = req.header("authorization");
 
@@ -32,7 +32,7 @@ router.post('/story/:storyId/like', async (req: Request, res: Response) => {
     }
 });
 
-router.post('/story/:storyId/dislike', async (req: Request, res: Response) => {
+router.post('/story/dislike/:storyId/', async (req: Request, res: Response) => {
     try {
       const authorizationHeader = req.header("authorization");
 

@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import { useUser } from '../../../Context/UserContext';
 import toast from 'react-hot-toast';
+import config from '../../../Utils/Config';
 
 const theme = createTheme({
   palette: {
@@ -48,7 +49,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login', formData);
+      const response = await axios.post(config.userLoginUrl, formData);
       const token = response.data;
       localStorage.setItem('token', token);
 
