@@ -1,7 +1,7 @@
 import React from 'react';
 import CollapseStory from './CollapseStory';
 import './CollapseStoryList.css'
-import LocationModel from '../../../Models/LocationModel';
+import LocationModel from '../../../Models-temp/LocationModel';
 
 interface StoriesCollectionProps {
   locations: LocationModel[];

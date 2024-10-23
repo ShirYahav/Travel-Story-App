@@ -5,7 +5,7 @@ import arrowDownWhite from "../../../assets/SVGs/arrow-down-circle-white.png";
 import arrowDownBrown from "../../../assets/SVGs/arrow-down-circle-brown.png";
 import arrowUpWhite from "../../../assets/SVGs/arrow-up-circle-white.png";
 import arrowUpBrown from "../../../assets/SVGs/arrow-up-circle-brown.png";
-import LocationModel from "../../../Models/LocationModel";
+import LocationModel from "../../../Models-temp/LocationModel";
 import axios from "axios";
 
 interface LocationWithMedia extends Omit<LocationModel, "photos" | "videos"> {

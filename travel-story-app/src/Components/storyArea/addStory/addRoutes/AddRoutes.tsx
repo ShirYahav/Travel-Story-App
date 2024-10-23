@@ -10,9 +10,9 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CloseIcon from '@mui/icons-material/Close';
-import RouteModel from "../../../../Models/RouteModel";
+import RouteModel from "../../../../Models-temp/RouteModel";
 import debounce from "lodash.debounce";
-import { fetchCitiesAPIWithoutCountry } from "../../../../Services/CountriesCitiesService";
+import { fetchCitiesAPIWithoutCountry } from "../../../../Services-temp/CountriesCitiesService";
 import toast from 'react-hot-toast';
 import './AddRoutes.css';
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './StoryCard.css'
-import StoryModel from '../../../Models/StoryModel';
+import StoryModel from '../../../Models-temp/StoryModel';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import defaultStoryImg from '../../../assets/defaults/default-story-img.jpg';

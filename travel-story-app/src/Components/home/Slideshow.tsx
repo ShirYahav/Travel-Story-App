@@ -19,7 +19,7 @@ import Dunes from "../../assets/slideshowPhotos/Dunes.jpg";
 import Brazil from "../../assets/slideshowPhotos/Brazil.jpg";
 
 
-import { fetchCountriesAPI } from "../../Services/CountriesCitiesService";
+import { fetchCountriesAPI } from "../../Services-temp/CountriesCitiesService";
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 

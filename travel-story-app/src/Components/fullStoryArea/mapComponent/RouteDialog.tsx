@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './RouteDialog.css';
 import closeSvg from '../../../assets/SVGs/close-svgrepo-com.png';
-import RouteModel from '../../../Models/RouteModel';
+import RouteModel from '../../../Models-temp/RouteModel';
 
 interface RouteDialogProps {
   route: RouteModel; 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import UserStories from './userStories/UserStories'
 import StoriesUserLiked from './storiesUserLiked/StoriesUserLiked'
 import { useUser } from '../../Context/UserContext';
-import StoryModel from '../../Models/StoryModel';
+import StoryModel from '../../Models-temp/StoryModel';
 import axios from 'axios';
 import UserMap from './userMap/UserMap';
 

@@ -1,5 +1,5 @@
-import LocationModel from "../Models/LocationModel";
-import StoryModel from "../Models/StoryModel";
+import LocationModel from "../Models-temp/LocationModel";
+import StoryModel from "../Models-temp/StoryModel";
 
 export function calculateDaysDifference(startDate: Date | string, endDate: Date | string): number {
   const start = typeof startDate === 'string' ? new Date(startDate) : startDate;
