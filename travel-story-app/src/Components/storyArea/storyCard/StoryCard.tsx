@@ -25,7 +25,6 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
 
       } catch (error) {
         setImageUrl(defaultStoryImg);
-        toast.error('Something went wrong'); 
       }
     };
     fetchFirstPhoto();
