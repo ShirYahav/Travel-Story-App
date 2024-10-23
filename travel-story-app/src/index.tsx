@@ -6,8 +6,8 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Layout from './Components/layout/layout/Layout';
 import { UserProvider } from './Context/UserContext';
-import interceptorsService from './Services-temp/InterceptorService';
-import ToastProvider from './Utils-temp/ToastProvider';
+import interceptorsService from './Services/InterceptorService';
+import ToastProvider from './Utils/ToastProvider';
 
 interceptorsService.createInterceptors();
 

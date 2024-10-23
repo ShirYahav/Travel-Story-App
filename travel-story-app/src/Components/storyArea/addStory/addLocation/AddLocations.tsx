@@ -17,9 +17,9 @@ import "./AddLocations.css";
 import {
   fetchCitiesAPI,
   fetchCountriesAPI,
-} from "../../../../Services-temp/CountriesCitiesService";
+} from "../../../../Services/CountriesCitiesService";
 import CloseIcon from '@mui/icons-material/Close';
-import LocationModel from "../../../../Models-temp/LocationModel";
+import LocationModel from "../../../../Models/LocationModel";
 import toast from 'react-hot-toast';
 
 const theme = createTheme({

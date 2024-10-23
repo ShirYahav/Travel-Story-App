@@ -1,5 +1,5 @@
-import LocationModel from "../Models-temp/LocationModel";
-import RouteModel from "../Models-temp/RouteModel";
+import LocationModel from "../Models/LocationModel";
+import RouteModel from "../Models/RouteModel";
 
 const conversionRates: { [key: string]: { [key: string]: number } } = {
   EUR: { USD: 1.1, EUR: 1 },

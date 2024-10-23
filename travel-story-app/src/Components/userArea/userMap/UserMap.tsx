@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
-import StoryModel from '../../../Models-temp/StoryModel';
-import LocationModel from '../../../Models-temp/LocationModel';
+import StoryModel from '../../../Models/StoryModel';
+import LocationModel from '../../../Models/LocationModel';
 import axios from 'axios';
-import { getCityCoordinatesGoogle } from '../../../Services-temp/CountriesCitiesService';
+import { getCityCoordinatesGoogle } from '../../../Services/CountriesCitiesService';
 import Slider from 'react-slick';
 import durationIcon from '../../../assets/SVGs/flight-date.png';
 import budgetIcon from '../../../assets/SVGs/money-bag.png';
-import { calculateDaysDifference, formatDate } from '../../../Services-temp/DateService';
+import { calculateDaysDifference, formatDate } from '../../../Services/DateService';
 import pinSharpCircle from '../../../assets/SVGs/pin-sharp-circle.png'; 
 import './UserMap.css';
 

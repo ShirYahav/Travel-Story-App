@@ -1,5 +1,5 @@
 import React from 'react';
-import StoryModel from '../../../Models-temp/StoryModel';
+import StoryModel from '../../../Models/StoryModel';
 import StoriesCollection from '../../storyArea/storiesCollection/StoriesCollection';
 import { useNavigate } from 'react-router-dom';
 import whitePlus from '../../../assets/SVGs/white-plus.png';

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import StoryModel from '../../../Models-temp/StoryModel';
+import StoryModel from '../../../Models/StoryModel';
 import axios from 'axios';
 import { useUser } from '../../../Context/UserContext';
 import { useNavigate } from 'react-router-dom';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import StoryLine from '../storyLine/StoryLine';
 import './storiesCollection.css';
-import StoryModel from '../../../Models-temp/StoryModel';
+import StoryModel from '../../../Models/StoryModel';
 
 interface StoriesCollectionProps {
   stories: StoryModel[];

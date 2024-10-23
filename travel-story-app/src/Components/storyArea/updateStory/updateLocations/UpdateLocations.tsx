@@ -17,8 +17,8 @@ import debounce from "lodash.debounce";
 import {
   fetchCitiesAPI,
   fetchCountriesAPI,
-} from "../../../../Services-temp/CountriesCitiesService";
-import LocationModel from "../../../../Models-temp/LocationModel";
+} from "../../../../Services/CountriesCitiesService";
+import LocationModel from "../../../../Models/LocationModel";
 import axios from "axios";
 
 const theme = createTheme({

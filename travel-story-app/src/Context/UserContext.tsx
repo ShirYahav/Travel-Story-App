@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import axios from 'axios';
-import UserModel from '../Models-temp/UserModel';
+import UserModel from '../Models/UserModel';
 
 type SafeUser = Omit<UserModel, 'password'>;
 

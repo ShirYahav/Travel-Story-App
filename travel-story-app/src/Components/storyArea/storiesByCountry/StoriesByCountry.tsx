@@ -4,7 +4,7 @@ import whitePlus from '../../../assets/SVGs/white-plus.png';
 import StoriesCollection from '../storiesCollection/StoriesCollection';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import StoryModel from '../../../Models-temp/StoryModel';
+import StoryModel from '../../../Models/StoryModel';
 import toast from 'react-hot-toast';
 
 const StoriesByCountry: React.FC = () => {
