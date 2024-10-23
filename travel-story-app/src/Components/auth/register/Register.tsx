@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useUser } from '../../../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import config from '../../../Utils/Config';
 
 const theme = createTheme({
   palette: {
@@ -48,11 +49,11 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/register', formData);
+      const response = await axios.post(config.userRegisterUrl, formData);
       const token = response.data;
       localStorage.setItem('token', token);
 
-      const responseUser = await axios.get('http://localhost:3001/api/auth/me')
+      const responseUser = await axios.get(config.userValidationUrl)
       setUser(responseUser.data.user);
 
       toast.success('You are registered :)')

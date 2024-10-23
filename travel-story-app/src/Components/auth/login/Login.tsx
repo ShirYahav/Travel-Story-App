@@ -53,7 +53,7 @@ const Login: React.FC = () => {
       const token = response.data;
       localStorage.setItem('token', token);
 
-      const responseUser = await axios.get('http://localhost:3001/api/auth/me')
+      const responseUser = await axios.get(config.userValidationUrl)
       setUser(responseUser.data.user);
 
       toast.success('You are logged in')
