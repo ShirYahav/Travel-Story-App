@@ -4,19 +4,19 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./Slideshow.css";
 
-import cambodia from "../../assets/slideshowPhotos/Cambodia.jpg";
-import Japan from "../../assets/slideshowPhotos/Japan.jpg";
-import Galapagos from "../../assets/slideshowPhotos/Galapagos.jpg";
-import Vietnam from "../../assets/slideshowPhotos/Vietnam.jpg";
-import Peru from "../../assets/slideshowPhotos/Peru.jpg";
-import Bacalar from "../../assets/slideshowPhotos/Bacalar.jpg";
-import Argentina from "../../assets/slideshowPhotos/Argentina.jpg";
-import Tanzania from "../../assets/slideshowPhotos/Tanzania.jpg";
-import SouthAfrica from "../../assets/slideshowPhotos/SouthAfrica.jpg";
-import Lapland from "../../assets/slideshowPhotos/Lapland.jpg";
-import PrettySnow from "../../assets/slideshowPhotos/PrettySnow.jpg";
-import Dunes from "../../assets/slideshowPhotos/Dunes.jpg";
-import Brazil from "../../assets/slideshowPhotos/Brazil.jpg";
+import cambodia from "../../Assets/slideshowPhotos/Cambodia.jpg";
+import Japan from "../../Assets/slideshowPhotos/Japan.jpg";
+import Galapagos from "../../Assets/slideshowPhotos/Galapagos.jpg";
+import Vietnam from "../../Assets/slideshowPhotos/Vietnam.jpg";
+import Peru from "../../Assets/slideshowPhotos/Peru.jpg";
+import Bacalar from "../../Assets/slideshowPhotos/Bacalar.jpg";
+import Argentina from "../../Assets/slideshowPhotos/Argentina.jpg";
+import Tanzania from "../../Assets/slideshowPhotos/Tanzania.jpg";
+import SouthAfrica from "../../Assets/slideshowPhotos/SouthAfrica.jpg";
+import Lapland from "../../Assets/slideshowPhotos/Lapland.jpg";
+import PrettySnow from "../../Assets/slideshowPhotos/PrettySnow.jpg";
+import Dunes from "../../Assets/slideshowPhotos/Dunes.jpg";
+import Brazil from "../../Assets/slideshowPhotos/Brazil.jpg";
 
 
 import { fetchCountriesAPI } from "../../Services/CountriesCitiesService";

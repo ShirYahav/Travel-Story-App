@@ -16,9 +16,9 @@ import { getCityCoordinatesGoogle } from "../../../Services/CountriesCitiesServi
 import axios from "axios";
 import StoryModel from "../../../Models/StoryModel";
 import Slider from "react-slick";
-import durationIcon from "../../../assets/SVGs/flight-date.png";
-import budgetIcon from "../../../assets/SVGs/money-bag.png";
-import pinSharpCircle from '../../../assets/SVGs/pin-sharp-circle.png'; 
+import durationIcon from "../../../Assets/SVGs/flight-date.png";
+import budgetIcon from "../../../Assets/SVGs/money-bag.png";
+import pinSharpCircle from '../../../Assets/SVGs/pin-sharp-circle.png'; 
 
 interface LocationWithCoordinates
   extends Omit<LocationModel, "photos" | "videos"> {

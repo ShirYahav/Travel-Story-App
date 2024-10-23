@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import MapComponent from "../mapComponent/Map";
-import emptyHeart from "../../../assets/SVGs/brown-empty-heart.png";
-import filledHeart from "../../../assets/SVGs/brown-filled-heart.png";
+import emptyHeart from "../../../Assets/SVGs/brown-empty-heart.png";
+import filledHeart from "../../../Assets/SVGs/brown-filled-heart.png";
 import CollapseStoryList from "../collapseComponent/CollapseStoryList";
-import durationIcon from '../../../assets/SVGs/flight-date.png';
-import budgetIcon from '../../../assets/SVGs/money-bag.png';
+import durationIcon from '../../../Assets/SVGs/flight-date.png';
+import budgetIcon from '../../../Assets/SVGs/money-bag.png';
 import { formatDate } from "../../../Services/DateService";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -13,8 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import "./StoryPage.css";
 import { getCityCoordinatesGoogle } from "../../../Services/CountriesCitiesService";
 import { useUser } from '../../../Context/UserContext';
-import brownTrash from '../../../assets/SVGs/trash-bin-trash-brown.png';
-import whiteTrash from '../../../assets/SVGs/trash-bin-trash-white.png';
+import brownTrash from '../../../Assets/SVGs/trash-bin-trash-brown.png';
+import whiteTrash from '../../../Assets/SVGs/trash-bin-trash-white.png';
 import toast from 'react-hot-toast';
 
 const StoryPage: React.FC = () => {

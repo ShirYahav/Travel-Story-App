@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Collapse } from "react-collapse";
 import "./CollapseStory.css";
-import arrowDownWhite from "../../../assets/SVGs/arrow-down-circle-white.png";
-import arrowDownBrown from "../../../assets/SVGs/arrow-down-circle-brown.png";
-import arrowUpWhite from "../../../assets/SVGs/arrow-up-circle-white.png";
-import arrowUpBrown from "../../../assets/SVGs/arrow-up-circle-brown.png";
+import arrowDownWhite from "../../../Assets/SVGs/arrow-down-circle-white.png";
+import arrowDownBrown from "../../../Assets/SVGs/arrow-down-circle-brown.png";
+import arrowUpWhite from "../../../Assets/SVGs/arrow-up-circle-white.png";
+import arrowUpBrown from "../../../Assets/SVGs/arrow-up-circle-brown.png";
 import LocationModel from "../../../Models/LocationModel";
 import axios from "axios";
 

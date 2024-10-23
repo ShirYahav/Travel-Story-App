@@ -3,7 +3,7 @@ import './StoryCard.css'
 import StoryModel from '../../../Models/StoryModel';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import defaultStoryImg from '../../../assets/defaults/default-story-img.jpg';
+import defaultStoryImg from '../../../Assets/defaults/default-story-img.jpg';
 import toast from 'react-hot-toast';
 
 interface StoryCardProps {

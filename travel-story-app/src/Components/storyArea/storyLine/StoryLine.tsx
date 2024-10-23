@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import './StoryLine.css';
-import plane from '../../../assets/SVGs/flight-date.png';
-import budgetIcon from '../../../assets/SVGs/money-bag.png';
+import plane from '../../../Assets/SVGs/flight-date.png';
+import budgetIcon from '../../../Assets/SVGs/money-bag.png';
 import StoryModel from '../../../Models/StoryModel';
 import { calculateDaysDifference } from '../../../Services/DateService';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../Context/UserContext';
-import brownTrash from '../../../assets/SVGs/trash-bin-trash-brown.png';
-import defaultStoryImg from '../../../assets/defaults/default-story-img.jpg';
+import brownTrash from '../../../Assets/SVGs/trash-bin-trash-brown.png';
+import defaultStoryImg from '../../../Assets/defaults/default-story-img.jpg';
 import toast from 'react-hot-toast';
 
 interface StoryLineProps {

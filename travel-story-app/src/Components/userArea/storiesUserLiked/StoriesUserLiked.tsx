@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useUser } from '../../../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import StoriesCollection from '../../storyArea/storiesCollection/StoriesCollection';
-import globusIcon from '../../../assets/SVGs/globus-white.png';
+import globusIcon from '../../../Assets/SVGs/globus-white.png';
 
 import './StoriesUserLiked.css';
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './StoriesByCountry.css';
-import whitePlus from '../../../assets/SVGs/white-plus.png';
+import whitePlus from '../../../Assets/SVGs/white-plus.png';
 import StoriesCollection from '../storiesCollection/StoriesCollection';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';

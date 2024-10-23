@@ -5,10 +5,10 @@ import LocationModel from '../../../Models/LocationModel';
 import axios from 'axios';
 import { getCityCoordinatesGoogle } from '../../../Services/CountriesCitiesService';
 import Slider from 'react-slick';
-import durationIcon from '../../../assets/SVGs/flight-date.png';
-import budgetIcon from '../../../assets/SVGs/money-bag.png';
+import durationIcon from '../../../Assets/SVGs/flight-date.png';
+import budgetIcon from '../../../Assets/SVGs/money-bag.png';
 import { calculateDaysDifference, formatDate } from '../../../Services/DateService';
-import pinSharpCircle from '../../../assets/SVGs/pin-sharp-circle.png'; 
+import pinSharpCircle from '../../../Assets/SVGs/pin-sharp-circle.png'; 
 import './UserMap.css';
 
 interface LocationWithCoordinates extends Omit<LocationModel, 'photos' | 'videos'> {

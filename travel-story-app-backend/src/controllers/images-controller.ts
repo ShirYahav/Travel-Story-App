@@ -12,9 +12,9 @@ const storage = multer.diskStorage({
     let uploadPath = "";
 
     if (file.mimetype.startsWith("image/")) {
-      uploadPath = path.join(__dirname, "../assets/stories/photos");
+      uploadPath = path.join(__dirname, "../Assets/stories/photos");
     } else if (file.mimetype.startsWith("video/")) {
-      uploadPath = path.join(__dirname, "../assets/stories/videos");
+      uploadPath = path.join(__dirname, "../Assets/stories/videos");
     }
 
     if (!fs.existsSync(uploadPath)) {
