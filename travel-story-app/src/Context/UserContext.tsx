@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import axios from 'axios';
 import UserModel from '../Models/UserModel';
+import config from '../Utils/Config';
 
 type SafeUser = Omit<UserModel, 'password'>;
 
@@ -31,7 +32,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
     if (token) {
       
-      axios.get('http://localhost:3001/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+      axios.get(config.userValidationUrl, { headers: { Authorization: `Bearer ${token}` } })
         .then(response => {
           setUser(response.data.user);
         })

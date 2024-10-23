@@ -19,6 +19,7 @@ import Slider from "react-slick";
 import durationIcon from "../../../Assets/SVGs/flight-date.png";
 import budgetIcon from "../../../Assets/SVGs/money-bag.png";
 import pinSharpCircle from '../../../Assets/SVGs/pin-sharp-circle.png'; 
+import config from "../../../Utils/Config";
 
 interface LocationWithCoordinates
   extends Omit<LocationModel, "photos" | "videos"> {
@@ -52,10 +53,10 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
       const coordinates = await getCityCoordinatesGoogle(location.city);
       if (coordinates) {
         const photosResponse = await axios.get(
-          `http://localhost:3001/api/story/photos/${location._id}`
+          config.getPhotosByLocationIdUrl + location._id
         );
         const videosResponse = await axios.get(
-          `http://localhost:3001/api/story/videos/${location._id}`
+          config.getVideosByLocationIdUrl + location._id
         );
 
         updatedLocations.push({

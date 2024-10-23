@@ -5,6 +5,7 @@ import "./Home.css";
 import StoryModel from "../../Models/StoryModel";
 import axios from "axios";
 import toast from 'react-hot-toast';
+import config from '../../Utils/Config'
 
 const Home: React.FC = () => {
   
@@ -13,7 +14,7 @@ const Home: React.FC = () => {
   useEffect(() => {
       const fetchStories = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/api/top-stories`);
+          const response = await axios.get(config.getTopStories);
           setStories(response.data);
           
         } catch (error) {

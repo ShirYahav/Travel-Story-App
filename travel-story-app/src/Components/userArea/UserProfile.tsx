@@ -5,6 +5,7 @@ import { useUser } from '../../Context/UserContext';
 import StoryModel from '../../Models/StoryModel';
 import axios from 'axios';
 import UserMap from './userMap/UserMap';
+import config from '../../Utils/Config';
 
 const UserProfile: React.FC = () => {
   const { user } = useUser();
@@ -14,7 +15,7 @@ const UserProfile: React.FC = () => {
     const fetchStories = async () => {
       try {
         if (user && user._id) {
-          const response = await axios.get(`http://localhost:3001/api/stories-by-user/${user._id}`);
+          const response = await axios.get(config.getStoriesByUserUrl + user._id);
           setStories(response.data); 
         }
       } catch (error) {

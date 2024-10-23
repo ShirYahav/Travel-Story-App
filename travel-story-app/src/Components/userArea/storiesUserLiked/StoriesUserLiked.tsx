@@ -7,6 +7,7 @@ import StoriesCollection from '../../storyArea/storiesCollection/StoriesCollecti
 import globusIcon from '../../../Assets/SVGs/globus-white.png';
 
 import './StoriesUserLiked.css';
+import config from '../../../Utils/Config';
 
 const LikedStories: React.FC = () => {
   const { user } = useUser();
@@ -17,7 +18,7 @@ const LikedStories: React.FC = () => {
     const fetchLikedStories = async () => {
       try {
         if (user && user._id) {
-          const response = await axios.get(`http://localhost:3001/api/get-liked-stories/${user._id}`);
+          const response = await axios.get(config.getLikedStoriesByUserUrl + user._id);
           setLikedStories(response.data);
         }
       } catch (error) {

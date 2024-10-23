@@ -10,6 +10,7 @@ import { useUser } from '../../../Context/UserContext';
 import brownTrash from '../../../Assets/SVGs/trash-bin-trash-brown.png';
 import defaultStoryImg from '../../../Assets/defaults/default-story-img.jpg';
 import toast from 'react-hot-toast';
+import config from '../../../Utils/Config';
 
 interface StoryLineProps {
   story: StoryModel;
@@ -29,7 +30,7 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
         const firstPhotoFileName = story?.locations?.[0]?.photos?.[0];
         
         if (firstPhotoFileName) { 
-          const response = await axios.get(`http://localhost:3001/api/story/photo/${firstPhotoFileName}`, { responseType: "blob" });
+          const response = await axios.get(config.getPhotoByImgNameUrl + firstPhotoFileName, { responseType: "blob" });
           const imageObjectUrl = URL.createObjectURL(response.data);
           setImageUrl(imageObjectUrl);
         } else {
@@ -55,7 +56,7 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
 
     if (confirmation) {
       try {
-        await axios.delete(`http://localhost:3001/api/delete-story/${story._id}`);
+        await axios.delete(config.deleteStoryUrl + story._id);
         onDeleteStory(story._id);
         toast.success("story deleted successfully")
       } catch (error) {

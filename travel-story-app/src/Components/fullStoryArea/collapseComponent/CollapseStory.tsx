@@ -7,6 +7,7 @@ import arrowUpWhite from "../../../Assets/SVGs/arrow-up-circle-white.png";
 import arrowUpBrown from "../../../Assets/SVGs/arrow-up-circle-brown.png";
 import LocationModel from "../../../Models/LocationModel";
 import axios from "axios";
+import config from '../../../Utils/Config';
 
 interface LocationWithMedia extends Omit<LocationModel, "photos" | "videos"> {
   photos: string[];
@@ -46,10 +47,10 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
       const fetchLocationMedia = async () => {
         try {
           const photosResponse = await axios.get(
-            `http://localhost:3001/api/story/photos/${location._id}`
+            config.getPhotosByLocationIdUrl + location._id
           );
           const videosResponse = await axios.get(
-            `http://localhost:3001/api/story/videos/${location._id}`
+           config.getVideosByLocationIdUrl + location._id
           );
 
           const updatedLocation: LocationWithMedia = {

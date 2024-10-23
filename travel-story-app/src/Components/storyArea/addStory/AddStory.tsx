@@ -23,6 +23,7 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../Context/UserContext';
 import toast from 'react-hot-toast';
+import config from "../../../Utils/Config";
 
 const theme = createTheme({
   palette: {
@@ -158,7 +159,7 @@ const AddStory: React.FC = () => {
     locationVideos.forEach((video) => formData.append("videos", video));
   
     try {
-      const uploadResponse = await axios.post(`http://localhost:3001/api/upload/${locationId}`, formData, {
+      const uploadResponse = await axios.post(config.uploadDataByLocationIdUrl + locationId, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -192,7 +193,7 @@ const AddStory: React.FC = () => {
       };
   
   
-      const storyResponse = await axios.post("http://localhost:3001/api/add-story", storyToAdd);
+      const storyResponse = await axios.post(config.addStoryUrl, storyToAdd);
       const savedStory = storyResponse.data.story;
   
       toast.success("Added Story Successfully")

@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import StoryModel from '../../../Models/StoryModel';
 import toast from 'react-hot-toast';
+import config from '../../../Utils/Config';
 
 const StoriesByCountry: React.FC = () => {
   const { country } = useParams<{ country: string }>();
@@ -15,7 +16,7 @@ const StoriesByCountry: React.FC = () => {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/stories-by-country/${country}`);
+        const response = await axios.get(config.getStoriesByCountryUrl + country);
         setStories(response.data);
       } catch (error) {
         console.error(error)

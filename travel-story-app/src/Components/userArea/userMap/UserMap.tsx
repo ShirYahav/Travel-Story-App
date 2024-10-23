@@ -10,6 +10,7 @@ import budgetIcon from '../../../Assets/SVGs/money-bag.png';
 import { calculateDaysDifference, formatDate } from '../../../Services/DateService';
 import pinSharpCircle from '../../../Assets/SVGs/pin-sharp-circle.png'; 
 import './UserMap.css';
+import config from '../../../Utils/Config';
 
 interface LocationWithCoordinates extends Omit<LocationModel, 'photos' | 'videos'> {
   lat: number;
@@ -36,8 +37,8 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
         for (const location of story.locations) {
           const coordinates = await getCityCoordinatesGoogle(location.city);
           if (coordinates) {
-            const photosResponse = await axios.get(`http://localhost:3001/api/story/photos/${location._id}`);
-            const videosResponse = await axios.get(`http://localhost:3001/api/story/videos/${location._id}`);
+            const photosResponse = await axios.get(config.getPhotosByLocationIdUrl + location._id);
+            const videosResponse = await axios.get(config.getVideosByLocationIdUrl + location._id);
             updatedLocations.push({
               ...location,
               lat: coordinates.lat,

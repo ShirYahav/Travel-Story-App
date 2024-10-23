@@ -22,6 +22,7 @@ import axios from "axios";
 import { calculateTotalBudget } from "../../../Services/CurrencyCostService";
 import toast from 'react-hot-toast';
 import './UpdateStory.css';
+import config from "../../../Utils/Config";
 
 const theme = createTheme({
   palette: {
@@ -90,7 +91,7 @@ const UpdateStory: React.FC = () => {
   useEffect(() => {
     const fetchStory = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/story/${storyId}`);
+        const response = await axios.get(config.getStoryByStoryIdUrl + storyId);
         const fetchedStory = convertStory(response.data);
         setStory(fetchedStory);
         setLocations(fetchedStory.locations); 
@@ -160,7 +161,7 @@ const UpdateStory: React.FC = () => {
         })
       };
 
-      const response = await axios.put(`http://localhost:3001/api/update-story/${storyId}`,storyToUpdate);
+      const response = await axios.put(config.updateStoryUrl + storyId,storyToUpdate);
       toast.success("Story Updated successfully")
       navigate(`/story/${story._id}`);
       

@@ -16,6 +16,8 @@ import { useUser } from '../../../Context/UserContext';
 import brownTrash from '../../../Assets/SVGs/trash-bin-trash-brown.png';
 import whiteTrash from '../../../Assets/SVGs/trash-bin-trash-white.png';
 import toast from 'react-hot-toast';
+import config from '../../../Utils/Config';
+
 
 const StoryPage: React.FC = () => {
   
@@ -36,7 +38,7 @@ const StoryPage: React.FC = () => {
   useEffect(() => {
     const fetchStory = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/story/${storyId}`);
+        const response = await axios.get(config.getStoryByStoryIdUrl + storyId);
         const fetchedStory = response.data;
         setStory(fetchedStory);
         setLikes(fetchedStory.likes);
@@ -72,7 +74,7 @@ const StoryPage: React.FC = () => {
           user.likedStories = updatedLikedStories; 
         }
 
-        await axios.post(`http://localhost:3001/api/story/${storyId}/dislike`);
+        await axios.post(config.dislikeStoryUrl + storyId);
       } else {
         setLikes((prevLikes) => prevLikes + 1);
         setIsLiked(true);
@@ -83,7 +85,7 @@ const StoryPage: React.FC = () => {
           user.likedStories = [storyId as string]; 
         }
 
-        await axios.post(`http://localhost:3001/api/story/${storyId}/like`);
+        await axios.post(config.likeStoryUrl + storyId);
       }
     } catch (error) {
       toast.error("Error liking/disliking story");
@@ -104,7 +106,7 @@ const StoryPage: React.FC = () => {
 
     if (confirmation) {
       try {
-        await axios.delete(`http://localhost:3001/api/delete-story/${storyId}`);
+        await axios.delete(config.deleteStoryUrl + storyId);
         toast.success("story deleted successfully");
         navigate("/");
       } catch (error) {

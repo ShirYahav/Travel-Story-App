@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import defaultStoryImg from '../../../Assets/defaults/default-story-img.jpg';
 import toast from 'react-hot-toast';
+import config from '../../../Utils/Config';
 
 interface StoryCardProps {
   story: StoryModel;
@@ -19,7 +20,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
     const fetchFirstPhoto = async () => {
       try {
         const firstPhotoFileName = story?.locations?.[0]?.photos?.[0];
-          const response = await axios.get(`http://localhost:3001/api/story/photo/${firstPhotoFileName}`, { responseType: "blob" });
+          const response = await axios.get(config.getPhotoByImgNameUrl + firstPhotoFileName, { responseType: "blob" });
           const imageObjectUrl = URL.createObjectURL(response.data);
           setImageUrl(imageObjectUrl); 
 

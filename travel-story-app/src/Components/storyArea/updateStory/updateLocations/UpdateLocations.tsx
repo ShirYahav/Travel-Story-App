@@ -20,6 +20,7 @@ import {
 } from "../../../../Services/CountriesCitiesService";
 import LocationModel from "../../../../Models/LocationModel";
 import axios from "axios";
+import config from "../../../../Utils/Config";
 
 const theme = createTheme({
   palette: {
@@ -102,8 +103,8 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({locations,setLocations
   
         return axios
           .all([
-            axios.get(`http://localhost:3001/api/story/photos/${location._id}`),
-            axios.get(`http://localhost:3001/api/story/videos/${location._id}`),
+            axios.get(config.getPhotosByLocationIdUrl + location._id),
+            axios.get(config.getVideosByLocationIdUrl + location._id),
           ])
           .then(([photosResponse, videosResponse]) => {
             
