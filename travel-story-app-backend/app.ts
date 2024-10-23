@@ -16,10 +16,10 @@ const app = express();
 
 app.use(cors({
   origin: [
-    'http://localhost:3000',  // Development frontend URL
-    'https://travelog-app.vercel.app'  // Production frontend URL
+    'http://localhost:3000', 
+    'https://travelog-app-server.vercel.app'
   ],
-  credentials: true,  // If you are dealing with cookies or authentication
+  credentials: true,
 }));
 app.use(express.json());
 app.use("/api" ,storiesController);
