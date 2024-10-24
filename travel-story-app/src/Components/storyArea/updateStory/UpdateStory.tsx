@@ -101,7 +101,7 @@ const UpdateStory: React.FC = () => {
       }
     };
     fetchStory();
-  }, [storyId]);
+  }, []);
 
   useEffect(() => {
     if (story) {
@@ -110,7 +110,7 @@ const UpdateStory: React.FC = () => {
         locations: [...locations], 
       });
     }
-  }, [locations]);
+  }, []);
 
   const handleNext = () => {
     setStep(step + 1);
@@ -131,6 +131,50 @@ const UpdateStory: React.FC = () => {
         currency: "",
       }]);
     } 
+  };
+
+  const base64ToFile = (base64String: string, filename: string, mimeType: string) => {
+    const byteString = atob(base64String.split(",")[1]); // Decode base64 string
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
+  
+    for (let i = 0; i < byteString.length; i++) {
+      uint8Array[i] = byteString.charCodeAt(i);
+    }
+  
+    return new File([uint8Array], filename, { type: mimeType });
+  };
+  
+  
+  const updateMedia = async (locationId: string, photos: File[], videos: File[]) => {
+    console.log("Calling updateMedia for locationId:", locationId);
+    console.log("Photos to upload:", photos);
+    console.log("Videos to upload:", videos);
+  
+    const formData = new FormData();
+    
+    photos.forEach((photo) => {
+      console.log("Appending photo:", photo.name);
+      formData.append("photos", photo);
+    });
+    videos.forEach((video) => {
+      console.log("Appending video:", video.name);
+      formData.append("videos", video);
+    });
+  
+    try {
+      const response = await axios.put(config.updateStoryMediaByLocationId + locationId, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+  
+      console.log("Media update response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating media:", error);
+      throw error;
+    }
   };
   
   const handleUpdateStory = async () => {
@@ -162,6 +206,36 @@ const UpdateStory: React.FC = () => {
       };
 
       const response = await axios.put(config.updateStoryUrl + storyId,storyToUpdate);
+
+      console.log("Locations after story update:", locations);
+
+      for (const location of locations) {
+        const { _id, photos, videos } = location;
+  
+        // Explicitly cast `photos` and `videos` to be either `string[]` or `File[]`
+        const photoArray = photos as (string | File)[];
+        const videoArray = videos as (string | File)[];
+  
+        // Convert base64 strings to File objects for photos
+        const newPhotos = photoArray
+          .filter((photo) => typeof photo === "string" && (photo as string).startsWith("data:image/"))
+          .map((photo, index) => base64ToFile(photo as string, `photo-${index}.jpg`, "image/jpeg"));
+  
+        // Convert base64 strings to File objects for videos
+        const newVideos = videoArray
+          .filter((video) => typeof video === "string" && (video as string).startsWith("data:video/"))
+          .map((video, index) => base64ToFile(video as string, `video-${index}.mp4`, "video/mp4"));
+  
+        console.log("Converted photos:", newPhotos);
+        console.log("Converted videos:", newVideos);
+  
+        if (newPhotos.length || newVideos.length) {
+          console.log("Calling updateMedia for location:", location._id);
+          const updatedMediaResponse = await updateMedia(_id, newPhotos, newVideos);
+          console.log('Updated media response from backend:', updatedMediaResponse);
+        }
+      }
+
       toast.success("Story Updated successfully")
       navigate(`/story/${story._id}`);
       

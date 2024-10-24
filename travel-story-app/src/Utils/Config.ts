@@ -23,6 +23,7 @@ class DevelopmentConfig extends Config {
     public likeStoryUrl = "http://localhost:3001/api/story/like/";
     public dislikeStoryUrl = "http://localhost:3001/api/story/dislike/";
     public getLikedStoriesByUserUrl = "http://localhost:3001/api/get-liked-stories/";
+    public updateStoryMediaByLocationId = "http://localhost:3001/api/update-media/";
 }
 
 class ProductionConfig extends Config {
@@ -45,6 +46,7 @@ class ProductionConfig extends Config {
     public likeStoryUrl = "https://travelog-app-server.vercel.app/api/story/like/";
     public dislikeStoryUrl = "https://travelog-app-server.vercel.app/api/story/dislike/";
     public getLikedStoriesByUserUrl = "https://travelog-app-server.vercel.app/api/get-liked-stories/";
+    public updateStoryMediaByLocationId = "https://travelog-app-server.vercel.app/api/update-media/";
 }
 
 

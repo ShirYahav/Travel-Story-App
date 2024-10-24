@@ -1,139 +1,145 @@
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import express, { Request, Response } from "express";
 import multer from "multer";
-import path from "path";
+import { Readable } from 'stream';
 import LocationModel from "../models/location-model";
-import fs from 'fs';
 import locationLogic from '../logic/location-logic'
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    let uploadPath = "";
-
-    if (file.mimetype.startsWith("image/")) {
-      uploadPath = path.join(__dirname, "../Assets/stories/photos");
-    } else if (file.mimetype.startsWith("video/")) {
-      uploadPath = path.join(__dirname, "../Assets/stories/videos");
-    }
-
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
 });
 
-const upload = multer({ storage: storage });
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+const getS3Url = (bucket: string, key: string) => {
+  return `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+};
+
+const uploadToS3 = async (file: Express.Multer.File, folder: string) => {
+  const key = `${folder}/${Date.now()}-${file.originalname}`;
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME!,
+    Key: key,
+    Body: file.buffer,
+    ContentType: file.mimetype,
+  };
+
+  const command = new PutObjectCommand(params);
+  await s3.send(command); 
+
+  return getS3Url(params.Bucket, params.Key);
+};
 
 router.post("/upload/:locationId", upload.fields([
-    { name: "photos", maxCount: 20 },
-    { name: "videos", maxCount: 10 },
-  ]),
-  async (req: Request, res: Response) => {
-    try {
-      const { locationId } = req.params;
-      const location = await LocationModel.findById(locationId);
-      if (!location) {
-        return res.status(404).send("Location not found");
-      }
-
-      if (!req.files) {
-        return res.status(400).send("No files uploaded");
-      }
-
-      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-
-      if (files.photos) {
-        const photoPaths = files.photos.map((file) => file.filename);
-        location.photos.push(...photoPaths);
-      }
-
-      if (files.videos) {
-        const videoPaths = files.videos.map((file) => file.filename);
-        location.videos.push(...videoPaths);
-      }
-
-      await location.save();
-
-      res.send({
-        message: "Files uploaded and paths saved to location successfully",
-        photos: location.photos,
-        videos: location.videos,
-      });
-    } catch (error) {
-      console.error("Error uploading files:", error);
-      res.status(500).send("Error uploading files");
-    }
-  }
-);
-
-
-// router.get("/story/:storyId/photos", async (req: Request, res: Response) => {
-//   try {
-//     const { storyId } = req.params;
-
-//     // Fetch the story using the getStoryById logic
-//     const story = await storyLogic.getStoryById(storyId);
-//     if (!story) {
-//       return res.status(404).send("Story not found");
-//     }
-
-//     // Extract the locations from the story
-//     const locations = story.locations;
-
-//     // Initialize an array to hold all photo URLs
-//     const allPhotoUrls: string[] = [];
-
-//     // Loop through each location and gather the photo URLs
-//     for (const locationId of locations) {
-//       const location = await LocationModel.findById(locationId);
-//       if (location && location.photos.length > 0) {
-//         // Map each photo filename to its corresponding URL
-//         const photoUrls = location.photos.map((photo) => `/photos/${photo}`);
-//         allPhotoUrls.push(...photoUrls);  // Collect the photo URLs
-//       }
-//     }
-
-//     // Send the collected photo URLs as the response
-//     res.json({ photos: allPhotoUrls });
-//   } catch (error) {
-//     console.error("Error fetching photos for story:", error);
-//     res.status(500).send("Error fetching photos");
-//   }
-// });
-
-router.get("/story/photo/:imageName" ,async (request, response) => {
+  { name: "photos", maxCount: 20 },
+  { name: "videos", maxCount: 10 },
+]), async (req: Request, res: Response) => {
   try {
-      const imageName = request.params.imageName;
-      const absolutePath = path.join(__dirname, "..", "assets", "stories", "photos", imageName);
-      response.sendFile(absolutePath);
+    const { locationId } = req.params;
+    const location = await LocationModel.findById(locationId);
+    if (!location) {
+      return res.status(404).send("Location not found");
+    }
+
+    if (!req.files) {
+      return res.status(400).send("No files uploaded");
+    }
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+    if (files.photos) {
+      const photoUploadPromises = files.photos.map((file) =>
+        uploadToS3(file, 'photos')
+      );
+      const photoPaths = await Promise.all(photoUploadPromises);
+      location.photos.push(...photoPaths);
+    }
+
+    if (files.videos) {
+      const videoUploadPromises = files.videos.map((file) =>
+        uploadToS3(file, 'videos')
+      );
+      const videoPaths = await Promise.all(videoUploadPromises);
+      location.videos.push(...videoPaths); 
+    }
+
+    await location.save();
+
+    res.send({
+      message: "Files uploaded to S3 and paths saved to location successfully",
+      photos: location.photos,
+      videos: location.videos,
+    });
+  } catch (error) {
+    console.error("Error uploading files to S3:", error);
+    res.status(500).send("Error uploading files");
   }
-  catch (err) {
-      response.status(400).json(err);
+});
+
+
+const getS3Object = async (key: string) => {
+  const command = new GetObjectCommand({
+    Bucket: process.env.S3_BUCKET_NAME!,
+    Key: key,
+  });
+
+  const result = await s3.send(command);
+  console.log(result); 
+
+  return result.Body as Readable;
+};
+
+router.get("/story/photo/:imageName", async (request: Request, response: Response) => {
+  try {
+    const imageName = request.params.imageName;
+    const key = `photos/${imageName}`; 
+
+    const s3Stream = await getS3Object(key);
+
+    if (s3Stream) {
+      s3Stream.pipe(response);
+    } else {
+      response.status(404).json({ message: "Image not found" });
+    }
+
+  } catch (err) {
+    console.error("Error fetching photo from S3:", err);
+    response.status(500).json({ error: "Error fetching photo from S3", details: err });
   }
 });
 
 router.get("/story/photos/:locationId", async (request: Request, response: Response) => {
   try {
     const { locationId } = request.params;
-    const location = await locationLogic.findLocationById(locationId);  
+    const location = await locationLogic.findLocationById(locationId);
 
+    if (!location || !location.photos.length) {
+      return response.status(404).send("No photos found for this location");
+    }
 
     const base64Photos: string[] = [];
 
-    for (const photoName of location.photos) {
-      const absolutePath = path.join(__dirname, "..", "assets", "stories", "photos", photoName);
+    for (const photoUrl of location.photos) {
+      const photoName = photoUrl.split('/').pop();
+      const key = `photos/${photoName}`; 
 
-      const fileData = fs.readFileSync(absolutePath);
-      const base64Photo = fileData.toString("base64");
+      console.log(`Fetching photo from S3 with key: ${key}`);
+
+      const s3Stream = await getS3Object(key);
+
+      const chunks: Uint8Array[] = [];
+      for await (const chunk of s3Stream) {
+        chunks.push(chunk);
+      }
+      const buffer = Buffer.concat(chunks);
+      const base64Photo = buffer.toString("base64");
 
       base64Photos.push(`data:image/jpeg;base64,${base64Photo}`);
     }
@@ -150,13 +156,26 @@ router.get("/story/videos/:locationId", async (request: Request, response: Respo
     const { locationId } = request.params;
     const location = await locationLogic.findLocationById(locationId);
 
+    if (!location || !location.videos.length) {
+      return response.status(404).send("No videos found for this location");
+    }
+
     const base64Videos: string[] = [];
 
-    for (const videoName of location.videos) {
-      const absolutePath = path.join(__dirname, "..", "assets", "stories", "videos", videoName);
+    for (const videoUrl of location.videos) {
+      const videoName = videoUrl.split('/').pop();
+      const key = `videos/${videoName}`; 
 
-      const fileData = fs.readFileSync(absolutePath);
-      const base64Video = fileData.toString("base64");
+      console.log(`Fetching video from S3 with key: ${key}`);
+
+      const s3Stream = await getS3Object(key);
+
+      const chunks: Uint8Array[] = [];
+      for await (const chunk of s3Stream) {
+        chunks.push(chunk);
+      }
+      const buffer = Buffer.concat(chunks);
+      const base64Video = buffer.toString("base64");
 
       base64Videos.push(`data:video/mp4;base64,${base64Video}`);
     }
@@ -167,6 +186,103 @@ router.get("/story/videos/:locationId", async (request: Request, response: Respo
     response.status(400).json(err);
   }
 });
+
+
+router.put("/update-media/:locationId", upload.fields([
+  { name: "photos", maxCount: 20 },
+  { name: "videos", maxCount: 10 },
+]), async (req: Request, res: Response) => {
+  try {
+    const { locationId } = req.params;
+    console.log("Received request for locationId:", locationId);
+
+    // Find location in the database
+    const location = await LocationModel.findById(locationId);
+
+    if (!location) {
+      console.log("Location not found for id:", locationId);
+      return res.status(404).send("Location not found");
+    }
+    console.log("Found location:--------------------------------------", location);
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    console.log("Files received:", files);
+
+    // Step 1: Delete all existing photos and videos from S3
+    const deleteOldMediaPromises = [];
+
+    console.log("Existing photos to delete:", location.photos);
+    for (const photoUrl of location.photos) {
+      const photoKey = photoUrl.split('/').pop(); // Extract the key from the URL
+      console.log("Deleting photo from S3 with key:", photoKey);
+      deleteOldMediaPromises.push(deleteFromS3(`photos/${photoKey}`));
+    }
+
+    console.log("Existing videos to delete:", location.videos);
+    for (const videoUrl of location.videos) {
+      const videoKey = videoUrl.split('/').pop(); // Extract the key from the URL
+      console.log("Deleting video from S3 with key:", videoKey);
+      deleteOldMediaPromises.push(deleteFromS3(`videos/${videoKey}`));
+    }
+
+    await Promise.all(deleteOldMediaPromises);
+    console.log("Deleted old media from S3.");
+
+    // Step 2: Clear existing media in the database
+    location.photos = [];
+    location.videos = [];
+    console.log("Cleared existing media in the database.");
+
+    // Step 3: Add new photos to S3
+    if (files.photos) {
+      const photoUploadPromises = files.photos.map((file) => {
+        console.log("Uploading new photo:", file.originalname);
+        return uploadToS3(file, 'photos');
+      });
+
+      const newPhotoPaths = await Promise.all(photoUploadPromises);
+      console.log("Uploaded new photos, S3 URLs:", newPhotoPaths);
+      location.photos.push(...newPhotoPaths); // Add new photos to the database
+    }
+
+    // Step 4: Add new videos to S3
+    if (files.videos) {
+      const videoUploadPromises = files.videos.map((file) => {
+        console.log("Uploading new video:", file.originalname);
+        return uploadToS3(file, 'videos');
+      });
+
+      const newVideoPaths = await Promise.all(videoUploadPromises);
+      console.log("Uploaded new videos, S3 URLs:", newVideoPaths);
+      location.videos.push(...newVideoPaths); // Add new videos to the database
+    }
+
+    // Step 5: Save the updated location with new media
+    await location.save();
+    console.log("Updated location saved to database:", location);
+
+    res.send({
+      message: "Media updated successfully",
+      photos: location.photos,
+      videos: location.videos,
+    });
+  } catch (error) {
+    console.error("Error updating media:", error);
+    res.status(500).send("Error updating media");
+  }
+});
+
+
+const deleteFromS3 = async (key: string) => {
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME!,
+    Key: key,
+  };
+
+  const command = new DeleteObjectCommand(params);
+  await s3.send(command);
+};
+
 
 
 export default router;

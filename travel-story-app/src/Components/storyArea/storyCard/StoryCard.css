@@ -6,15 +6,17 @@
     margin-bottom: 50px;
     transition: transform 0.3s ease;
     cursor: pointer;
+    position: relative;
 }
 
 .storyCard:hover {
-    transform: scale(1.05); 
+    transform: scale(1.05);
 }
 
 
 .imageOverlayContainer {
     position: relative;
+    height: 200px;
     height: 285px;
     background-size: cover;
     background-position: center;
@@ -23,6 +25,7 @@
 
 .imageOverlay {
     position: absolute;
+    height: 285px;
     top: 0;
     left: 0;
     right: 0;
@@ -82,3 +85,15 @@
     width: 0px;
 }
 
+.imageContainer {
+    width: 100%;
+    height: 285px;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.storyImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

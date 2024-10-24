@@ -23,8 +23,8 @@ app.use("/api" ,storiesController);
 app.use("/api", imageController);
 app.use("/api", authController);
 app.use("/api", userController);
-app.use('/photos', express.static(path.join(__dirname, 'assets/stories/photos')));
-app.use('/videos', express.static(path.join(__dirname, 'assets/stories/videos')));
+// app.use('/photos', express.static(path.join(__dirname, 'assets/stories/photos')));
+// app.use('/videos', express.static(path.join(__dirname, 'assets/stories/videos')));
 
 
 app.get('/', (req: Request, res: Response) => {
