@@ -84,6 +84,23 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
     setRoutes(routes);
   }, []);
 
+  useEffect(() => {
+    if (routes.length === 0) {
+      setRoutes([
+        {
+          _id: "",
+          origin: "",
+          destination: "",
+          transportType: "",
+          duration: 0,
+          note: "",
+          cost: 0,
+          currency: "",
+        },
+      ]);
+    }
+  }, []);
+
   const deleteRoute = (index: number) => {
     const updatedRoutes = routes.filter((_, i) => i !== index);
     setRoutes(updatedRoutes);

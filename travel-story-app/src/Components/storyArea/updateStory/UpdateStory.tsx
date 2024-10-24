@@ -133,6 +133,17 @@ const UpdateStory: React.FC = () => {
     } 
   };
 
+  const handleSkipRoutes = () => {
+    setStep(step + 1);
+    setRoutes([]);
+    const budgetDetails = calculateTotalBudget(locations, routes);
+    setStory({
+      ...story,
+      budget: budgetDetails.totalBudget,
+      currency: budgetDetails.currency,
+    });
+  };
+
   const base64ToFile = (base64String: string, filename: string, mimeType: string) => {
     const byteString = atob(base64String.split(",")[1]); // Decode base64 string
     const arrayBuffer = new ArrayBuffer(byteString.length);
@@ -270,6 +281,9 @@ const UpdateStory: React.FC = () => {
             <div className="step2Buttons">
               <Button variant="outlined" onClick={handleBack} color="secondary">
                 Back
+              </Button>
+              <Button variant="outlined" onClick={handleSkipRoutes} color="secondary">
+                skip
               </Button>
               <Button
                 variant="contained"
