@@ -91,8 +91,6 @@ const getS3Object = async (key: string) => {
   });
 
   const result = await s3.send(command);
-  console.log(result); 
-
   return result.Body as Readable;
 };
 
@@ -130,8 +128,6 @@ router.get("/story/photos/:locationId", async (request: Request, response: Respo
       const photoName = photoUrl.split('/').pop();
       const key = `photos/${photoName}`; 
 
-      console.log(`Fetching photo from S3 with key: ${key}`);
-
       const s3Stream = await getS3Object(key);
 
       const chunks: Uint8Array[] = [];
@@ -165,9 +161,6 @@ router.get("/story/videos/:locationId", async (request: Request, response: Respo
     for (const videoUrl of location.videos) {
       const videoName = videoUrl.split('/').pop();
       const key = `videos/${videoName}`; 
-
-      console.log(`Fetching video from S3 with key: ${key}`);
-
       const s3Stream = await getS3Object(key);
 
       const chunks: Uint8Array[] = [];
@@ -194,72 +187,51 @@ router.put("/update-media/:locationId", upload.fields([
 ]), async (req: Request, res: Response) => {
   try {
     const { locationId } = req.params;
-    console.log("Received request for locationId:", locationId);
 
-    // Find location in the database
     const location = await LocationModel.findById(locationId);
 
     if (!location) {
-      console.log("Location not found for id:", locationId);
       return res.status(404).send("Location not found");
     }
-    console.log("Found location:--------------------------------------", location);
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    console.log("Files received:", files);
 
-    // Step 1: Delete all existing photos and videos from S3
     const deleteOldMediaPromises = [];
 
-    console.log("Existing photos to delete:", location.photos);
     for (const photoUrl of location.photos) {
-      const photoKey = photoUrl.split('/').pop(); // Extract the key from the URL
-      console.log("Deleting photo from S3 with key:", photoKey);
+      const photoKey = photoUrl.split('/').pop(); 
       deleteOldMediaPromises.push(deleteFromS3(`photos/${photoKey}`));
     }
 
-    console.log("Existing videos to delete:", location.videos);
     for (const videoUrl of location.videos) {
-      const videoKey = videoUrl.split('/').pop(); // Extract the key from the URL
-      console.log("Deleting video from S3 with key:", videoKey);
+      const videoKey = videoUrl.split('/').pop(); 
       deleteOldMediaPromises.push(deleteFromS3(`videos/${videoKey}`));
     }
 
     await Promise.all(deleteOldMediaPromises);
-    console.log("Deleted old media from S3.");
 
-    // Step 2: Clear existing media in the database
     location.photos = [];
     location.videos = [];
-    console.log("Cleared existing media in the database.");
 
-    // Step 3: Add new photos to S3
     if (files.photos) {
       const photoUploadPromises = files.photos.map((file) => {
-        console.log("Uploading new photo:", file.originalname);
         return uploadToS3(file, 'photos');
       });
 
       const newPhotoPaths = await Promise.all(photoUploadPromises);
-      console.log("Uploaded new photos, S3 URLs:", newPhotoPaths);
-      location.photos.push(...newPhotoPaths); // Add new photos to the database
+      location.photos.push(...newPhotoPaths); 
     }
 
-    // Step 4: Add new videos to S3
     if (files.videos) {
       const videoUploadPromises = files.videos.map((file) => {
-        console.log("Uploading new video:", file.originalname);
         return uploadToS3(file, 'videos');
       });
 
       const newVideoPaths = await Promise.all(videoUploadPromises);
-      console.log("Uploaded new videos, S3 URLs:", newVideoPaths);
-      location.videos.push(...newVideoPaths); // Add new videos to the database
+      location.videos.push(...newVideoPaths); 
     }
 
-    // Step 5: Save the updated location with new media
     await location.save();
-    console.log("Updated location saved to database:", location);
 
     res.send({
       message: "Media updated successfully",
@@ -271,7 +243,6 @@ router.put("/update-media/:locationId", upload.fields([
     res.status(500).send("Error updating media");
   }
 });
-
 
 const deleteFromS3 = async (key: string) => {
   const params = {

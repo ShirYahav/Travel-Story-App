@@ -145,20 +145,13 @@ const UpdateStory: React.FC = () => {
     return new File([uint8Array], filename, { type: mimeType });
   };
   
-  
   const updateMedia = async (locationId: string, photos: File[], videos: File[]) => {
-    console.log("Calling updateMedia for locationId:", locationId);
-    console.log("Photos to upload:", photos);
-    console.log("Videos to upload:", videos);
-  
     const formData = new FormData();
     
     photos.forEach((photo) => {
-      console.log("Appending photo:", photo.name);
       formData.append("photos", photo);
     });
     videos.forEach((video) => {
-      console.log("Appending video:", video.name);
       formData.append("videos", video);
     });
   
@@ -169,7 +162,6 @@ const UpdateStory: React.FC = () => {
         }
       });
   
-      console.log("Media update response:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error updating media:", error);
@@ -205,34 +197,30 @@ const UpdateStory: React.FC = () => {
         })
       };
 
-      const response = await axios.put(config.updateStoryUrl + storyId,storyToUpdate);
-
-      console.log("Locations after story update:", locations);
+      const response = await axios.put(config.updateStoryUrl + storyId, storyToUpdate);
 
       for (const location of locations) {
         const { _id, photos, videos } = location;
-  
-        // Explicitly cast `photos` and `videos` to be either `string[]` or `File[]`
+
         const photoArray = photos as (string | File)[];
         const videoArray = videos as (string | File)[];
-  
-        // Convert base64 strings to File objects for photos
-        const newPhotos = photoArray
+
+        const convertedPhotos = photoArray
           .filter((photo) => typeof photo === "string" && (photo as string).startsWith("data:image/"))
           .map((photo, index) => base64ToFile(photo as string, `photo-${index}.jpg`, "image/jpeg"));
-  
-        // Convert base64 strings to File objects for videos
-        const newVideos = videoArray
+
+        const convertedVideos = videoArray
           .filter((video) => typeof video === "string" && (video as string).startsWith("data:video/"))
           .map((video, index) => base64ToFile(video as string, `video-${index}.mp4`, "video/mp4"));
-  
-        console.log("Converted photos:", newPhotos);
-        console.log("Converted videos:", newVideos);
-  
-        if (newPhotos.length || newVideos.length) {
-          console.log("Calling updateMedia for location:", location._id);
-          const updatedMediaResponse = await updateMedia(_id, newPhotos, newVideos);
-          console.log('Updated media response from backend:', updatedMediaResponse);
+
+        const newPhotos = photoArray.filter((photo) => photo instanceof File) as File[];
+        const newVideos = videoArray.filter((video) => video instanceof File) as File[];
+
+        const finalPhotos = [...newPhotos, ...convertedPhotos];
+        const finalVideos = [...newVideos, ...convertedVideos];
+
+        if (finalPhotos.length || finalVideos.length) {
+          const updatedMediaResponse = await updateMedia(_id, finalPhotos, finalVideos);
         }
       }
 
