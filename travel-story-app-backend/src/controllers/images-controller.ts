@@ -1,4 +1,5 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'; // Import getSignedUrl
 import express, { Request, Response } from "express";
 import multer from "multer";
 import { Readable } from 'stream';
@@ -37,6 +38,54 @@ const uploadToS3 = async (file: Express.Multer.File, folder: string) => {
   return getS3Url(params.Bucket, params.Key);
 };
 
+router.post("/get-presigned-url", async (req: Request, res: Response) => {
+  const { fileName, fileType, folder } = req.body;  
+  const key = `${folder}/${Date.now()}-${fileName}`; 
+
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME!,
+    Key: key,
+    ContentType: fileType,
+  };
+
+  try {
+    const command = new PutObjectCommand(params);
+    const presignedUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
+    res.json({ presignedUrl, key });
+  } catch (error) {
+    console.error("Error generating presigned URL:", error);
+    res.status(500).send("Error generating URL");
+  }
+});
+
+router.put("/update-location-media/:locationId", async (req: Request, res: Response) => {
+  const { locationId } = req.params;
+  const { fileKey, mediaType } = req.body; 
+
+  try {
+    const location = await LocationModel.findById(locationId);
+    if (!location) {
+      return res.status(404).send("Location not found");
+    }
+
+    if (mediaType === 'photo') {
+      location.photos.push(fileKey);
+    } else if (mediaType === 'video') {
+      location.videos.push(fileKey);
+    }
+
+    await location.save();
+    res.send({
+      message: "Media added to location successfully",
+      location,
+    });
+  } catch (error) {
+    console.error("Error updating location with media:", error);
+    res.status(500).send("Error updating location");
+  }
+});
+
+//works in general, not with vercel - maximum request body size of 4.5 MB
 router.post("/upload/:locationId", upload.fields([
   { name: "photos", maxCount: 20 },
   { name: "videos", maxCount: 10 },
@@ -82,7 +131,6 @@ router.post("/upload/:locationId", upload.fields([
     res.status(500).send("Error uploading files");
   }
 });
-
 
 const getS3Object = async (key: string) => {
   const command = new GetObjectCommand({
@@ -253,7 +301,5 @@ const deleteFromS3 = async (key: string) => {
   const command = new DeleteObjectCommand(params);
   await s3.send(command);
 };
-
-
 
 export default router;

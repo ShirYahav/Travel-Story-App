@@ -8,7 +8,11 @@ class DevelopmentConfig extends Config {
     public userLoginUrl = "http://localhost:3001/api/auth/login/";
     public userRegisterUrl = "http://localhost:3001/api/auth/register/";
     public userValidationUrl = "http://localhost:3001/api/auth/me/";
-    public uploadDataByLocationIdUrl = "http://localhost:3001/api/upload/";
+
+    //public uploadDataByLocationIdUrl = "http://localhost:3001/api/upload/";
+    public getPreSignedUrl = "http://localhost:3001/api/get-presigned-url/";
+    public updateLocationMedia = "http://localhost:3001/api/update-location-media/";
+
     public getPhotoByImgNameUrl = "http://localhost:3001/api/story/photo/";
     public getPhotosByLocationIdUrl = "http://localhost:3001/api/story/photos/";
     public getVideosByLocationIdUrl = "http://localhost:3001/api/story/videos/";
@@ -31,7 +35,11 @@ class ProductionConfig extends Config {
     public userLoginUrl = "https://travelog-app-server.vercel.app/api/auth/login/";
     public userRegisterUrl = "https://travelog-app-server.vercel.app/api/auth/register/";
     public userValidationUrl = "https://travelog-app-server.vercel.app/api/auth/me/";
-    public uploadDataByLocationIdUrl = "https://travelog-app-server.vercel.app/api/upload/";
+
+    //public uploadDataByLocationIdUrl = "https://travelog-app-server.vercel.app/api/upload/";
+    public getPreSignedUrl = "https://travelog-app-server.vercel.app/api/get-presigned-url/";
+    public updateLocationMedia = "https://travelog-app-server.vercel.app/api/update-location-media/";
+
     public getPhotoByImgNameUrl = "https://travelog-app-server.vercel.app/api/story/photo/";
     public getPhotosByLocationIdUrl = "https://travelog-app-server.vercel.app/api/story/photos/";
     public getVideosByLocationIdUrl = "https://travelog-app-server.vercel.app/api/story/videos/";

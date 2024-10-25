@@ -151,26 +151,82 @@ const AddStory: React.FC = () => {
     });
   };
 
-  const handleUpload = async (locationId: string, locationPhotos: File[], locationVideos: File[]) => {
-    const formData = new FormData();
-  
-    locationPhotos.forEach((photo) => formData.append("photos", photo));
-  
-    locationVideos.forEach((video) => formData.append("videos", video));
-  
+  const getPresignedUrl = async (fileName: string, fileType: string, folder: string, locationId: string) => {
     try {
-      const uploadResponse = await axios.post(config.uploadDataByLocationIdUrl + locationId, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const response = await axios.post(config.getPreSignedUrl, {
+        fileName,
+        fileType,
+        folder,
+        locationId
       });
   
+      return response.data; 
     } catch (error) {
-      toast.error(`Error uploading files for location`);
+      console.error("Error generating presigned URL:", error);
+      throw error;
     }
   };
-  
-  
+
+  const axiosS3Instance = axios.create({
+  });
+
+  const uploadToS3 = async (presignedUrl: string, file: File) => {
+    try {
+      
+      await axiosS3Instance.put(presignedUrl, file, {
+        headers: {
+          'Content-Type': file.type, 
+        },
+      });
+    } catch (error) {
+      console.error("Error uploading file to S3:", error);
+      throw error;
+    }
+  };
+
+  const updateLocationMedia = async (locationId: string, fileKey: string, mediaType: string) => {
+    try {
+      await axios.put(config.updateLocationMedia + locationId, {
+        fileKey,
+        mediaType // Can be 'photo' or 'video'
+      });
+    } catch (error) {
+      console.error("Error updating location with media:", error);
+      throw error;
+    }
+  };
+
+  const handleUpload = async (locationId: string, locationPhotos: File[], locationVideos: File[]) => {
+    try {
+      // Upload photos
+      for (const photo of locationPhotos) {
+        // Step 1: Get presigned URL
+        const { presignedUrl, key } = await getPresignedUrl(photo.name, photo.type, "photos", locationId);
+
+        // Step 2: Upload the file to S3
+        await uploadToS3(presignedUrl, photo);
+
+        // Step 3: Update location with the media key
+        await updateLocationMedia(locationId, key, "photo");
+      }
+
+      // Upload videos
+      for (const video of locationVideos) {
+        // Step 1: Get presigned URL
+        const { presignedUrl, key } = await getPresignedUrl(video.name, video.type, "videos", locationId);
+
+        // Step 2: Upload the file to S3
+        await uploadToS3(presignedUrl, video);
+
+        // Step 3: Update location with the media key
+        await updateLocationMedia(locationId, key, "video");
+      }
+    } catch (error) {
+      console.error("Error uploading files for location:", error);
+      toast.error("Error uploading files for location");
+    }
+  };
+
   const handleCreateStory = async () => {
     try {
       const storyToAdd = {
@@ -190,26 +246,20 @@ const AddStory: React.FC = () => {
           ...routeWithoutId,
           duration: routeWithoutId.duration,
         })),
-      };
-  
-  
+      };  
       const storyResponse = await axios.post(config.addStoryUrl, storyToAdd);
       const savedStory = storyResponse.data.story;
-  
       toast.success("Added Story Successfully")
-      if (savedStory.locations && savedStory.locations.length > 0) {
 
+      if (savedStory.locations && savedStory.locations.length > 0) {
         for (let i = 0; i < savedStory.locations.length; i++) {
           const locationId = savedStory.locations[i];
   
           if (locationId) {
-  
             const locationPhotos = locations[i].photos || [];
-            const locationVideos = locations[i].videos || []; 
+            const locationVideos = locations[i].videos || [];
+  
             await handleUpload(locationId, locationPhotos, locationVideos);
-
-          } else {
-            console.error("Location ID is undefined");
           }
         }
       } else {
