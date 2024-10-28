@@ -12,7 +12,7 @@ class DevelopmentConfig extends Config {
     //public uploadDataByLocationIdUrl = "http://localhost:3001/api/upload/";
     public getPreSignedUrl = "http://localhost:3001/api/get-presigned-url/";
     public addLocationMedia = "http://localhost:3001/api/add-location-media/";
-    public updateLocationMedia = "http://localhost:3001/api/update-location-media/";
+    public deleteLocationMediaUrl = "http://localhost:3001/api/delete-location-media/";
 
     public getPhotoByImgNameUrl = "http://localhost:3001/api/story/photo/";
     public getPhotosByLocationIdUrl = "http://localhost:3001/api/story/photos/";
@@ -40,7 +40,7 @@ class ProductionConfig extends Config {
     //public uploadDataByLocationIdUrl = "https://travelog-app-server.vercel.app/api/upload/";
     public getPreSignedUrl = "https://travelog-app-server.vercel.app/api/get-presigned-url/";
     public addLocationMedia = "https://travelog-app-server.vercel.app/api/add-location-media/";
-    public updateLocationMedia = "https://travelog-app-server.vercel.app/api/update-location-media/";
+    public deleteLocationMediaUrl = "https://travelog-app-server.vercel.app/api/delete-location-media/";
 
     public getPhotoByImgNameUrl = "https://travelog-app-server.vercel.app/api/story/photo/";
     public getPhotosByLocationIdUrl = "https://travelog-app-server.vercel.app/api/story/photos/";

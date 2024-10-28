@@ -153,7 +153,6 @@ const UpdateStory: React.FC = () => {
         locationId
       });
 
-      console.log(response.data)
       return response.data; 
     } catch (error) {
       console.error("Error generating presigned URL:", error);

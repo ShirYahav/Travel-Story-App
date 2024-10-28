@@ -58,13 +58,14 @@ interface UpdateLocationsProps {
   setLocations: (locations: LocationModel[]) => void;
 }
 
-const UpdateLocations: React.FC<UpdateLocationsProps> = ({locations,setLocations}) => {
+const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocations }) => {
 
   const [countries, setCountries] = useState<{ name: string; code: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [cities, setCities] = useState<string[]>([]);
   const [isLoadingCities, setIsLoadingCities] = useState(false);
   const [mediaLoading, setMediaLoading] = useState<boolean[]>(Array(locations.length).fill(true));
+  const [originalMediaKeys, setOriginalMediaKeys] = useState<any>([]);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -94,26 +95,24 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({locations,setLocations
   useEffect(() => {
     const fetchAllLocationMedia = () => {
       const updatedLocationsPromises = locations.map((location, index) => {
-        
         setMediaLoading((prev) => {
           const updatedLoading = [...prev];
           updatedLoading[index] = true;
           return updatedLoading;
         });
-  
+
         return axios
           .all([
             axios.get(config.getPhotosByLocationIdUrl + location._id),
             axios.get(config.getVideosByLocationIdUrl + location._id),
           ])
           .then(([photosResponse, videosResponse]) => {
-            
             setMediaLoading((prev) => {
               const updatedLoading = [...prev];
               updatedLoading[index] = false;
               return updatedLoading;
             });
-  
+
             return {
               ...location,
               photos: photosResponse.data.photos,
@@ -121,19 +120,30 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({locations,setLocations
             };
           });
       });
-  
+
       Promise.all(updatedLocationsPromises)
-      .then((updatedLocations) => {
+        .then((updatedLocations) => {
           setLocations(updatedLocations);
         })
         .catch((error) => {
           console.error("Error fetching location media:", error);
         });
-      };
-  
+    };
+
     fetchAllLocationMedia();
   }, []);
-  
+
+  useEffect(() => {
+    if (locations.length > 0 && originalMediaKeys.length === 0) {
+      const mediaKeys = locations.map((location) => ({
+        photos: [...location.photos],
+        videos: [...location.videos],
+      }));
+      setOriginalMediaKeys(mediaKeys);
+    }
+  }, []);   
+
+
   const handleFetchCities = debounce(
     async (countryCode: string, query: string) => {
       if (!query) return;
@@ -234,26 +244,49 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({locations,setLocations
     fileType: "photos" | "videos"
   ) => {
     const updatedLocations = [...locations];
-
+  
+    const fileKey =
+      fileType === "photos"
+        ? originalMediaKeys[locationIndex].photos[fileIndex]
+        : originalMediaKeys[locationIndex].videos[fileIndex];
+  
     if (fileType === "photos") {
       const updatedPhotos = updatedLocations[locationIndex].photos.filter(
-        (_, i) => i !== fileIndex
+        (photo, i) => i !== fileIndex
       );
-      updatedLocations[locationIndex].photos = updatedPhotos;
+      updatedLocations[locationIndex] = {
+        ...updatedLocations[locationIndex],
+        photos: updatedPhotos,
+      };
     } else if (fileType === "videos") {
       const updatedVideos = updatedLocations[locationIndex].videos.filter(
-        (_, i) => i !== fileIndex
+        (video, i) => i !== fileIndex
       );
-      updatedLocations[locationIndex].videos = updatedVideos;
+      updatedLocations[locationIndex] = {
+        ...updatedLocations[locationIndex],
+        videos: updatedVideos,
+      };
     }
-
+  
     setLocations(updatedLocations);
+    deleteMedia(updatedLocations[locationIndex]._id, fileKey, fileType);
   };
   
+
+  const deleteMedia = async (locationId: string, fileKey: string, fileType: "photos" | "videos") => {
+    try {
+      await axios.delete(config.deleteLocationMediaUrl + locationId, {
+        data: { fileKey, fileType },
+      });
+    } catch (error) {
+      console.error("Error deleting media:", error);
+    }
+  };
+
   function base64ToBlobUrl(base64: string) {
     if (base64.startsWith("data:video/mp4;base64,")) {
       try {
-        const byteString = atob(base64.split(",")[1]); 
+        const byteString = atob(base64.split(",")[1]);
         const mimeType = base64.split(",")[0].split(":")[1].split(";")[0];
         const byteNumbers = new Array(byteString.length);
 
@@ -263,10 +296,10 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({locations,setLocations
 
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: mimeType });
-        return URL.createObjectURL(blob); 
+        return URL.createObjectURL(blob);
       } catch (error) {
         console.error("Failed to convert base64 to blob:", error);
-        return ""; 
+        return "";
       }
     }
     return base64;
@@ -447,7 +480,7 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({locations,setLocations
             </div>
 
             {mediaLoading[index] ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' , marginRight:'17px'}}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', marginRight: '17px' }}>
                 <CircularProgress />
               </div>
             ) : (
@@ -481,7 +514,7 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({locations,setLocations
                         <img
                           src={
                             typeof file === "string"
-                              ? file 
+                              ? file
                               : URL.createObjectURL(file)
                           }
                           alt={`Preview ${i}`}
@@ -511,8 +544,8 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({locations,setLocations
                       (file: string | File, i: number) => {
                         const videoSrc =
                           typeof file === "string"
-                            ? base64ToBlobUrl(file) 
-                            : URL.createObjectURL(file); 
+                            ? base64ToBlobUrl(file)
+                            : URL.createObjectURL(file);
 
                         return videoSrc ? (
                           <div key={i} className="formVideoDiv">
@@ -564,4 +597,4 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({locations,setLocations
   );
 };
 
-export default UpdateLocations;
+export default UpdateLocations; 

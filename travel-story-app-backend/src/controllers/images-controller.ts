@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'; 
 import express, { Request, Response } from "express";
 import multer from "multer";
@@ -18,25 +18,6 @@ const s3 = new S3Client({
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-
-const getS3Url = (bucket: string, key: string) => {
-  return `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
-};
-
-const uploadToS3 = async (file: Express.Multer.File, folder: string) => {
-  const key = `${folder}/${Date.now()}-${file.originalname}`;
-  const params = {
-    Bucket: process.env.S3_BUCKET_NAME!,
-    Key: key,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-  };
-
-  const command = new PutObjectCommand(params);
-  await s3.send(command); 
-
-  return getS3Url(params.Bucket, params.Key);
-};
 
 router.post("/get-presigned-url", async (req: Request, res: Response) => {
   const { fileName, fileType, folder } = req.body;  
@@ -85,50 +66,39 @@ router.put("/add-location-media/:locationId", async (req: Request, res: Response
   }
 });
 
-//works in general, not with vercel - maximum request body size of 4.5 MB
-router.post("/upload/:locationId", upload.fields([
-  { name: "photos", maxCount: 20 },
-  { name: "videos", maxCount: 10 },
-]), async (req: Request, res: Response) => {
+const deleteFromS3 = async (key: string) => {
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME!,
+    Key: key,
+  };
+
+  const command = new DeleteObjectCommand(params);
+  await s3.send(command);
+};
+
+router.delete('/delete-location-media/:locationId', async (req: Request, res: Response) => {
+  const { locationId } = req.params;
+  const { fileKey, fileType } = req.body;
+
   try {
-    const { locationId } = req.params;
     const location = await LocationModel.findById(locationId);
     if (!location) {
-      return res.status(404).send("Location not found");
+      return res.status(404).send("Location not found.");
     }
 
-    if (!req.files) {
-      return res.status(400).send("No files uploaded");
-    }
-
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-
-    if (files.photos) {
-      const photoUploadPromises = files.photos.map((file) =>
-        uploadToS3(file, 'photos')
-      );
-      const photoPaths = await Promise.all(photoUploadPromises);
-      location.photos.push(...photoPaths);
-    }
-
-    if (files.videos) {
-      const videoUploadPromises = files.videos.map((file) =>
-        uploadToS3(file, 'videos')
-      );
-      const videoPaths = await Promise.all(videoUploadPromises);
-      location.videos.push(...videoPaths); 
+    if (fileType === "photos") {
+      location.photos = location.photos.filter((key) => key !== fileKey);
+    } else if (fileType === "videos") {
+      location.videos = location.videos.filter((key) => key !== fileKey);
     }
 
     await location.save();
 
-    res.send({
-      message: "Files uploaded to S3 and paths saved to location successfully",
-      photos: location.photos,
-      videos: location.videos,
-    });
+    await deleteFromS3(fileKey);
+    res.status(200).send("Media deleted successfully.");
   } catch (error) {
-    console.error("Error uploading files to S3:", error);
-    res.status(500).send("Error uploading files");
+    console.error("Error deleting media:", error);
+    res.status(500).send("Error deleting media.");
   }
 });
 
