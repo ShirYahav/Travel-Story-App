@@ -101,10 +101,8 @@ router.put('/update-story/:storyId', async (req: Request, res: Response) => {
 });
 
 router.delete('/delete-story/:storyId', async (req: Request, res: Response) => {
-
   const { storyId } = req.params;
   try {
-
     await logic.deleteStory(storyId);
     res.status(200).json({ message: 'Story and associated data deleted successfully.' });
   } catch (err) {

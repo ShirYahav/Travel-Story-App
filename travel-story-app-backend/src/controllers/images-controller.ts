@@ -1,5 +1,5 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'; // Import getSignedUrl
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'; 
 import express, { Request, Response } from "express";
 import multer from "multer";
 import { Readable } from 'stream';
@@ -227,46 +227,5 @@ router.get("/story/videos/:locationId", async (request: Request, response: Respo
     response.status(400).json(err);
   }
 });
-
-router.put("/update-location-media/:locationId", async (req: Request, res: Response) => {
-  const { locationId } = req.params;
-  const { fileKey, mediaType } = req.body; // Expect a single file key
-
-  try {
-    const location = await LocationModel.findById(locationId);
-    if (!location) {
-      return res.status(404).send("Location not found");
-    }
-
-    // Add the new file key directly to the appropriate media array
-    if (mediaType === 'photo') {
-      location.photos.push(fileKey); 
-    } else if (mediaType === 'video') {
-      location.videos.push(fileKey); 
-    }
-
-    await location.save();
-
-    res.send({
-      message: "Media updated successfully",
-      photos: location.photos,
-      videos: location.videos,
-    });
-  } catch (error) {
-    console.error("Error updating location with media:", error);
-    res.status(500).send("Error updating location");
-  }
-});
-
-
-const deleteFromS3 = async (key: string) => {
-  const params = {
-    Bucket: process.env.S3_BUCKET_NAME!,
-    Key: key,
-  };
-
-  const command = new DeleteObjectCommand(params);
-  await s3.send(command);
-};
 
 export default router;

@@ -1,9 +1,19 @@
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import StoryModel, { IStory } from "../models/story-model";
 import LocationModel, { ILocation } from "../models/location-model";
 import RouteModel, { IRoute } from "../models/route-model";
 import locationLogic from "./location-logic";
 import routeLogic from "./route-logic";
 import UserModel from "../models/user-model";
+
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
+
 
 async function getAllStories(): Promise<IStory[]> {
   return StoryModel.find()
@@ -83,13 +93,35 @@ async function addStory(story: IStory): Promise<IStory> {
   return newStory.save();
 }
 
+const deleteFromS3 = async (key: string) => {
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME!,
+    Key: key,
+  };
+
+  const command = new DeleteObjectCommand(params);
+  await s3.send(command);
+};
+
 async function deleteStory(storyId: string): Promise<void> {
-  const existingStory = await StoryModel.findById(storyId);
+  const existingStory = await StoryModel
+  .findById(storyId)
+  .populate({ path: "locations", model: LocationModel })
+  .populate({ path: "routes", model: RouteModel });
   if (!existingStory) {
     throw new Error("Story not found.");
   }
 
-  const locationIds = existingStory.locations;
+  const mediaKeys: string[] = [];
+  existingStory.locations.forEach((location: any) => {
+    location.photos.forEach((photoKey: string) => mediaKeys.push(`${photoKey}`));
+    location.videos.forEach((videoKey: string) => mediaKeys.push(`${videoKey}`));
+  });
+
+  const deletePromises = mediaKeys.map((key) => deleteFromS3(key));
+  await Promise.all(deletePromises);
+
+  const locationIds = existingStory.locations.map((loc: any) => loc._id);
   await LocationModel.deleteMany({ _id: { $in: locationIds } });
 
   const routeIds = existingStory.routes;
