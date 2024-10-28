@@ -186,9 +186,9 @@ const AddStory: React.FC = () => {
 
   const updateLocationMedia = async (locationId: string, fileKey: string, mediaType: string) => {
     try {
-      await axios.put(config.updateLocationMedia + locationId, {
+      await axios.put(config.addLocationMedia + locationId, {
         fileKey,
-        mediaType // Can be 'photo' or 'video'
+        mediaType 
       });
     } catch (error) {
       console.error("Error updating location with media:", error);
@@ -198,27 +198,14 @@ const AddStory: React.FC = () => {
 
   const handleUpload = async (locationId: string, locationPhotos: File[], locationVideos: File[]) => {
     try {
-      // Upload photos
       for (const photo of locationPhotos) {
-        // Step 1: Get presigned URL
         const { presignedUrl, key } = await getPresignedUrl(photo.name, photo.type, "photos", locationId);
-
-        // Step 2: Upload the file to S3
         await uploadToS3(presignedUrl, photo);
-
-        // Step 3: Update location with the media key
         await updateLocationMedia(locationId, key, "photo");
       }
-
-      // Upload videos
       for (const video of locationVideos) {
-        // Step 1: Get presigned URL
         const { presignedUrl, key } = await getPresignedUrl(video.name, video.type, "videos", locationId);
-
-        // Step 2: Upload the file to S3
         await uploadToS3(presignedUrl, video);
-
-        // Step 3: Update location with the media key
         await updateLocationMedia(locationId, key, "video");
       }
     } catch (error) {
@@ -273,7 +260,6 @@ const AddStory: React.FC = () => {
     }
   };
   
-
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ p: 3 }}>

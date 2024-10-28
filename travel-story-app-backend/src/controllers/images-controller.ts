@@ -58,7 +58,7 @@ router.post("/get-presigned-url", async (req: Request, res: Response) => {
   }
 });
 
-router.put("/update-location-media/:locationId", async (req: Request, res: Response) => {
+router.put("/add-location-media/:locationId", async (req: Request, res: Response) => {
   const { locationId } = req.params;
   const { fileKey, mediaType } = req.body; 
 
@@ -228,55 +228,21 @@ router.get("/story/videos/:locationId", async (request: Request, response: Respo
   }
 });
 
+router.put("/update-location-media/:locationId", async (req: Request, res: Response) => {
+  const { locationId } = req.params;
+  const { fileKey, mediaType } = req.body; // Expect a single file key
 
-router.put("/update-media/:locationId", upload.fields([
-  { name: "photos", maxCount: 20 },
-  { name: "videos", maxCount: 10 },
-]), async (req: Request, res: Response) => {
   try {
-    const { locationId } = req.params;
-
     const location = await LocationModel.findById(locationId);
-
     if (!location) {
       return res.status(404).send("Location not found");
     }
 
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-
-    const deleteOldMediaPromises = [];
-
-    for (const photoUrl of location.photos) {
-      const photoKey = photoUrl.split('/').pop(); 
-      deleteOldMediaPromises.push(deleteFromS3(`photos/${photoKey}`));
-    }
-
-    for (const videoUrl of location.videos) {
-      const videoKey = videoUrl.split('/').pop(); 
-      deleteOldMediaPromises.push(deleteFromS3(`videos/${videoKey}`));
-    }
-
-    await Promise.all(deleteOldMediaPromises);
-
-    location.photos = [];
-    location.videos = [];
-
-    if (files.photos) {
-      const photoUploadPromises = files.photos.map((file) => {
-        return uploadToS3(file, 'photos');
-      });
-
-      const newPhotoPaths = await Promise.all(photoUploadPromises);
-      location.photos.push(...newPhotoPaths); 
-    }
-
-    if (files.videos) {
-      const videoUploadPromises = files.videos.map((file) => {
-        return uploadToS3(file, 'videos');
-      });
-
-      const newVideoPaths = await Promise.all(videoUploadPromises);
-      location.videos.push(...newVideoPaths); 
+    // Add the new file key directly to the appropriate media array
+    if (mediaType === 'photo') {
+      location.photos.push(fileKey); 
+    } else if (mediaType === 'video') {
+      location.videos.push(fileKey); 
     }
 
     await location.save();
@@ -287,10 +253,11 @@ router.put("/update-media/:locationId", upload.fields([
       videos: location.videos,
     });
   } catch (error) {
-    console.error("Error updating media:", error);
-    res.status(500).send("Error updating media");
+    console.error("Error updating location with media:", error);
+    res.status(500).send("Error updating location");
   }
 });
+
 
 const deleteFromS3 = async (key: string) => {
   const params = {

@@ -144,42 +144,87 @@ const UpdateStory: React.FC = () => {
     });
   };
 
-  const base64ToFile = (base64String: string, filename: string, mimeType: string) => {
-    const byteString = atob(base64String.split(",")[1]); // Decode base64 string
-    const arrayBuffer = new ArrayBuffer(byteString.length);
-    const uint8Array = new Uint8Array(arrayBuffer);
-  
-    for (let i = 0; i < byteString.length; i++) {
-      uint8Array[i] = byteString.charCodeAt(i);
-    }
-  
-    return new File([uint8Array], filename, { type: mimeType });
-  };
-  
-  const updateMedia = async (locationId: string, photos: File[], videos: File[]) => {
-    const formData = new FormData();
-    
-    photos.forEach((photo) => {
-      formData.append("photos", photo);
-    });
-    videos.forEach((video) => {
-      formData.append("videos", video);
-    });
-  
+  const getPresignedUrl = async (fileName: string, fileType: string, folder: string, locationId: string) => {
     try {
-      const response = await axios.put(config.updateStoryMediaByLocationId + locationId, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
+      const response = await axios.post(config.getPreSignedUrl, {
+        fileName,
+        fileType,
+        folder,
+        locationId
       });
-  
-      return response.data;
+
+      console.log(response.data)
+      return response.data; 
     } catch (error) {
-      console.error("Error updating media:", error);
+      console.error("Error generating presigned URL:", error);
+      throw error;
+    }
+  };
+
+  const axiosS3Instance = axios.create({ 
+  });
+
+  const uploadToS3 = async (presignedUrl: string, file: File) => {
+    try {
+      await axiosS3Instance.put(presignedUrl, file, {
+        headers: {
+          'Content-Type': file.type, 
+        },
+      });
+    } catch (error) {
+      console.error("Error uploading file to S3:", error);
       throw error;
     }
   };
   
+  const updateLocationMedia = async (locationId: string, fileKey: string, mediaType: string) => {
+    try {
+      await axios.put(config.addLocationMedia + locationId, {
+        fileKey,
+        mediaType 
+      });
+    } catch (error) {
+      console.error("Error updating location with media:", error);
+      throw error;
+    }
+  };
+
+  const handleUpload = async (locationId: string, locationPhotos: Array<string | File>, locationVideos: Array<string | File>) => {
+    try {
+      const newPhotos = locationPhotos.filter((item): item is File => item instanceof File);
+      const newVideos = locationVideos.filter((item): item is File => item instanceof File);
+    
+      const photoUploadPromises = [];
+      const videoUploadPromises = [];
+  
+      if (newPhotos.length !== 0) {
+        photoUploadPromises.push(
+          ...newPhotos.map(async (photo) => {
+            const { presignedUrl, key: fileKey } = await getPresignedUrl(photo.name, photo.type, 'photos', locationId);
+            await uploadToS3(presignedUrl, photo);  
+            await updateLocationMedia(locationId, fileKey, 'photo');
+          })
+        );
+      }
+      if (newVideos.length !== 0) {
+        videoUploadPromises.push(
+          ...newVideos.map(async (video) => {
+            const { presignedUrl, key: fileKey } = await getPresignedUrl(video.name, video.type, 'videos', locationId);
+            await uploadToS3(presignedUrl, video);
+            await updateLocationMedia(locationId, fileKey, 'video');
+          })
+        );
+      }
+  
+      await Promise.all([...photoUploadPromises, ...videoUploadPromises]);
+  
+    } catch (error) {
+      console.error("Error during media upload:", error);
+    }
+  };
+  
+  
+    
   const handleUpdateStory = async () => {
     try {
       const { user, _id, ...storyWithoutIdAndUser } = story;
@@ -208,33 +253,16 @@ const UpdateStory: React.FC = () => {
         })
       };
 
-      const response = await axios.put(config.updateStoryUrl + storyId, storyToUpdate);
+      await axios.put(config.updateStoryUrl + storyId, storyToUpdate);
 
       for (const location of locations) {
-        const { _id, photos, videos } = location;
-
-        const photoArray = photos as (string | File)[];
-        const videoArray = videos as (string | File)[];
-
-        const convertedPhotos = photoArray
-          .filter((photo) => typeof photo === "string" && (photo as string).startsWith("data:image/"))
-          .map((photo, index) => base64ToFile(photo as string, `photo-${index}.jpg`, "image/jpeg"));
-
-        const convertedVideos = videoArray
-          .filter((video) => typeof video === "string" && (video as string).startsWith("data:video/"))
-          .map((video, index) => base64ToFile(video as string, `video-${index}.mp4`, "video/mp4"));
-
-        const newPhotos = photoArray.filter((photo) => photo instanceof File) as File[];
-        const newVideos = videoArray.filter((video) => video instanceof File) as File[];
-
-        const finalPhotos = [...newPhotos, ...convertedPhotos];
-        const finalVideos = [...newVideos, ...convertedVideos];
-
-        if (finalPhotos.length || finalVideos.length) {
-          const updatedMediaResponse = await updateMedia(_id, finalPhotos, finalVideos);
+        if (location._id) {
+          if (location.photos.length > 0 || location.videos.length > 0) {
+            await handleUpload(location._id, location.photos, location.videos);
+          }
         }
       }
-
+      
       toast.success("Story Updated successfully")
       navigate(`/story/${story._id}`);
       
@@ -250,8 +278,6 @@ const UpdateStory: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <Link className='backLink' to={`/story/${storyId}`}>Back</Link>
-
-
       <Box sx={{ p: 3 }}>
         {step === 1 && (
           <Box>
