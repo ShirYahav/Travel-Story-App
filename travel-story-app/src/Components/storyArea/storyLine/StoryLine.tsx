@@ -22,19 +22,24 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
   const { user } = useUser();
   const navigate = useNavigate();
   const duration = calculateDaysDifference(story.startDate, story.endDate);
-  const [imageUrl, setImageUrl] = useState<string | null>(defaultStoryImg);
+  const [imageUrl, setImageUrl] = useState<any>(defaultStoryImg);
 
   useEffect(() => {
     const fetchFirstPhoto = async () => {
       try {
-        const firstPhotoFileName = story?.locations?.[0]?.photos?.[0];
-        
-        if (firstPhotoFileName) { 
-          const response = await axios.get(config.getPhotoByImgNameUrl + firstPhotoFileName, { responseType: "blob" });
-          const imageObjectUrl = URL.createObjectURL(response.data);
-          setImageUrl(imageObjectUrl);
-        } else {
-          setImageUrl(defaultStoryImg);
+        const firstPhoto = story?.locations?.[0]?.photos?.[0];
+        if (firstPhoto) {
+          const fileName = firstPhoto.toString().replace("photos/", "");
+          
+          const response = await axios.get(config.getPhotoByImgNameUrl + fileName, {
+            responseType: 'blob', 
+          });
+
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setImageUrl(reader.result); 
+          };
+          reader.readAsDataURL(response.data);
         }
       } catch (error) {
         setImageUrl(defaultStoryImg);
