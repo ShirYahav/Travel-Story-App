@@ -105,7 +105,7 @@ const AddLocations: React.FC<AddLocationsProps> = ({
         const cityNames = await fetchCitiesAPI(countryCode, query);
         setCities(cityNames);
       } catch (error) {
-        console.error("Error fetching cities in the component: ", error);
+        
       } finally {
         setIsLoadingCities(false);
       }

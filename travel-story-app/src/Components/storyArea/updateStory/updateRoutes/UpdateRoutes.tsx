@@ -124,7 +124,7 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
       const cityNames = await fetchCitiesAPIWithoutCountry(query);
       setCities(cityNames);
     } catch (error) {
-      console.error("Error fetching cities: ", error);
+      
     } finally {
       setIsLoadingCities(false);
     }
