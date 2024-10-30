@@ -6,6 +6,7 @@ import storiesController from './src/controllers/story-controller';
 import imageController from './src/controllers/images-controller';
 import authController from './src/controllers/auth-controller';
 import userController from './src/controllers/user-controller';
+import openaiController from './src/controllers/openai-controller';
 import path from "path";
 
 const port: number = 3001; 
@@ -23,9 +24,7 @@ app.use("/api" ,storiesController);
 app.use("/api", imageController);
 app.use("/api", authController);
 app.use("/api", userController);
-// app.use('/photos', express.static(path.join(__dirname, 'assets/stories/photos')));
-// app.use('/videos', express.static(path.join(__dirname, 'assets/stories/videos')));
-
+app.use("/api", openaiController);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Welcome to my server!');

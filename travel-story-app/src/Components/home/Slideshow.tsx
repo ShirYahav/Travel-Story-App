@@ -89,6 +89,10 @@ const Slideshow: React.FC = () => {
     navigate(`/stories/${chosenCountry}`);
   }
 
+  const navigateAllStories = () => {
+    navigate(`/all-stories`);
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <div className="slideshowContainer">
@@ -137,6 +141,19 @@ const Slideshow: React.FC = () => {
                 }}
               >
                 Go
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="secondary"
+                onClick={navigateAllStories}
+                sx={{
+                  height: '40px',
+                  borderRadius: "6px",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                }}
+              >
+                All Stories
               </Button>
             </div>
           </form>

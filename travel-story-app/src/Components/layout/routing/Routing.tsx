@@ -9,6 +9,8 @@ import Login from '../../auth/login/Login';
 import Register from '../../auth/register/Register';
 import UserProfile from '../../userArea/UserProfile';
 import RouteNotFound from '../routeNotFound/RouteNotFound';
+import GeneratePost from '../../generateSocialMediaPost/GeneratePost';
+import AllStories from '../../storyArea/allStories/AllStories';
 
 
 const Routing: React.FC = () => {
@@ -23,6 +25,9 @@ const Routing: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/my-profile" element={<UserProfile />} />
+          <Route path="/all-stories" element={<AllStories />} />
+          <Route path="/generate-post" element={<GeneratePost />} />
+
           <Route path="*" element={<RouteNotFound />} />
         </Routes>
       </>

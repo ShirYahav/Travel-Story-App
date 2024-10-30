@@ -32,7 +32,7 @@ const LikedStories: React.FC = () => {
   }, [user]);
 
   const handleExploreStories = () => {
-    //navigate('/explore'); 
+    navigate('/all-stories'); 
   };
 
   return (

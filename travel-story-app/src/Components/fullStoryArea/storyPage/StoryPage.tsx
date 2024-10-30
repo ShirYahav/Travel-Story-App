@@ -115,11 +115,18 @@ const StoryPage: React.FC = () => {
     }
   }
 
+  const handleShareClick = () => {
+    navigate('/generate-post', { state: { story } });
+  };
+
   return (
     <div className="storyPageDiv">
       {center && story && <MapComponent story={story} center={center} />}
       <div className="collapseStoryPageDiv">
-        <h3>{story?.countries?.join(", ")}</h3>
+        <div className="h3AndShareOnFacebook">
+          <h3>{story?.countries?.join(", ")}</h3>
+          {story?.user?._id === user?._id &&<button className="updateStoryButton" onClick={handleShareClick}>Share On Facebook</button>}
+        </div>
         <p>{story?.description}</p>
         <p>
           <img src={durationIcon} />
