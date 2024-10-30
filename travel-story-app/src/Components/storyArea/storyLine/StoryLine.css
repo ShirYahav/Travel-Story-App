@@ -11,7 +11,7 @@
     transition: transform 0.3s ease;
     cursor: pointer;
     box-shadow: 8px 8px 8px rgba(65, 38, 26, 0.2);
-    border: 7px solid var(--darkBrown);
+    border: 4px solid var(--lightBrown);
 }
 
 .storyLine:hover {
