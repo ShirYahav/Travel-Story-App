@@ -34,7 +34,7 @@ const Home: React.FC = () => {
           <hr className="underlineOurCommunity"></hr>
           <p className="ourCommunityParagraph">
             Whether you’re exploring local gems or venturing across the globe,
-            Travel Story makes it easy to document and share your travel
+            Travelog makes it easy to document and share your travel
             experiences with a community of fellow explorers. Start sharing your
             adventures today, and inspire others to discover new destinations!
           </p>

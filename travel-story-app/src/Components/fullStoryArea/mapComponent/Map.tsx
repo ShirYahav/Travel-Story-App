@@ -94,7 +94,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
       apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "Your_API_Key_Here"}
     >
       <Map
-        defaultZoom={5}
+        defaultZoom={6}
         defaultCenter={center}
         mapId={process.env.REACT_APP_GOOGLE_MAPS_ID}
         colorScheme="DARK"

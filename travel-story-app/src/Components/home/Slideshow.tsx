@@ -89,8 +89,8 @@ const Slideshow: React.FC = () => {
     navigate(`/stories/${chosenCountry}`);
   }
 
-  const navigateAllStories = () => {
-    navigate(`/all-stories`);
+  const goAllStories = () => {
+    navigate(`all-stories`);
   }
 
   return (
@@ -135,7 +135,14 @@ const Slideshow: React.FC = () => {
                 color="secondary"
                 onClick={submitCountry}
                 sx={{
-                  height: '40px',
+                  height: {
+                    xs: '40px',
+                    sm: '40px',
+                  },
+                  minWidth: {
+                    xs: '35px',
+                    sm: 'auto',
+                  },
                   borderRadius: "6px",
                   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                 }}
@@ -146,9 +153,16 @@ const Slideshow: React.FC = () => {
                 type="submit"
                 variant="contained"
                 color="secondary"
-                onClick={navigateAllStories}
+                onClick={goAllStories}
                 sx={{
-                  height: '40px',
+                  height: {
+                    xs: '40px',
+                    sm: '40px',
+                  },
+                  minWidth: {
+                    xs: '80px',
+                    sm: 'auto',
+                  },
                   borderRadius: "6px",
                   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                 }}

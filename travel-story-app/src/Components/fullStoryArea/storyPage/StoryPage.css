@@ -124,6 +124,7 @@
 
     .likeButton {
         height: 31px;
+        margin-left: 1px;
     }
 
     .likeButton img {
@@ -133,6 +134,21 @@
     .updateStoryButton {
         height: 31px;
         width: 113px;
-        margin-right: 7px;
+        margin-right: 1px;
+        margin-left: 4px;
+    }
+
+    .deleteStoryButton{
+        width: 36px;
+        height: 31px;
+    }
+
+    .collapseStoryPageDiv p{
+        width:373px
+    }
+
+    .deleteStoryIcon {
+        width: 24px;
+        height: 24px;
     }
 }

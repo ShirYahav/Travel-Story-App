@@ -40,7 +40,8 @@
     }
 
     .getInspired {
-        font-size: 25px;
+        font-size: 33px;
+        width: 256px;
         margin-bottom: 6px;
     }
 

@@ -2,14 +2,18 @@
     height: 350px;
 }
 
+.storyCardList {
+    display: flex !important;
+    justify-content: center !important;
+}
+
 .sliderContainer .slick-slide > div  {
-    display: grid;
-    place-items: center;
-    width: 80%;
-    margin-top: 50px;
     margin: auto;
+    margin-top: 15px;
+    margin-bottom: -15px;
     height: 350px;
-    padding: 0px;
+    padding: 0;
+    display: block;
 }
 
 .slick-dots {
@@ -19,9 +23,5 @@
 @media (max-width: 768px) {
     .storyCardsContainer {
         gap: 10px
-    }
-
-    .sliderContainer .slick-slide > div  {
-        padding-left: 86px;
     }
 }

@@ -10,9 +10,6 @@
 
 /* Mobile responsiveness */
 @media (max-width: 768px) {
-    .content {
-        padding: 10px;
-    }
 
     .footer {
         height: 50px;

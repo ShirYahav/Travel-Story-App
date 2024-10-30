@@ -14,7 +14,6 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
 
   const settings = {
     dots: true,
-    infinite: true,
     speed: 500,
     autoplay: true,
     autoplaySpeed: 10000,
@@ -28,7 +27,6 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
         settings: {
           slidesToShow: 4,
           slidesToScroll: 4,
-          infinite: true,
           dots: true,
           autoplay: true,
           autoplaySpeed: 10000,
@@ -39,7 +37,6 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
-          infinite: true,
           dots: true,
           autoplay: true,
           autoplaySpeed: 10000,
@@ -70,7 +67,7 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
       <Slider {...settings} className="storyCardsContainer">
         {stories.map((story, index) => {
           return (
-            <div key={index}>
+            <div key={index} className="storyCardList">
               <StoryCard story={story} />
             </div>
           );
