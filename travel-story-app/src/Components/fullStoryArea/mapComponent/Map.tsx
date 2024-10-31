@@ -138,7 +138,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
                       autoPlay
                       muted
                       loop
-                      controls
+                      playsInline
                     >
                       <source src={video} type="video/mp4" />
                       Your browser does not support the video tag.

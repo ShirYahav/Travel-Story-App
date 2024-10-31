@@ -60,7 +60,7 @@ const StoryPage: React.FC = () => {
     };
 
     fetchStory();
-  }, [storyId, user]);
+  }, []);
 
   const toggleLike = async () => {
     if (!user) return;
