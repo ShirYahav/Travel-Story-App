@@ -1,8 +1,7 @@
 .backLink {
-    margin-top: 16px;
     color: var(--darkBrown);
     position: absolute;
     left: 25px;
     text-decoration: underline;
-    font-size: 20px;
+    font-size: 17px;
 }

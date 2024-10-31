@@ -11,26 +11,26 @@ import QuiltedMediaList from './QuiltedMediaList';
 
 const theme = createTheme({
     palette: {
-      primary: {
-        main: "#B25E39",
-      },
-      secondary: {
-        main: "#473D3A",
-      },
-      background: {
-        default: "#f3f3f3",
-      },
+        primary: {
+            main: "#B25E39",
+        },
+        secondary: {
+            main: "#473D3A",
+        },
+        background: {
+            default: "#f3f3f3",
+        },
     },
     typography: {
-      h3: {
-        fontFamily: 'Georgia, "Times New Roman", Times, serif',
-        marginTop: "30px",
-        marginBottom:"15px",
-        fontSize: "32px",
-      },
-      h6: {
-        marginBottom: "20px",
-      },
+        h3: {
+            fontFamily: 'Georgia, "Times New Roman", Times, serif',
+            marginTop: "30px",
+            marginBottom: "15px",
+            fontSize: "32px",
+        },
+        h6: {
+            marginBottom: "20px",
+        },
     },
 });
 
@@ -38,17 +38,17 @@ interface MediaItem {
     url: string;
     type: 'image' | 'video';
 }
-  
+
 const GeneratePost: React.FC = () => {
 
     const location = useLocation();
-    const { story } = location.state as { story: StoryModel } || {}; 
+    const { story } = location.state as { story: StoryModel } || {};
 
     const [postContent, setPostContent] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
     const [redirect, setRedirect] = useState<boolean>(false);
     const [mediaData, setMediaData] = useState<MediaItem[]>([]);
-
+    const [mediaLoading, setMediaLoading] = useState(true);
 
     useEffect(() => {
         if (!story) {
@@ -60,14 +60,13 @@ const GeneratePost: React.FC = () => {
             setLoading(true);
             try {
                 const prompt = createPromptForStory(story);
-                setPostContent(localStorage.getItem("postContent"))
-                //console.log(prompt)
-                // const generatedContent = await generateFacebookPost(prompt);
-                // setPostContent(generatedContent);
-                // localStorage.setItem("postContent", generatedContent);
+               //setPostContent(localStorage.getItem("postContent"))
+                const generatedContent = await generateFacebookPost(prompt);
+                setPostContent(generatedContent);
+                //localStorage.setItem("postContent", generatedContent);
             } catch (error) {
                 console.error("Failed to generate post:", error);
-                setPostContent("Could not generate post content."); 
+                setPostContent("Could not generate post content.");
             } finally {
                 setLoading(false);
             }
@@ -75,21 +74,22 @@ const GeneratePost: React.FC = () => {
 
         const fetchLocationsMedia = async () => {
             try {
+                setMediaLoading(true);
                 const allMedia: MediaItem[] = [];
-    
-                for(let location of story.locations) {
-    
+
+                for (let location of story.locations) {
+
                     const photosResponse = await axios.get(config.getPhotosByLocationIdUrl + location._id);
                     const videosResponse = await axios.get(config.getVideosByLocationIdUrl + location._id);
 
-                    photosResponse.data.photos.forEach((photoUrl:any) => {
+                    photosResponse.data.photos.forEach((photoUrl: any) => {
                         allMedia.push({
                             url: photoUrl,
                             type: 'image'
                         });
                     });
 
-                    videosResponse.data.videos.forEach((videoUrl:any) => {
+                    videosResponse.data.videos.forEach((videoUrl: any) => {
                         allMedia.push({
                             url: videoUrl,
                             type: 'video'
@@ -99,6 +99,8 @@ const GeneratePost: React.FC = () => {
                 setMediaData(allMedia);
             } catch (error) {
                 console.error("Error fetching location media:", error);
+            } finally {
+                setMediaLoading(false);
             }
         };
 
@@ -128,8 +130,8 @@ const GeneratePost: React.FC = () => {
         for (let i = 0; i < story.locations.length; i++) {
             locationSummaries.push(summarizeLocation(story.locations[i]));
         }
-        
-        if(story.routes.length > 0){
+
+        if (story.routes.length > 0) {
             for (let i = 0; i < story.routes.length; i++) {
                 locationSummaries.push(summarizeRoute(story.routes[i]));
             }
@@ -149,13 +151,16 @@ const GeneratePost: React.FC = () => {
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{ p: 3 }}>
-                <Link className='backLink' to={`/story/${story._id}`}>Back</Link>
-                <Typography variant="h3" color='secondary'>
+                <Link className="backLink" to={`/story/${story._id}`}>Back</Link>
+                <Typography variant="h3" color="secondary">
                     Preview and Edit Your Post
                 </Typography>
+
                 {loading ? (
                     <Box display="flex" alignItems="center" justifyContent="center" sx={{ mt: 4 }}>
-                        <CircularProgress />
+                        <Typography variant="h6" color="textSecondary">
+                            Generating a post for you...
+                        </Typography>
                     </Box>
                 ) : (
                     <TextField
@@ -169,8 +174,16 @@ const GeneratePost: React.FC = () => {
                         sx={{ mt: 3 }}
                     />
                 )}
-                <QuiltedMediaList mediaData={mediaData} />
-                <Button variant="contained" color="secondary" style={{marginTop: "20px"}}>
+
+                {mediaLoading ? (
+                    <Box display="flex" alignItems="center" justifyContent="center" sx={{ mt: 4 }}>
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <QuiltedMediaList mediaData={mediaData} />
+                )}
+
+                <Button variant="contained" color="secondary" style={{ marginTop: "20px" }}>
                     Publish on Facebook
                 </Button>
             </Box>
