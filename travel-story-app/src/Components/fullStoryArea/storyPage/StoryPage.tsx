@@ -101,9 +101,7 @@ const StoryPage: React.FC = () => {
   };
 
   const deleteStory = async () => {
-
     const confirmation = window.confirm("Are you sure you want to delete this story?");
-
     if (confirmation) {
       try {
         await axios.delete(config.deleteStoryUrl + storyId);

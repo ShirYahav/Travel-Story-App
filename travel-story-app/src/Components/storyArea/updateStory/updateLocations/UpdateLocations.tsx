@@ -106,39 +106,64 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
           updatedLoading[index] = true;
           return updatedLoading;
         });
-
-        return axios
-          .all([
-            axios.get(config.getPhotosByLocationIdUrl + location._id),
-            axios.get(config.getVideosByLocationIdUrl + location._id),
-          ])
-          .then(([photosResponse, videosResponse]) => {
+  
+        let photos:any = undefined;
+        let videos:any = undefined;
+  
+        const photosPromise = axios
+          .get(config.getPhotosByLocationIdUrl + location._id)
+          .then((response) => {
+            photos = response.data.photos.length > 0 ? response.data.photos : undefined;
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 404) {
+              photos = undefined;
+            } else {
+              console.error("Error fetching photos for location:", location._id, error);
+            }
+          });
+  
+        const videosPromise = axios
+          .get(config.getVideosByLocationIdUrl + location._id)
+          .then((response) => {
+            videos = response.data.videos.length > 0 ? response.data.videos : undefined;
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 404) {
+              videos = undefined; 
+            } else {
+              console.error("Error fetching videos for location:", location._id, error);
+            }
+          });
+  
+        return Promise.all([photosPromise, videosPromise])
+          .then(() => {
             setMediaLoading((prev) => {
               const updatedLoading = [...prev];
               updatedLoading[index] = false;
               return updatedLoading;
             });
-
+  
             return {
               ...location,
-              photos: photosResponse.data.photos,
-              videos: videosResponse.data.videos,
+              photos,
+              videos,
             };
           });
       });
-
+  
       Promise.all(updatedLocationsPromises)
         .then((updatedLocations) => {
           setLocations(updatedLocations);
         })
         .catch((error) => {
-          console.error("Error fetching location media:", error);
+          console.error("Error updating locations:", error);
         });
     };
-
+  
     fetchAllLocationMedia();
   }, []);
-
+  
   useEffect(() => {
     if (locations.length > 0 && originalMediaKeys.length === 0) {
       const mediaKeys = locations.map((location) => ({
@@ -600,7 +625,7 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
                 </div>
 
                 <div className="imagePreview">
-                  {locations[index].photos.length > 0 &&
+                  {locations[index].photos?.length > 0 &&
                     locations[index].photos.map((file, i) => (
                       <div key={i} className="formImageDiv">
                         <img
@@ -631,7 +656,7 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
                 </div>
 
                 <div className="videoPreview">
-                  {locations[index].videos.length > 0 &&
+                  {locations[index].videos?.length > 0 &&
                     locations[index].videos.map(
                       (file: string | File, i: number) => {
                         const videoSrc =

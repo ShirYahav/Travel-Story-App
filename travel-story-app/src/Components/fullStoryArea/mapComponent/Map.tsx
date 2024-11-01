@@ -18,7 +18,7 @@ import StoryModel from "../../../Models/StoryModel";
 import Slider from "react-slick";
 import durationIcon from "../../../Assets/SVGs/flight-date.png";
 import budgetIcon from "../../../Assets/SVGs/money-bag.png";
-import pinSharpCircle from '../../../Assets/SVGs/pin-sharp-circle.png'; 
+import pinSharpCircle from '../../../Assets/SVGs/pin-sharp-circle.png';
 import config from "../../../Utils/Config";
 
 interface LocationWithCoordinates
@@ -46,25 +46,42 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
   }, [story]);
 
   const updateLocations = async (story: StoryModel) => {
-
     const updatedLocations: LocationWithCoordinates[] = [];
 
     for (const location of story.locations) {
       const coordinates = await getCityCoordinatesGoogle(location.city);
       if (coordinates) {
-        const photosResponse = await axios.get(
-          config.getPhotosByLocationIdUrl + location._id
-        );
-        const videosResponse = await axios.get(
-          config.getVideosByLocationIdUrl + location._id
-        );
+        let photos: string[] = [];
+        let videos: string[] = [];
+
+        try {
+          const photosResponse = await axios.get(
+            config.getPhotosByLocationIdUrl + location._id
+          );
+          photos = photosResponse.data.photos;
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response?.status !== 404) {
+            console.error("Error fetching photos:", error);
+          }
+        }
+
+        try {
+          const videosResponse = await axios.get(
+            config.getVideosByLocationIdUrl + location._id
+          );
+          videos = videosResponse.data.videos;
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response?.status !== 404) {
+            console.error("Error fetching videos:", error);
+          }
+        }
 
         updatedLocations.push({
           ...location,
           lat: coordinates.lat,
           lng: coordinates.lng,
-          photos: photosResponse.data.photos,
-          videos: videosResponse.data.videos,
+          photos,
+          videos,
           startDate: new Date(location.startDate),
           endDate: new Date(location.endDate),
         });
@@ -73,6 +90,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
 
     setLocations(updatedLocations);
   };
+
 
   const sliderSettings = {
     dots: false,
@@ -87,7 +105,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
     south: -85,
     west: -360,
     east: 360,
-  }; 
+  };
 
   return (
     <APIProvider
@@ -99,11 +117,11 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
         mapId={process.env.REACT_APP_GOOGLE_MAPS_ID}
         colorScheme="DARK"
         className="storyMap"
-        gestureHandling= "greedy"
+        gestureHandling="greedy"
         restriction={{
-          latLngBounds: WORLD_BOUNDS,  
+          latLngBounds: WORLD_BOUNDS,
           strictBounds: true,
-        }} 
+        }}
       >
         {locations.map((location, index) => (
           <AdvancedMarker

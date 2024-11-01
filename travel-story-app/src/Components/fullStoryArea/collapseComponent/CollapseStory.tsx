@@ -8,6 +8,21 @@ import arrowUpBrown from "../../../Assets/SVGs/arrow-up-circle-brown.png";
 import LocationModel from "../../../Models/LocationModel";
 import axios from "axios";
 import config from '../../../Utils/Config';
+import { CircularProgress, createTheme, ThemeProvider } from "@mui/material";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#B25E39",
+    },
+    secondary: {
+      main: "#473D3A",
+    },
+    background: {
+      default: "#f3f3f3",
+    },
+  },
+});
 
 interface LocationWithMedia extends Omit<LocationModel, "photos" | "videos"> {
   photos: string[];
@@ -21,10 +36,12 @@ interface CollapseStoryProps {
 const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
   const [isOpened, setIsOpened] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [locationMedia, setLocationMedia] = useState<LocationWithMedia | null>(
-    null
-  );
-
+  const [locationMedia, setLocationMedia] = useState<LocationWithMedia | null>({
+    ...location,
+    photos: [],
+    videos: [],
+  });
+  const [mediaLoading, setMediaLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMediaIndex, setSelectedMediaIndex] = useState<number | null>(null);
 
@@ -43,31 +60,48 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
   };
 
   useEffect(() => {
-    if (isOpened && !locationMedia) {
+    if (isOpened && mediaLoading) {
       const fetchLocationMedia = async () => {
+        let photos: string[] = [];
+        let videos: string[] = [];
         try {
-          const photosResponse = await axios.get(
-            config.getPhotosByLocationIdUrl + location._id
-          );
-          const videosResponse = await axios.get(
-           config.getVideosByLocationIdUrl + location._id
-          );
+          try {
+            const photosResponse = await axios.get<{ photos: string[] }>(
+              config.getPhotosByLocationIdUrl + location._id
+            );
+            photos = photosResponse.data.photos;
+          } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status !== 404) {
+              console.error("Error fetching photos:", error);
+            }
+          }
 
-          const updatedLocation: LocationWithMedia = {
-            ...location,
-            photos: photosResponse.data.photos,
-            videos: videosResponse.data.videos,
-          };
-
-          setLocationMedia(updatedLocation);
+          try {
+            const videosResponse = await axios.get<{ videos: string[] }>(
+              config.getVideosByLocationIdUrl + location._id
+            );
+            videos = videosResponse.data.videos;
+          } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status !== 404) {
+              console.error("Error fetching videos:", error);
+            }
+          }
+          setLocationMedia((prev) => ({
+            ...prev,
+            photos,
+            videos,
+          }));
+          setMediaLoading(false);
         } catch (error) {
           console.error("Error fetching location media:", error);
+          setMediaLoading(false);
         }
       };
 
       fetchLocationMedia();
     }
-  }, [isOpened, location, locationMedia]);
+  }, [isOpened, mediaLoading, location._id]);
+  
 
   const openModal = (index: number) => {
     setSelectedMediaIndex(index);
@@ -94,6 +128,7 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <div className="collapse-story">
       <button
         onClick={toggleCollapse}
@@ -112,52 +147,43 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
       <Collapse isOpened={isOpened}>
         {locationMedia ? (
           <div className="collapse-content">
-            <p>
-              <strong>Country:&nbsp;</strong> {locationMedia.country}
-            </p>
-            <p>
-              <strong>Start Date:&nbsp;</strong>{" "}
-              {new Date(locationMedia.startDate).toLocaleDateString()}
-            </p>
-            <p>
-              <strong>End Date:&nbsp;</strong>
-              {new Date(locationMedia.endDate).toLocaleDateString()}
-            </p>
-            <p>
-              <strong>Cost:&nbsp;</strong>
-              {locationMedia.cost} {locationMedia.currency}
-            </p>
+            <p><strong>Country:&nbsp;</strong> {locationMedia.country}</p>
+            <p><strong>Start Date:&nbsp;</strong> {new Date(locationMedia.startDate).toLocaleDateString()}</p>
+            <p><strong>End Date:&nbsp;</strong> {new Date(locationMedia.endDate).toLocaleDateString()}</p>
+            <p><strong>Cost:&nbsp;</strong> {locationMedia.cost} {locationMedia.currency}</p>
             <p>{locationMedia.story}</p>
-            <div className="media-container">
-              {locationMedia.photos.length > 0 && (
-                locationMedia.photos.map((photo, index) => (
-                  <img
-                    key={index}
-                    src={photo}
-                    alt={locationMedia.city}
-                    id="mapPhotoCollapse"
-                    onClick={() => openModal(index)}
-                  />
-                ))
-              )}
 
-              {locationMedia.videos.length > 0 && (
-                locationMedia.videos.map((video, index) => (
-                  <video
-                    key={index}
-                    controls
-                    onClick={() => openModal(locationMedia.photos.length + index)}
-                    onTouchStart={() => openModal(locationMedia.photos.length + index)}
-                  >
-                    <source src={video} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                ))
+            <div className="media-container">
+              {mediaLoading ? (
+                <CircularProgress />
+              ) : (
+                <>
+                  {locationMedia.photos.map((photo, index) => (
+                    <img
+                      key={index}
+                      src={photo}
+                      alt={locationMedia.city}
+                      id="mapPhotoCollapse"
+                      onClick={() => openModal(index)}
+                    />
+                  ))}
+                  {locationMedia.videos.map((video, index) => (
+                    <video
+                      key={index}
+                      controls
+                      onClick={() => openModal(locationMedia.photos.length + index)}
+                      onTouchStart={() => openModal(locationMedia.photos.length + index)}
+                    >
+                      <source src={video} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ))}
+                </>
               )}
             </div>
           </div>
         ) : (
-          <p>Loading media...</p>
+          <p>Loading location details...</p>
         )}
       </Collapse>
       {isModalOpen && selectedMediaIndex !== null && (
@@ -195,6 +221,7 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
         </div>
       )}
     </div>
+    </ThemeProvider>
   );
 };
 

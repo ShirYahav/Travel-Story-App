@@ -77,25 +77,37 @@ const GeneratePost: React.FC = () => {
                 setMediaLoading(true);
                 const allMedia: MediaItem[] = [];
 
-                for (let location of story.locations) {
+                for (const location of story.locations) {
+                    let photos: string[] = [];
+                    let videos: string[] = [];
 
-                    const photosResponse = await axios.get(config.getPhotosByLocationIdUrl + location._id);
-                    const videosResponse = await axios.get(config.getVideosByLocationIdUrl + location._id);
+                    try {
+                        const photosResponse = await axios.get(config.getPhotosByLocationIdUrl + location._id);
+                        photos = photosResponse.data.photos;
+                    } catch (error) {
+                        if (axios.isAxiosError(error) && error.response?.status !== 404) {
+                            console.error("Error fetching photos:", error);
+                        }
+                    }
 
-                    photosResponse.data.photos.forEach((photoUrl: any) => {
-                        allMedia.push({
-                            url: photoUrl,
-                            type: 'image'
-                        });
+                    try {
+                        const videosResponse = await axios.get(config.getVideosByLocationIdUrl + location._id);
+                        videos = videosResponse.data.videos;
+                    } catch (error) {
+                        if (axios.isAxiosError(error) && error.response?.status !== 404) {
+                            console.error("Error fetching videos:", error);
+                        }
+                    }
+
+                    photos.forEach((photoUrl) => {
+                        allMedia.push({ url: photoUrl, type: 'image' });
                     });
 
-                    videosResponse.data.videos.forEach((videoUrl: any) => {
-                        allMedia.push({
-                            url: videoUrl,
-                            type: 'video'
-                        });
+                    videos.forEach((videoUrl) => {
+                        allMedia.push({ url: videoUrl, type: 'video' });
                     });
                 }
+
                 setMediaData(allMedia);
             } catch (error) {
                 console.error("Error fetching location media:", error);
@@ -103,7 +115,6 @@ const GeneratePost: React.FC = () => {
                 setMediaLoading(false);
             }
         };
-
         fetchPostContent();
         fetchLocationsMedia();
     }, []);
