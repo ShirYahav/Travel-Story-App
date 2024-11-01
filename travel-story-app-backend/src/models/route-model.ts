@@ -14,34 +14,34 @@ export interface IRoute extends Document {
 const RouteSchema: Schema = new Schema({
     origin: {
         type: String,
-        //required: [true, "Origin is required"],
+        required: [true, "Origin is required"],
         trim: true
     },
     destination: {
         type: String,
-        //required: [true, "Destination is required"],
+        required: [true, "Destination is required"],
         trim: true
     },
     transportType: {
         type: String,
-        //required: [true, "Transport type is required"],
+        required: [true, "Transport type is required"],
         trim: true
     },
     duration: {
         type: Number, 
-        //required: [true, "Duration is required"]
+        min: [0, 'Duration cannot be negative']
     },
     note: {
         type: String,
-        trim: true
+        trim: true,
+        maxlength: 100,
     },
     cost: {
         type: Number,
-        //required: [true, "Cost is required"]
+        min: [0, 'Cost cannot be negative']
     },
     currency: {
         type: String,
-        //required: [true, "Currency is required"],
         trim: true
     }
 }, {

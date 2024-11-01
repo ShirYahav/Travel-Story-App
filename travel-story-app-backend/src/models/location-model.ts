@@ -16,24 +16,32 @@ export interface ILocation extends Document {
 const LocationSchema: Schema = new Schema({
     country: {
         type: String,
-        trim: true
+        trim: true,
+        required: [true, 'Country is required'],
     },
     city: {
         type: String,
-        trim: true
+        trim: true,
+        required: [true, 'City is required'],
     },
     startDate: {
-        type: Date
+        type: Date,
+        required: [true, 'start date is required'],
     },
     endDate: {
-        type: Date
+        type: Date,
+        required: [true, 'end date is required'],
     },
     story: {
         type: String,
-        trim: true
+        trim: true,
+        maxlength: 4000,
+        minlength: 5,
+        required: [true, 'Story content is required'],
     },
     cost: {
-        type: Number
+        type: Number,
+        min: [0, 'Cost cannot be negative']
     },
     currency: {
         type: String,

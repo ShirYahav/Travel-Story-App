@@ -73,9 +73,11 @@ const minutes = Array.from({ length: 60 }, (_, i) => i);
 interface AddRoutesProps {
   routes: RouteModel[];
   setRoutes: (routes: RouteModel[]) => void;
+  validationErrors: { [key: number]: { [key: string]: string } };
+  setValidationErrors: React.Dispatch<React.SetStateAction<{ [key: number]: { [key: string]: string } }>>;
 }
 
-const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
+const UpdateRoutes: React.FC<AddRoutesProps> = ({ routes, setRoutes, validationErrors, setValidationErrors }) => {
 
   const [cities, setCities] = useState<string[]>([]);
   const [isLoadingCities, setIsLoadingCities] = useState(false);
@@ -124,14 +126,14 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
       const cityNames = await fetchCitiesAPIWithoutCountry(query);
       setCities(cityNames);
     } catch (error) {
-      
+
     } finally {
       setIsLoadingCities(false);
     }
   }, 300);
 
   const handleCityInputChange = (index: number, cityQuery: string) => {
-    handleFetchCities(cityQuery); 
+    handleFetchCities(cityQuery);
   };
 
   const handleDurationChange = (index: number, days: number, hours: number, minutes: number) => {
@@ -155,6 +157,59 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
         currency: "",
       },
     ]);
+  };
+
+  const validateField = (index: number, field: keyof RouteModel, value: any) => {
+    const newErrors = { ...validationErrors };
+    const fieldErrors: { [key: string]: string } = {};
+
+    switch (field) {
+      case "origin":
+        if (!value) {
+          fieldErrors.origin = "Origin is required";
+        }
+        break;
+      case "destination":
+        if (!value) {
+          fieldErrors.destination = "Destination is required";
+        }
+        break;
+      case "transportType":
+        if (!value) {
+          fieldErrors.transportType = "Transport Type is required";
+        }
+        break;
+      case "note":
+        if (value && (value.length < 1 || value.length > 100)) {
+          fieldErrors.note = "Note must be between 1 and 100 characters";
+        }
+        break;
+      case "cost":
+        if (value < 0) {
+          fieldErrors.cost = "Cost must be positive (leave 0 if not interested)";
+        }
+        break;
+      case "currency":
+        if (routes[index].cost > 0 && !value) {
+          fieldErrors.currency = "Currency is required when cost is provided";
+        }
+        break;
+      default:
+        break;
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      newErrors[index] = { ...newErrors[index], ...fieldErrors };
+    } else {
+      if (newErrors[index]) {
+        delete newErrors[index][field];
+        if (Object.keys(newErrors[index]).length === 0) {
+          delete newErrors[index];
+        }
+      }
+    }
+
+    setValidationErrors(newErrors);
   };
 
   return (
@@ -187,19 +242,19 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
             </Typography>
 
             {index > 0 && (
-             <IconButton
-             onClick={() => deleteRoute(index)}
-             style={{
-               position: "absolute",
-               top: "5px",
-               right: "5px",
-               borderRadius: "50%",
-               padding: "2px",
-             }}
-           >
-             <DeleteIcon style={{ fontSize: "20px", color: "#B25E39" }} />
-           </IconButton>
-          )}
+              <IconButton
+                onClick={() => deleteRoute(index)}
+                style={{
+                  position: "absolute",
+                  top: "5px",
+                  right: "5px",
+                  borderRadius: "50%",
+                  padding: "2px",
+                }}
+              >
+                <DeleteIcon style={{ fontSize: "20px", color: "#B25E39" }} />
+              </IconButton>
+            )}
 
             <div className="inputFieldAddForm">
               <Autocomplete
@@ -210,6 +265,7 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
                 value={route.origin || ""}
                 onChange={(event, newValue) => {
                   handleRouteChange(index, "origin", newValue || "");
+                  validateField(index, "origin", newValue);
                 }}
                 onInputChange={(event, newInputValue) => {
                   handleCityInputChange(index, newInputValue);
@@ -220,6 +276,9 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
                     label="From (Origin)"
                     fullWidth
                     size="small"
+                    required
+                    error={!!validationErrors[index]?.origin}
+                    helperText={validationErrors[index]?.origin || ""}
                   />
                 )}
               />
@@ -234,6 +293,7 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
                 value={route.destination || ""}
                 onChange={(event, newValue) => {
                   handleRouteChange(index, "destination", newValue || "");
+                  validateField(index, "destination", newValue)
                 }}
                 onInputChange={(event, newInputValue) => {
                   handleCityInputChange(index, newInputValue);
@@ -244,6 +304,9 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
                     label="To (Destination)"
                     fullWidth
                     size="small"
+                    required
+                    error={!!validationErrors[index]?.destination}
+                    helperText={validationErrors[index]?.destination || ""}
                   />
                 )}
               />
@@ -253,15 +316,22 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
               <TextField
                 id="outlined-select-currency"
                 select
-                label="Select"
+                label="Select Transport Type"
                 fullWidth
                 size="small"
-                helperText="Please select your transport types"
                 value={route.transportType}
-                onChange={(e) =>
-                  handleRouteChange(index, "transportType", e.target.value)
-                }
+                required
+                error={!!validationErrors[index]?.transportType}
+                helperText={validationErrors[index]?.transportType || ""}
+                onChange={(e) => {
+                  handleRouteChange(index, "transportType", e.target.value);
+                  validateField(index, "transportType", e.target.value);
+                }}
               >
+                <MenuItem value="">
+                  <em>Clear</em>
+                </MenuItem>
+
                 {transportTypes.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
@@ -271,110 +341,116 @@ const UpdateRoutes: React.FC<AddRoutesProps>=({routes, setRoutes}) => {
             </div>
 
             <div className="inputFieldAddForm">
-            <Box display="flex" justifyContent="space-between">
-              <TextField
-                select
-                label="Days"
-                value={Math.floor(routes[index].duration / (24 * 60))} 
-                defaultValue={0}
-                size="small"
-                onChange={(e) =>
-                  handleDurationChange(index, parseInt(e.target.value), Math.floor((routes[index].duration % (24 * 60)) / 60), routes[index].duration % 60)
-                }
-                style={{ width: '30%' }} 
-              >
-                {days.map((day) => (
-                  <MenuItem key={day} value={day}>
-                    {day} days
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <TextField
-                select
-                label="Hours"
-                value={Math.floor((routes[index].duration % (24 * 60)) / 60)} 
-                size="small"
-                onChange={(e) =>
-                  handleDurationChange(index, Math.floor(routes[index].duration / (24 * 60)), parseInt(e.target.value), routes[index].duration % 60)
-                }
-                style={{ width: '30%' }} 
-              >
-                {hours.map((hour) => (
-                  <MenuItem key={hour} value={hour}>
-                    {hour} hours
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <TextField
-                select
-                label="Minutes"
-                value={routes[index].duration % 60} 
-                size="small"
-                onChange={(e) =>
-                  handleDurationChange(index, Math.floor(routes[index].duration / (24 * 60)), Math.floor((routes[index].duration % (24 * 60)) / 60), parseInt(e.target.value))
-                }
-                style={{ width: '30%' }} 
-              >
-                {minutes.map((minute) => (
-                  <MenuItem key={minute} value={minute}>
-                    {minute} minutes
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Box>
-          </div>
-
-            <div className="inputFieldAddForm">
+              <Box display="flex" justifyContent="space-between">
                 <TextField
-                  label="Note"
-                  value={route.note}
-                  fullWidth
+                  select
+                  label="Days"
+                  value={Math.floor(routes[index].duration / (24 * 60))}
+                  defaultValue={0}
                   size="small"
                   onChange={(e) =>
-                    handleRouteChange(index, "note", e.target.value)
+                    handleDurationChange(index, parseInt(e.target.value), Math.floor((routes[index].duration % (24 * 60)) / 60), routes[index].duration % 60)
                   }
-                />
-              </div>
+                  style={{ width: '30%' }}
+                >
+                  {days.map((day) => (
+                    <MenuItem key={day} value={day}>
+                      {day} days
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+                <TextField
+                  select
+                  label="Hours"
+                  value={Math.floor((routes[index].duration % (24 * 60)) / 60)}
+                  size="small"
+                  onChange={(e) =>
+                    handleDurationChange(index, Math.floor(routes[index].duration / (24 * 60)), parseInt(e.target.value), routes[index].duration % 60)
+                  }
+                  style={{ width: '30%' }}
+                >
+                  {hours.map((hour) => (
+                    <MenuItem key={hour} value={hour}>
+                      {hour} hours
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+                <TextField
+                  select
+                  label="Minutes"
+                  value={routes[index].duration % 60}
+                  size="small"
+                  onChange={(e) =>
+                    handleDurationChange(index, Math.floor(routes[index].duration / (24 * 60)), Math.floor((routes[index].duration % (24 * 60)) / 60), parseInt(e.target.value))
+                  }
+                  style={{ width: '30%' }}
+                >
+                  {minutes.map((minute) => (
+                    <MenuItem key={minute} value={minute}>
+                      {minute} minutes
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Box>
+            </div>
+
+            <div className="inputFieldAddForm">
+              <TextField
+                label="Note"
+                value={route.note}
+                fullWidth
+                size="small"
+                onChange={(e) => {
+                  handleRouteChange(index, "note", e.target.value)
+                  validateField(index, "note", e.target.value);
+                }}
+                error={!!validationErrors[index]?.note}
+                helperText={validationErrors[index]?.note || ""}
+              />
+            </div>
 
             <div className="inputFieldAddForm">
               <TextField
                 label="Cost"
                 type="number"
-                value={route.cost}
+                value={route.cost ?? ""}
                 fullWidth
                 size="small"
-                onChange={(e) =>
-                  handleRouteChange(index,"cost",parseFloat(e.target.value))
-                }
-                inputProps={{
-                  min: "1",
+                onChange={(e) => {
+                  const costValue = parseFloat(e.target.value) || 0;
+                  handleRouteChange(index, "cost", costValue);
+                  validateField(index, "cost", costValue);
                 }}
+                error={!!validationErrors[index]?.cost}
+                helperText={validationErrors[index]?.cost || "Leave empty or 0 if not interested"}
               />
             </div>
 
             <div className="inputFieldAddForm">
-                <TextField
-                  id="outlined-select-currency"
-                  select
-                  label="Select"
-                  fullWidth
-                  defaultValue="EUR"
-                  size="small"
-                  helperText="Please select your currency"
-                  value={route.currency}
-                  onChange={(e) =>
-                    handleRouteChange(index, "currency", e.target.value)
-                  }
-                >
-                  {currencies.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </div>
+              <TextField
+                id="outlined-select-currency"
+                select
+                label="Select"
+                fullWidth
+                defaultValue="EUR"
+                size="small"
+                value={route.currency || ""}
+                onChange={(e) => {
+                  handleRouteChange(index, "currency", e.target.value);
+                  validateField(index, "currency", e.target.value);
+                }}
+                error={!!validationErrors[index]?.currency}
+                helperText={validationErrors[index]?.currency || "Please select a currency if cost is provided"}
+              >
+                {currencies.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </div>
           </Box>
         ))}
 

@@ -20,7 +20,7 @@ import { extractCountriesFromLocations } from "../../../Services/CountriesCities
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { calculateTotalBudget } from "../../../Services/CurrencyCostService";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../../Context/UserContext';
 import toast from 'react-hot-toast';
 import config from "../../../Utils/Config";
@@ -78,7 +78,7 @@ const AddStory: React.FC = () => {
 
   const [locations, setLocations] = useState<LocationModel[]>([
     {
-      _id:'',
+      _id: '',
       country: "",
       city: "",
       startDate: null,
@@ -87,7 +87,7 @@ const AddStory: React.FC = () => {
       cost: 0,
       currency: "",
       photos: [],
-      videos:[],
+      videos: [],
     },
   ]);
   const [routes, setRoutes] = useState<RouteModel[]>([
@@ -103,7 +103,7 @@ const AddStory: React.FC = () => {
     },
   ]);
   const [story, setStory] = useState<StoryModel>({
-    _id:null,
+    _id: null,
     user: null,
     countries: [],
     title: "",
@@ -114,8 +114,13 @@ const AddStory: React.FC = () => {
     currency: "",
     locations: [],
     routes: [],
-    likes:0,
+    likes: 0,
   });
+
+  const [validationLocationErrors, setValidationLocationErrors] = useState<{ [key: number]: { [key: string]: string } }>({});
+  const [validationRouteErrors, setValidationRouteErrors] = useState<{ [key: number]: { [key: string]: string } }>({});
+  const [validationErrors, setValidationErrors] = useState<{ title?: string; description?: string }>({});
+  const [formErrorMessage, setFormErrorMessage] = useState<string>("");
 
   const handleNext = () => {
     setStep(step + 1);
@@ -135,14 +140,29 @@ const AddStory: React.FC = () => {
         cost: 0,
         currency: "",
       }]);
-    } 
+    }
+  };
+
+  const isRouteEmpty = (route: RouteModel) => {
+    return (
+      !route._id &&
+      !route.origin &&
+      !route.destination &&
+      !route.transportType &&
+      route.duration === 0 &&
+      !route.note &&
+      route.cost === 0 &&
+      !route.currency
+    );
+  };
+
+  const shouldShowSkipButton = () => {
+    return routes.length === 0 || (routes.length === 1 && isRouteEmpty(routes[0]));
   };
 
   const handleSkipRoutes = () => {
     setStep(step + 1);
-    if (routes.length === 0) {
-      setRoutes([]);
-    }
+    setRoutes([]);
     const budgetDetails = calculateTotalBudget(locations, routes);
     setStory({
       ...story,
@@ -159,8 +179,8 @@ const AddStory: React.FC = () => {
         folder,
         locationId
       });
-  
-      return response.data; 
+
+      return response.data;
     } catch (error) {
       console.error("Error generating presigned URL:", error);
       throw error;
@@ -172,10 +192,10 @@ const AddStory: React.FC = () => {
 
   const uploadToS3 = async (presignedUrl: string, file: File) => {
     try {
-      
+
       await axiosS3Instance.put(presignedUrl, file, {
         headers: {
-          'Content-Type': file.type, 
+          'Content-Type': file.type,
         },
       });
     } catch (error) {
@@ -188,7 +208,7 @@ const AddStory: React.FC = () => {
     try {
       await axios.put(config.addLocationMedia + locationId, {
         fileKey,
-        mediaType 
+        mediaType
       });
     } catch (error) {
       console.error("Error updating location with media:", error);
@@ -215,68 +235,228 @@ const AddStory: React.FC = () => {
   };
 
   const handleCreateStory = async () => {
-    try {
-      const storyToAdd = {
-        ...story,
-        user: user._id,  
-        startDate: story.startDate ? new Date(story.startDate).toISOString() : null,
-        endDate: story.endDate ? new Date(story.endDate).toISOString() : null,
-        locations: locations.map((location) => {
-          const { _id, photos, videos, ...locationWithoutId } = location;
-          return {
-            ...locationWithoutId,
-            startDate: location.startDate ? new Date(location.startDate).toISOString() : null,
-            endDate: location.endDate ? new Date(location.endDate).toISOString() : null,
-          };
-        }),
-        routes: routes.map(({ _id, ...routeWithoutId }) => ({
-          ...routeWithoutId,
-          duration: routeWithoutId.duration,
-        })),
-      };  
-      const storyResponse = await axios.post(config.addStoryUrl, storyToAdd);
-      const savedStory = storyResponse.data.story;
-      toast.success("Added Story Successfully")
+    if (validateForm()) {
+      try {
+        const storyToAdd = {
+          ...story,
+          user: user._id,
+          startDate: story.startDate ? new Date(story.startDate).toISOString() : null,
+          endDate: story.endDate ? new Date(story.endDate).toISOString() : null,
+          locations: locations.map((location) => {
+            const { _id, photos, videos, ...locationWithoutId } = location;
+            return {
+              ...locationWithoutId,
+              startDate: location.startDate ? new Date(location.startDate).toISOString() : null,
+              endDate: location.endDate ? new Date(location.endDate).toISOString() : null,
+            };
+          }),
+          routes: routes.map(({ _id, ...routeWithoutId }) => ({
+            ...routeWithoutId,
+            duration: routeWithoutId.duration,
+          })),
+        };
+        const storyResponse = await axios.post(config.addStoryUrl, storyToAdd);
+        const savedStory = storyResponse.data.story;
+        toast.success("Added Story Successfully")
 
-      if (savedStory.locations && savedStory.locations.length > 0) {
-        for (let i = 0; i < savedStory.locations.length; i++) {
-          const locationId = savedStory.locations[i];
-  
-          if (locationId) {
-            const locationPhotos = locations[i].photos || [];
-            const locationVideos = locations[i].videos || [];
-  
-            await handleUpload(locationId, locationPhotos, locationVideos);
+        if (savedStory.locations && savedStory.locations.length > 0) {
+          for (let i = 0; i < savedStory.locations.length; i++) {
+            const locationId = savedStory.locations[i];
+
+            if (locationId) {
+              const locationPhotos = locations[i].photos || [];
+              const locationVideos = locations[i].videos || [];
+
+              await handleUpload(locationId, locationPhotos, locationVideos);
+            }
           }
+        } else {
+          throw new Error("No locations found in saved story");
         }
-      } else {
-        throw new Error("No locations found in saved story");
+
+        navigate(`/story/${savedStory._id}`);
+
+      } catch (error) {
+        console.error("Error adding story or uploading files:", error);
       }
-
-      navigate(`/story/${savedStory._id}`);
-
-    } catch (error) {
-      console.error("Error adding story or uploading files:", error);
     }
   };
-  
+
+  const validateLocations = () => {
+    const errors: { [key: number]: { [key: string]: string } } = {};
+
+    locations.forEach((location, index) => {
+      const fieldErrors: { [key: string]: string } = {};
+
+      if (!location.story || location.story.length < 5 || location.story.length > 4000) {
+        fieldErrors.story = "Story must be between 5 and 500 characters";
+      }
+
+      if (location.cost && !location.currency) {
+        fieldErrors.currency = "Currency is required when cost is provided";
+      }
+
+      if (!location.country) {
+        fieldErrors.country = "Country is required";
+      }
+
+      if (!location.city) {
+        fieldErrors.city = "City is required";
+      }
+
+      if (!location.startDate) {
+        fieldErrors.startDate = "Start Date is required";
+      }
+
+      if (!location.endDate) {
+        fieldErrors.endDate = "End Date is required";
+      } else if (location.startDate && location.endDate < location.startDate) {
+        fieldErrors.endDate = "End Date cannot be earlier than Start Date";
+      }
+
+      if (Object.keys(fieldErrors).length > 0) {
+        errors[index] = fieldErrors;
+      }
+    });
+
+    setValidationLocationErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrorMessage("Please fill in all required fields correctly.");
+      return false;
+    } else {
+      setFormErrorMessage("");
+      return true;
+    }
+  };
+
+  const validateRoutes = () => {
+    const errors: { [key: number]: { [key: string]: string } } = {};
+
+    routes.forEach((route, index) => {
+      const fieldErrors: { [key: string]: string } = {};
+
+      if (!route.origin) {
+        fieldErrors.origin = "Origin is required";
+      }
+      if (!route.destination) {
+        fieldErrors.destination = "Destination is required";
+      }
+      if (!route.transportType) {
+        fieldErrors.transportType = "Transport Type is required";
+      }
+      if (route.note && (route.note.length < 1 || route.note.length > 100)) {
+        fieldErrors.note = "Note must be between 1 and 100 characters";
+      }
+      if (route.cost !== undefined && route.cost < 0) {
+        fieldErrors.cost = "Cost must be positive (leave 0 if not interested)";
+      }
+      if (route.cost > 0 && !route.currency) {
+        fieldErrors.currency = "Currency is required when cost is provided";
+      }
+
+      if (Object.keys(fieldErrors).length > 0) {
+        errors[index] = fieldErrors;
+      }
+    });
+
+    setValidationRouteErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrorMessage("Please fill in all required fields correctly.");
+      return false;
+    } else {
+      setFormErrorMessage("");
+      return true;
+    }
+  };
+
+  const validateField = (field: "title" | "description", value: string) => {
+    const errors: { title?: string; description?: string } = { ...validationErrors };
+
+    if (field === "title") {
+      if (!value) {
+        errors.title = "Title is required";
+      } else if (value.length < 1 || value.length > 300) {
+        errors.title = "300 characters max";
+      } else {
+        delete errors.title;
+      }
+    }
+
+    if (field === "description") {
+      if (!value) {
+        errors.description = "Summary is required";
+      } else if (value.length < 1 || value.length > 1000) {
+        errors.description = "Summary must be between 1 and 300 characters";
+      } else {
+        delete errors.description;
+      }
+    }
+
+    setValidationErrors(errors);
+  };
+
+  const validateForm = () => {
+    const errors: { title?: string; description?: string } = {};
+
+    if (!story.title) {
+      errors.title = "Title is required";
+    }
+    if (story.title.length < 1 || story.title.length > 300) {
+      errors.title = "300 characters max";
+    }
+
+    if (!story.description){
+      errors.title = "Summary is required";
+    }
+    if (story.description.length < 1 || story.description.length > 1000) {
+      errors.description = "1000 characters max";
+    }
+
+    setValidationErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrorMessage("Please fill out required fields.");
+      return false;
+    } else {
+      setFormErrorMessage("");
+      return true;
+    }
+  };
+
   return (
     <ThemeProvider theme={theme}>
+      <Link className='backLinkAddStory' to={`/`}>Back</Link>
       <Box sx={{ p: 3 }}>
         {step === 1 && (
           <Box>
-            <AddLocations locations={locations} setLocations={setLocations}/>
+            <AddLocations
+              locations={locations}
+              setLocations={setLocations}
+              currencies={currencies}
+              validationErrors={validationLocationErrors}
+              setValidationErrors={setValidationLocationErrors}
+            />
+            {formErrorMessage && (
+              <Typography color="error" sx={{ mt: 1, fontSize: '0.875rem', textAlign: 'center' }}>
+                {formErrorMessage}
+              </Typography>
+            )}
+
             <Button
               variant="contained"
               onClick={() => {
-                handleNext();
-                const dateRange = getDateRangeFromLocations(locations);
-                setStory({
-                  ...story,
-                  countries: extractCountriesFromLocations(locations),
-                  startDate: dateRange.earliestDate,
-                  endDate: dateRange.latestDate,
-                });
+                if (validateLocations()) {
+                  handleNext();
+                  const dateRange = getDateRangeFromLocations(locations);
+                  setStory({
+                    ...story,
+                    countries: extractCountriesFromLocations(locations),
+                    startDate: dateRange.earliestDate,
+                    endDate: dateRange.latestDate,
+                  });
+                }
               }}
               color="secondary"
             >
@@ -287,28 +467,42 @@ const AddStory: React.FC = () => {
 
         {step === 2 && (
           <Box>
-            <AddRoutes routes={routes} setRoutes={setRoutes} />
+            <AddRoutes
+              routes={routes}
+              setRoutes={setRoutes}
+              validationErrors={validationRouteErrors}
+              setValidationErrors={setValidationRouteErrors}
+            />
+            {formErrorMessage && (
+              <Typography color="error" sx={{ mt: 1, fontSize: '0.875rem', textAlign: 'center' }}>
+                {formErrorMessage}
+              </Typography>
+            )}
             <div className="step2Buttons">
               <Button variant="outlined" onClick={handleBack} color="secondary">
                 Back
               </Button>
-              <Button
-                variant="outlined"
-                onClick={handleSkipRoutes}
-                color="secondary"
-              >
-                Skip
-              </Button>
+              {shouldShowSkipButton() && (
+                <Button
+                  variant="outlined"
+                  onClick={handleSkipRoutes}
+                  color="secondary"
+                >
+                  Skip
+                </Button>
+              )}
               <Button
                 variant="contained"
                 onClick={() => {
-                  handleNext();
-                  const budgetDetails = calculateTotalBudget(locations, routes);
-                  setStory({
-                    ...story,
-                    budget: budgetDetails.totalBudget,
-                    currency: budgetDetails.currency,
-                  });
+                  if (validateRoutes()) {
+                    handleNext();
+                    const budgetDetails = calculateTotalBudget(locations, routes);
+                    setStory({
+                      ...story,
+                      budget: budgetDetails.totalBudget,
+                      currency: budgetDetails.currency,
+                    });
+                  }
                 }}
                 color="secondary"
               >
@@ -342,7 +536,14 @@ const AddStory: React.FC = () => {
                 value={story.title}
                 size="small"
                 sx={{ mt: 2, mb: 2 }}
-                onChange={(e) => setStory({ ...story, title: e.target.value })}
+                required
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setStory({ ...story, title: value });
+                  validateField("title", value);
+                }}
+                error={!!validationErrors.title}
+                helperText={validationErrors.title}
               />
               <TextField
                 label="Summery"
@@ -351,7 +552,14 @@ const AddStory: React.FC = () => {
                 rows={2}
                 value={story.description}
                 sx={{ mb: 2 }}
-                onChange={(e) => setStory({ ...story, description: e.target.value })}
+                required
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setStory({ ...story, description: value });
+                  validateField("description", value);
+                }}
+                error={!!validationErrors.description}
+                helperText={validationErrors.description}
               />
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
@@ -406,6 +614,12 @@ const AddStory: React.FC = () => {
                 ))}
               </TextField>
             </Box>
+
+            {formErrorMessage && (
+              <Typography variant="body2" color="error" sx={{ mt: 2, textAlign: "center" }}>
+                {formErrorMessage}
+              </Typography>
+            )}
 
             <div className="step3Buttons">
               <Button variant="outlined" onClick={handleBack} color="secondary">

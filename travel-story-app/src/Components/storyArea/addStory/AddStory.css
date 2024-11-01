@@ -11,6 +11,15 @@
     margin-top: 20px;
 }
 
+.backLinkAddStory {
+    color: var(--darkBrown);
+    position: absolute;
+    left: 20px;
+    margin-top: 16px;
+    text-decoration: underline;
+    font-size: 17px;
+}
+
 @media (max-width: 768px) {
     .step2Buttons{
         flex-direction: column;

@@ -22,7 +22,7 @@ const StorySchema: Schema = new Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId, 
         ref: "user",
-        //required: [true, "User is required"]
+        required: [true, "User is required"]
     },
     countries: {
         type: [String],
@@ -30,13 +30,17 @@ const StorySchema: Schema = new Schema({
     },
     title: {
         type: String,
+        trim: true,
         required: [true, "Title is required"],
-        trim: true
+        maxlength: 300,
+        minlength: 1,
     },
     description: {
         type: String,
+        trim: true,
         required: [true, "Description is required"],
-        trim: true
+        maxlength: 1000,
+        minlength: 1,
     },
     startDate: {
         type: Date,
@@ -48,7 +52,7 @@ const StorySchema: Schema = new Schema({
     },
     budget: {
         type: Number,
-        required: [true, "Budget is required"]
+        min: [0, 'Budget cannot be negative']
     },
     currency: {
         type: String,
@@ -63,7 +67,6 @@ const StorySchema: Schema = new Schema({
     routes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "routes",
-        //required: [true, "Routes are required"]
     }],
     likes: {
         type: Number,

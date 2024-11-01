@@ -11,31 +11,44 @@ const convertCurrency = (amount: number,fromCurrency: string,toCurrency: string)
   return amount * (conversionRates[fromCurrency][toCurrency] || 1);
 };
 
-export const calculateTotalBudget = (locations: LocationModel[],routes: RouteModel[] = []): { totalBudget: number; currency: string } => {
+const filterValidRoutes = (routes: RouteModel[] = []): RouteModel[] => {
+  if (routes.length === 0) {
+    return [];
+  }
+  return routes.filter(route => {
+    if (route.cost > 0) {
+      return route.currency && route.currency.trim() !== "";
+    }
+    return false;
+  });
+};
+
+
+export const calculateTotalBudget = (locations: LocationModel[], routes: RouteModel[] = []): { totalBudget: number; currency: string } => {
   const currencyCount: { [key: string]: number } = {};
   const totalCosts: { [key: string]: number } = {};
 
+  const validRoutes = filterValidRoutes(routes);
+
   locations.forEach((location) => {
     const { cost, currency } = location;
-    if (!currency) return;
+    if (!currency || cost <= 0) return; 
 
     currencyCount[currency] = (currencyCount[currency] || 0) + 1;
     totalCosts[currency] = (totalCosts[currency] || 0) + cost;
   });
 
-  if (routes.length > 0) {
-    routes.forEach((route) => {
-      const { cost, currency } = route;
-      if (!currency) return;
+  validRoutes.forEach((route) => {
+    const { cost, currency } = route;
+    if (!currency || cost <= 0) return; 
 
-      currencyCount[currency] = (currencyCount[currency] || 0) + 1;
-      totalCosts[currency] = (totalCosts[currency] || 0) + cost;
-    });
-  }
+    currencyCount[currency] = (currencyCount[currency] || 0) + 1;
+    totalCosts[currency] = (totalCosts[currency] || 0) + cost;
+  });
 
-  const mostFrequentCurrency = Object.keys(currencyCount).reduce((a, b) =>
-    currencyCount[a] > currencyCount[b] ? a : b
-  );
+  const mostFrequentCurrency = Object.keys(currencyCount).length > 0
+    ? Object.keys(currencyCount).reduce((a, b) => (currencyCount[a] > currencyCount[b] ? a : b))
+    : "USD"; 
 
   let totalBudget = 0;
   Object.keys(totalCosts).forEach((currency) => {
@@ -48,4 +61,5 @@ export const calculateTotalBudget = (locations: LocationModel[],routes: RouteMod
 
   return { totalBudget, currency: mostFrequentCurrency };
 };
+
 

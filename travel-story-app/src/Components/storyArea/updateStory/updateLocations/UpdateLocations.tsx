@@ -46,19 +46,27 @@ const theme = createTheme({
   },
 });
 
-const currencies = [
-  { value: "USD", label: "$" },
-  { value: "EUR", label: "€" },
-  { value: "BTC", label: "฿" },
-  { value: "JPY", label: "¥" },
-];
+type CurrencyOption = {
+  value: string;
+  label: string;
+};
+
+// const currencies = [
+//   { value: "USD", label: "$" },
+//   { value: "EUR", label: "€" },
+//   { value: "BTC", label: "฿" },
+//   { value: "JPY", label: "¥" },
+// ];
 
 interface UpdateLocationsProps {
   locations: LocationModel[];
   setLocations: (locations: LocationModel[]) => void;
+  currencies: CurrencyOption[];
+  validationErrors: { [key: number]: { [key: string]: string } };
+  setValidationErrors: React.Dispatch<React.SetStateAction<{ [key: number]: { [key: string]: string } }>>;
 }
 
-const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocations }) => {
+const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocations, currencies, validationErrors, setValidationErrors }) => {
 
   const [countries, setCountries] = useState<{ name: string; code: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,8 +74,6 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
   const [isLoadingCities, setIsLoadingCities] = useState(false);
   const [mediaLoading, setMediaLoading] = useState<boolean[]>(Array(locations.length).fill(true));
   const [originalMediaKeys, setOriginalMediaKeys] = useState<any>([]);
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const updatedLocations = locations.map((location) => ({
@@ -141,8 +147,7 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
       }));
       setOriginalMediaKeys(mediaKeys);
     }
-  }, []);   
-
+  }, []);
 
   const handleFetchCities = debounce(
     async (countryCode: string, query: string) => {
@@ -152,7 +157,7 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
         const cityNames = await fetchCitiesAPI(countryCode, query);
         setCities(cityNames);
       } catch (error) {
-        
+
       } finally {
         setIsLoadingCities(false);
       }
@@ -244,12 +249,12 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
     fileType: "photos" | "videos"
   ) => {
     const updatedLocations = [...locations];
-  
+
     const fileKey =
       fileType === "photos"
         ? originalMediaKeys[locationIndex].photos[fileIndex]
         : originalMediaKeys[locationIndex].videos[fileIndex];
-  
+
     if (fileType === "photos") {
       const updatedPhotos = updatedLocations[locationIndex].photos.filter(
         (photo, i) => i !== fileIndex
@@ -267,11 +272,10 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
         videos: updatedVideos,
       };
     }
-  
+
     setLocations(updatedLocations);
     deleteMedia(updatedLocations[locationIndex]._id, fileKey, fileType);
   };
-  
 
   const deleteMedia = async (locationId: string, fileKey: string, fileType: "photos" | "videos") => {
     try {
@@ -304,6 +308,65 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
     }
     return base64;
   }
+
+  const validateField = (index: number, field: keyof LocationModel, value: any) => {
+    const newErrors = { ...validationErrors };
+    const fieldErrors: { [key: string]: string } = {};
+
+    switch (field) {
+      case "story":
+        if (!value || value.length < 5 || value.length > 500) {
+          fieldErrors.story = "Story must be between 5 and 500 characters";
+        }
+        break;
+      case "cost":
+        if (value < 0) {
+          fieldErrors.cost = "Cost must be positive (leave 0 if not interested)";
+        }
+        break;
+      case "currency":
+        if (locations[index].cost > 0 && !value) {
+          fieldErrors.currency = "Currency is required when cost is provided";
+        }
+        break;
+      case "country":
+        if (!value) {
+          fieldErrors.country = "Country is required";
+        }
+        break;
+      case "city":
+        if (!value) {
+          fieldErrors.city = "City is required";
+        }
+        break;
+      case "startDate":
+        if (!value) {
+          fieldErrors.startDate = "Start Date is required";
+        }
+        break;
+      case "endDate":
+        if (!value) {
+          fieldErrors.endDate = "End Date is required";
+        } else if (locations[index].startDate && value < locations[index].startDate) {
+          fieldErrors.endDate = "End Date cannot be earlier than Start Date";
+        }
+        break;
+      default:
+        break;
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      newErrors[index] = { ...newErrors[index], ...fieldErrors };
+    } else {
+      if (newErrors[index]) {
+        delete newErrors[index][field];
+        if (Object.keys(newErrors[index]).length === 0) {
+          delete newErrors[index];
+        }
+      }
+    }
+    setValidationErrors(newErrors);
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -357,6 +420,7 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
                 value={location.country}
                 onInputChange={(event, newInputValue) => {
                   handleCountryChange(index, newInputValue);
+                  validateField(index, "country", newInputValue)
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -364,6 +428,9 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
                     label="Country"
                     fullWidth
                     size="small"
+                    required
+                    error={!!validationErrors[index]?.country}
+                    helperText={validationErrors[index]?.country || ""}
                   />
                 )}
               />
@@ -379,6 +446,7 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
                 value={locations[index].city}
                 onChange={(event, newValue) => {
                   handleLocationChange(index, "city", newValue || "");
+                  validateField(index, "city", newValue)
                 }}
                 onInputChange={(event, newInputValue) => {
                   handleCityInputChange(
@@ -388,7 +456,15 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
                   );
                 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="City" fullWidth size="small" />
+                  <TextField
+                    {...params}
+                    label="City"
+                    fullWidth
+                    size="small"
+                    required
+                    error={!!validationErrors[index]?.city}
+                    helperText={validationErrors[index]?.city || ""}
+                  />
                 )}
               />
             </div>
@@ -398,13 +474,20 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
                 <DatePicker
                   label="Start Date"
                   value={location.startDate}
-                  onChange={(date) =>
-                    handleLocationChange(index, "startDate", date)
-                  }
-                  slotProps={{
-                    textField: { fullWidth: true, size: "small" },
-                  }}
                   format="dd/MM/yyyy"
+                  onChange={(date) => {
+                    handleLocationChange(index, "startDate", date);
+                    validateField(index, "startDate", date);
+                  }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      size: "small",
+                      required: true,
+                      error: !!validationErrors[index]?.startDate,
+                      helperText: validationErrors[index]?.startDate || "",
+                    },
+                  }}
                 />
               </LocalizationProvider>
             </div>
@@ -414,12 +497,19 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
                 <DatePicker
                   label="End Date"
                   value={location.endDate}
-                  onChange={(date) =>
-                    handleLocationChange(index, "endDate", date)
-                  }
+                  onChange={(date) => {
+                    handleLocationChange(index, "endDate", date);
+                    validateField(index, "endDate", date);
+                  }}
                   minDate={location.startDate || undefined}
                   slotProps={{
-                    textField: { fullWidth: true, size: "small" },
+                    textField: {
+                      fullWidth: true,
+                      size: "small",
+                      required: true,
+                      error: !!validationErrors[index]?.endDate,
+                      helperText: validationErrors[index]?.endDate || "",
+                    },
                   }}
                   format="dd/MM/yyyy"
                 />
@@ -433,9 +523,12 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
                 fullWidth
                 multiline
                 rows={4}
-                onChange={(e) =>
-                  handleLocationChange(index, "story", e.target.value)
-                }
+                required
+                onChange={(e) => {
+                  handleLocationChange(index, "story", e.target.value);
+                  validateField(index, "story", e.target.value);
+                }} error={!!validationErrors[index]?.story}
+                helperText={validationErrors[index]?.story || "Enter a story between 5 and 4000 characters"}
               />
             </div>
 
@@ -443,33 +536,32 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
               <TextField
                 label="Cost"
                 type="number"
-                value={location.cost}
-                fullWidth
                 size="small"
-                onChange={(e) =>
-                  handleLocationChange(
-                    index,
-                    "cost",
-                    parseFloat(e.target.value)
-                  )
-                }
-                inputProps={{
-                  min: "1",
+                value={location.cost ?? ""}
+                fullWidth
+                onChange={(e) => {
+                  const costValue = parseFloat(e.target.value) || 0;
+                  handleLocationChange(index, "cost", costValue);
+                  validateField(index, "cost", costValue);
                 }}
+                error={!!validationErrors[index]?.cost}
+                helperText={validationErrors[index]?.cost || "Leave empty or 0 if not interested"}
               />
             </div>
 
             <div className="inputFieldAddForm">
               <TextField
-                id="outlined-select-currency"
                 select
-                label="Select"
-                fullWidth
+                label="Currency"
                 size="small"
-                value={location.currency}
-                onChange={(e) =>
-                  handleLocationChange(index, "currency", e.target.value)
-                }
+                fullWidth
+                value={location.currency || ""}
+                onChange={(e) => {
+                  handleLocationChange(index, "currency", e.target.value);
+                  validateField(index, "currency", e.target.value);
+                }}
+                error={!!validationErrors[index]?.currency}
+                helperText={validationErrors[index]?.currency || "Please select a currency if cost is provided"}
               >
                 {currencies.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
