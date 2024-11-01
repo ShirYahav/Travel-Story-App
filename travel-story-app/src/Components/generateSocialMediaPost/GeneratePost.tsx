@@ -60,10 +60,9 @@ const GeneratePost: React.FC = () => {
             setLoading(true);
             try {
                 const prompt = createPromptForStory(story);
-               //setPostContent(localStorage.getItem("postContent"))
                 const generatedContent = await generateFacebookPost(prompt);
                 setPostContent(generatedContent);
-                //localStorage.setItem("postContent", generatedContent);
+                //setPostContent("test test")
             } catch (error) {
                 console.error("Failed to generate post:", error);
                 setPostContent("Could not generate post content.");
@@ -159,6 +158,13 @@ const GeneratePost: React.FC = () => {
     `;
     }
 
+    const handleShareOnFacebook = () => {
+        const shareURL = window.location.href; 
+        const facebookShareURL = `https://www.facebook.com/dialog/share?app_id=1088953099351523&href=${encodeURIComponent(shareURL)}&quote=${encodeURIComponent(postContent)}&display=popup`;
+
+        window.open(facebookShareURL, "Share on Facebook", "width=600,height=400");
+    };
+
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{ p: 3 }}>
@@ -193,10 +199,9 @@ const GeneratePost: React.FC = () => {
                 ) : (
                     <QuiltedMediaList mediaData={mediaData} />
                 )}
-
-                <Button variant="contained" color="secondary" style={{ marginTop: "20px" }}>
+                {/* <Button variant="contained" color="secondary" style={{ marginTop: "20px" }} onClick={handleShareOnFacebook}>
                     Publish on Facebook
-                </Button>
+                </Button> */}
             </Box>
         </ThemeProvider>
     );
