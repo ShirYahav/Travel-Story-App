@@ -250,8 +250,11 @@ const UpdateStory: React.FC = () => {
     locations.forEach((location, index) => {
       const fieldErrors: { [key: string]: string } = {};
 
-      if (!location.story || location.story.length < 5 || location.story.length > 4000) {
-        fieldErrors.story = "Story must be between 5 and 500 characters";
+      if (!location.story || location.story.length < 5) {
+        fieldErrors.story = "Story too short";
+      }
+      if (location.story.length > 4000) {
+        fieldErrors.story = "Story too long";
       }
 
       if (location.cost && !location.currency) {

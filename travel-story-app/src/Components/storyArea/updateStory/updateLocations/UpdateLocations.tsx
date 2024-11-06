@@ -340,8 +340,11 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
 
     switch (field) {
       case "story":
-        if (!value || value.length < 5 || value.length > 500) {
-          fieldErrors.story = "Story must be between 5 and 500 characters";
+        if (!value || value.length < 5) {
+          fieldErrors.story = "Story too short";
+        }
+        if (value.length > 4000) {
+          fieldErrors.story = "Story too long";
         }
         break;
       case "cost":
