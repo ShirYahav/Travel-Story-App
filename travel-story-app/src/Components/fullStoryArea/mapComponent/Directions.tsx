@@ -2,6 +2,7 @@ import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import RouteDialog from "./RouteDialog";
 import RouteModel from "../../../Models/RouteModel"; 
+import { getCityCoordinatesGoogle } from "../../../Services/CountriesCitiesService";
 
 interface DirectionsProps {
   routesData: RouteModel[];  
@@ -54,7 +55,8 @@ export function Directions({routesData} : DirectionsProps) {
 
         directionsRenderers[index].setMap(map);
       } catch (error) {
-        console.error("Error fetching directions:", error);
+        console.warn("Error fetching directions:", error);
+        handleFallbackRoute(route, map, setSelectedRoute, setDialogOpen, setClickPosition);
       }
     });
 
@@ -77,5 +79,42 @@ export function Directions({routesData} : DirectionsProps) {
       )}
     </>
   );
+}
+
+async function handleFallbackRoute(
+  route: RouteModel,
+  map: google.maps.Map,
+  setSelectedRoute: React.Dispatch<React.SetStateAction<RouteModel | null>>,
+  setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  setClickPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>
+) {
+  try {
+    const [originCoords, destinationCoords] = await Promise.all([
+      getCityCoordinatesGoogle(route.origin),
+      getCityCoordinatesGoogle(route.destination),
+    ]);
+
+    if (originCoords && destinationCoords) {
+      const fallbackPolyline = new google.maps.Polyline({
+        path: [
+          new google.maps.LatLng(originCoords.lat, originCoords.lng),
+          new google.maps.LatLng(destinationCoords.lat, destinationCoords.lng),
+        ],
+        strokeColor: "#B25E39", 
+        strokeWeight: 2,
+        map,
+      });
+
+      fallbackPolyline.addListener("click", (event: google.maps.MapMouseEvent) => {
+        setSelectedRoute(route);
+        setDialogOpen(true);
+
+        const { x, y } = event.domEvent as MouseEvent;
+        setClickPosition({ x, y });
+      });
+    }
+  } catch (error) {
+    console.error("Geocoding failed for fallback polyline:", error);
+  }
 }
 

@@ -32,30 +32,50 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
   useEffect(() => {
     const updateLocations = async () => {
       const updatedLocations: LocationWithCoordinates[] = [];
-
+  
       for (const story of stories) {
-        for (const location of story.locations) {
+        const locationPromises = story.locations.map(async (location) => {
           const coordinates = await getCityCoordinatesGoogle(location.city);
-          if (coordinates) {
+          if (!coordinates) return null;
+  
+          let photos: string[] = [];
+          let videos: string[] = [];
+          try {
             const photosResponse = await axios.get(config.getPhotosByLocationIdUrl + location._id);
-            const videosResponse = await axios.get(config.getVideosByLocationIdUrl + location._id);
-            updatedLocations.push({
-              ...location,
-              lat: coordinates.lat,
-              lng: coordinates.lng,
-              photos: photosResponse.data.photos,
-              videos: videosResponse.data.videos,
-              startDate: new Date(location.startDate),
-              endDate: new Date(location.endDate),
-            });
+            photos = photosResponse.data.photos || [];
+          } catch (error) {
+            console.warn(`No photos found for location ${location._id}:`, error);
           }
-        }
+  
+          try {
+            const videosResponse = await axios.get(config.getVideosByLocationIdUrl + location._id);
+            videos = videosResponse.data.videos || [];
+          } catch (error) {
+            console.warn(`No videos found for location ${location._id}:`, error);
+          }
+  
+          return {
+            ...location,
+            lat: coordinates.lat,
+            lng: coordinates.lng,
+            photos,
+            videos,
+            startDate: new Date(location.startDate),
+            endDate: new Date(location.endDate),
+          };
+        });
+  
+        const resolvedLocations = await Promise.all(locationPromises);
+        updatedLocations.push(...(resolvedLocations.filter(Boolean) as LocationWithCoordinates[]));
       }
+  
+      console.log("Updated Locations:", updatedLocations);
       setLocations(updatedLocations);
     };
-
+  
     if (stories.length > 0) updateLocations();
   }, [stories]);
+  
 
   const sliderSettings = {
     dots: false,
@@ -81,6 +101,9 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
         className="userStoriesMap"
         colorScheme="DARK"
         gestureHandling= "greedy"
+        streetViewControl={false}
+        mapTypeControl={false}
+        zoomControl={false}
         restriction={{
           latLngBounds: WORLD_BOUNDS,  
           strictBounds: true,

@@ -11,6 +11,7 @@ import brownTrash from '../../../Assets/SVGs/trash-bin-trash-brown.png';
 import defaultStoryImg from '../../../Assets/defaults/default-story-img.jpg';
 import toast from 'react-hot-toast';
 import config from '../../../Utils/Config';
+import { fetchFirstPhoto } from '../../../Services/MediaService';
 
 interface StoryLineProps {
   story: StoryModel;
@@ -25,29 +26,19 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
   const [imageUrl, setImageUrl] = useState<any>(defaultStoryImg);
 
   useEffect(() => {
-    const fetchFirstPhoto = async () => {
-      try {
-        const firstPhoto = story?.locations?.[0]?.photos?.[0];
-        if (firstPhoto) {
-          const fileName = firstPhoto.toString().replace("photos/", "");
-          
-          const response = await axios.get(config.getPhotoByImgNameUrl + fileName, {
-            responseType: 'blob', 
-          });
-
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setImageUrl(reader.result); 
-          };
-          reader.readAsDataURL(response.data);
-        }
-      } catch (error) {
+    const loadImage = async () => {
+      const firstPhoto = story?.locations?.[0]?.photos?.[0];
+      if (firstPhoto) {
+        const fileName = firstPhoto.toString().replace("photos/", "");
+        const image = await fetchFirstPhoto(fileName, defaultStoryImg);
+        setImageUrl(image);
+      } else {
         setImageUrl(defaultStoryImg);
       }
     };
 
-    fetchFirstPhoto();
-  }, [story]);
+    loadImage();
+  }, []);
 
   const storyClicked = () => {
     navigate(`/story/${story._id}`);

@@ -23,6 +23,7 @@ import { calculateTotalBudget } from "../../../Services/CurrencyCostService";
 import toast from 'react-hot-toast';
 import './UpdateStory.css';
 import config from "../../../Utils/Config";
+import LoadingOverlayAddStory from "../addStory/LoadingOverlayAddStory";
 
 const theme = createTheme({
   palette: {
@@ -92,6 +93,8 @@ const UpdateStory: React.FC = () => {
   const [validationRouteErrors, setValidationRouteErrors] = useState<{ [key: number]: { [key: string]: string } }>({});
   const [validationErrors, setValidationErrors] = useState<{ title?: string; description?: string }>({});
   const [formErrorMessage, setFormErrorMessage] = useState<string>("");
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchStory = async () => {
@@ -392,6 +395,7 @@ const UpdateStory: React.FC = () => {
 
   const handleUpdateStory = async () => {
     if (validateForm()){
+    setIsLoading(true);
     try {
       const { user, _id, ...storyWithoutIdAndUser } = story;
 
@@ -433,6 +437,7 @@ const UpdateStory: React.FC = () => {
       navigate(`/story/${story._id}`);
 
     } catch (error) {
+      setIsLoading(false);
       console.error(error);
     }
   }
@@ -648,6 +653,7 @@ const UpdateStory: React.FC = () => {
               >
                 Update Story
               </Button>
+              <LoadingOverlayAddStory isLoading={isLoading} loadingText="Updating your story..."/>
             </div>
           </div>
         )}

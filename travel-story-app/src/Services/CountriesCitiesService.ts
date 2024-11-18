@@ -46,7 +46,6 @@ export const fetchCitiesAPIWithoutCountry = async (query: string) => {
       },
     }
   );
-
   return response.data.data.map((city: any) => city.city);
 };
 
@@ -64,13 +63,17 @@ export async function getCityCoordinatesGoogle(city: string): Promise<{ lat: num
 
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`Failed to fetch coordinates for city: ${city}. Status: ${response.status}`);
+      return null;
+    }
     const data = await response.json();
 
     if (data.results && data.results.length > 0) {
       const { lat, lng } = data.results[0].geometry.location;
       return { lat, lng };
     } else {
-      console.error(`No results found for city: ${city}`);
+      console.warn(`No results found for city: ${city}`);
       return null;
     }
   } catch (error) {

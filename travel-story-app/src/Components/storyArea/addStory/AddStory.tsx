@@ -24,6 +24,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../../Context/UserContext';
 import toast from 'react-hot-toast';
 import config from "../../../Utils/Config";
+import LoadingOverlayAddStory from "./LoadingOverlayAddStory";
 
 const theme = createTheme({
   palette: {
@@ -76,6 +77,8 @@ const AddStory: React.FC = () => {
 
   const [step, setStep] = useState(1);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const [locations, setLocations] = useState<LocationModel[]>([
     {
       _id: '',
@@ -90,6 +93,7 @@ const AddStory: React.FC = () => {
       videos: [],
     },
   ]);
+
   const [routes, setRoutes] = useState<RouteModel[]>([
     {
       _id: "",
@@ -102,6 +106,7 @@ const AddStory: React.FC = () => {
       currency: "",
     },
   ]);
+
   const [story, setStory] = useState<StoryModel>({
     _id: null,
     user: null,
@@ -236,6 +241,7 @@ const AddStory: React.FC = () => {
 
   const handleCreateStory = async () => {
     if (validateForm()) {
+      setIsLoading(true);
       try {
         const storyToAdd = {
           ...story,
@@ -277,6 +283,7 @@ const AddStory: React.FC = () => {
         navigate(`/story/${savedStory._id}`);
 
       } catch (error) {
+        setIsLoading(false);
         console.error("Error adding story or uploading files:", error);
       }
     }
@@ -635,6 +642,8 @@ const AddStory: React.FC = () => {
               >
                 Create Story
               </Button>
+              <LoadingOverlayAddStory isLoading={isLoading} loadingText="Creating your story..."/>
+
             </div>
           </div>
         )}
