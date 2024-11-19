@@ -117,10 +117,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
         mapId={process.env.REACT_APP_GOOGLE_MAPS_ID}
         colorScheme="DARK"
         className="storyMap"
-        gestureHandling="cooperative"
-        streetViewControl={false}
-        mapTypeControl={false}
-        zoomControl={false}
+        gestureHandling="greedy"
         restriction={{
           latLngBounds: WORLD_BOUNDS,
           strictBounds: true,
