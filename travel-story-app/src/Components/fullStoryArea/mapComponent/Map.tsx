@@ -118,6 +118,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
         colorScheme="DARK"
         className="storyMap"
         gestureHandling="greedy"
+        streetViewControl={false}
+        mapTypeControl={false}
+        zoomControl={false}
         restriction={{
           latLngBounds: WORLD_BOUNDS,
           strictBounds: true,
