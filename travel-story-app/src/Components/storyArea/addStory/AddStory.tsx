@@ -45,7 +45,7 @@ const theme = createTheme({
       fontSize: "32px",
     },
     h6: {
-      marginBottom: "20px",
+      marginBottom: "15px",
     },
   },
 });
