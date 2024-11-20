@@ -41,6 +41,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
         </div>
         <div className="textContainer">
           <h3 className="storyTitle">{story.title}</h3>
+          <hr/>
           <p className="storyDescription">{story.description}</p>
           <p className="byUser">By: {story.user.firstName}</p>
           <p className="likeCard">{story.likes} Likes</p>

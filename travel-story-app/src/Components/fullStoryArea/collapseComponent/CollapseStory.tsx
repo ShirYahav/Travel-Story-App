@@ -150,7 +150,7 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
             <p><strong>Country:&nbsp;</strong> {locationMedia.country}</p>
             <p><strong>Start Date:&nbsp;</strong> {new Date(locationMedia.startDate).toLocaleDateString()}</p>
             <p><strong>End Date:&nbsp;</strong> {new Date(locationMedia.endDate).toLocaleDateString()}</p>
-            <p><strong>Cost:&nbsp;</strong> {locationMedia.cost} {locationMedia.currency}</p>
+            {locationMedia.cost !== 0 && <p><strong>Cost:&nbsp;</strong> {locationMedia.cost} {locationMedia.currency}</p>}
             <p>{locationMedia.story}</p>
 
             <div className="media-container">

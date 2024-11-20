@@ -1,7 +1,6 @@
 .storyCard {
     width: 240px;
     height: 285px;
-    background-color: var(--lightBrown);
     border-radius: 8px;
     margin-bottom: 50px;
     transition: transform 0.3s ease;
@@ -31,48 +30,53 @@
 
 .textContainer {
     position: absolute;
-    top: 16px;
-    left: 22px;
-    right: 22px;
-    bottom: 16px;
-    display: flex;
-    flex-direction: column;
+    top: 25px;
+    left: 25px;
+    right: 25px;
+    bottom: 25px;
     padding: 15px;
     z-index: 2;
-    border: 3px solid var(--darkerBrown);
-    background-color: rgba(178, 94, 67, 0.7);
+    border: 1px solid var(--lightGrey);
+    border-radius: 8px;
+    background-color: rgba(158, 80, 47, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .likeCard,
 .byUser {
     position: absolute;
-    bottom: -8px;
-    left: 2px;
+    bottom: -5px;
     color: var(--lightGrey);
     font-size: 10px;
-    padding: 3px 5px;
-    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 181px;
 }
 
+.byUser {
+    left: 6px;
+}
 .likeCard {
     right: -142px;
 }
 
 .storyTitle {
     color: var(--lightGrey);
-    font-size: 16px;
-    margin-top: 7px;
-    height: 38px;
+    font-size: 19px;
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
 
 .storyDescription {
-    font-size: 13px;
-    text-align: start;
-    border: 1px solid var(--darkerBrown);
-    height: 118px;
-    padding: 5px;
-    border-radius: 6px;
+    font-size: 15px;
+    text-align: center;
+    height: auto;
+    padding: 0px;
     color: var(--lightGrey);
+    border: none;
     overflow-y: auto;
 }
 
@@ -91,4 +95,11 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.textContainer hr {
+    border-color: var(--lightGrey);
+    background-color: var(--lightGrey);
+    width: 100%;
+    margin-bottom: -5px;
 }
