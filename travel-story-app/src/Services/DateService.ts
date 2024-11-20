@@ -37,12 +37,18 @@ export const getDateRangeFromLocations = (locations: LocationModel[]) => {
 export const convertStoryData = (stories: any[]): StoryModel[] => {
   return stories.map((story) => ({
     ...story,
-    startDate: new Date(story.startDate),  // Convert startDate string to Date
-    endDate: new Date(story.endDate),      // Convert endDate string to Date
+    startDate: new Date(story.startDate),  
+    endDate: new Date(story.endDate),      
     locations: story.locations.map((location:LocationModel) => ({
       ...location,
-      startDate: new Date(location.startDate),  // Convert location startDate
-      endDate: new Date(location.endDate),      // Convert location endDate
+      startDate: new Date(location.startDate),  
+      endDate: new Date(location.endDate),  
     })),
   }));
+};
+
+export const convertTimeFromMinToHours = (minutes: number): { hours: number; leftoverMinutes: number } => {
+  const hours = Math.floor(minutes / 60);
+  const leftoverMinutes = minutes % 60;
+  return { hours, leftoverMinutes };
 };

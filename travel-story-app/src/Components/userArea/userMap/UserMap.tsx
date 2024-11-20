@@ -152,10 +152,10 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
                   &nbsp; (
                   {calculateDaysDifference(selectedLocation.startDate, selectedLocation.endDate)} days)
                 </p>
-                <p className="budgetInfoWindow">
+                {selectedLocation.cost !== 0 && <p className="budgetInfoWindow">
                   <img src={budgetIcon} alt="Budget" />
                   &nbsp; Cost: {selectedLocation.cost} {selectedLocation.currency}
-                </p>
+                </p>}
               </div>
               <div className="mapPhotosDiv">
                 {selectedLocation.photos.map((photo, index) => (

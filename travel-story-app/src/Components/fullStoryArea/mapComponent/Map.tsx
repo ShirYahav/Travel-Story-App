@@ -183,11 +183,11 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
                   )}{" "}
                   days)
                 </p>
-                <p className="budgetInfoWindow">
+                {selectedLocation.cost !== 0 &&  <p className="budgetInfoWindow">
                   <img src={budgetIcon} />
                   &nbsp; Cost: {selectedLocation.cost}{" "}
                   {selectedLocation.currency}
-                </p>
+                </p>}
               </div>
               <div className="mapPhotosDiv">
                 {selectedLocation.photos.map((photo, index) => (
