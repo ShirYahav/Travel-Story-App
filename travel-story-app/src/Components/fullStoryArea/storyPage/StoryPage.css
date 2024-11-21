@@ -3,9 +3,6 @@
 }
 .likesSection {
     display: flex;
-    justify-content: flex-start;
-    flex-direction: row;
-    align-items: center;
     margin-top: 20px;
 }
 
@@ -31,6 +28,20 @@
     margin-right: 7px;
 }
 
+.GeneratePostButton {
+    width: 145px;
+    height: 38px;
+    border-radius: 6px;
+    background-color: var(--lightGrey);
+    color: var(--darkBrown);
+    border: 3px solid var(--darkBrown);
+    cursor: pointer;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 18px;
+    margin-right: 7px;
+}
+
+.GeneratePostButton:hover,
 .updateStoryButton:hover {
     color: var(--lightGrey);
     background-color: var(--darkBrown);
@@ -57,6 +68,9 @@
 .collapseStoryPageDiv {
     text-align: start;
     margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .collapseStoryPageDiv h3 {
@@ -67,7 +81,7 @@
 }
 
 .collapseStoryPageDiv p {
-    font-size: 17px;
+    font-size: 20px;
     display: flex;
     align-items: center;
 }
@@ -79,8 +93,6 @@
 
 .updateDeleteStory {
     display: flex;
-    flex-direction: row;
-    align-items: center;
 }
 
 .deleteStoryButton {
@@ -146,10 +158,12 @@
     .deleteStoryButton{
         width: 35px;
         height: 29px;
+        margin-left: 1px;
     }
 
     .collapseStoryPageDiv p{
-        width:342px
+        width:342px;
+        font-size: 17px;
     }
 
     .deleteStoryIcon {

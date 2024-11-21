@@ -118,12 +118,14 @@ const StoryPage: React.FC = () => {
   };
 
   return (
+
     <div className="storyPageDiv">
       {center && story && <MapComponent story={story} center={center} />}
+
       <div className="collapseStoryPageDiv">
         <div className="h3AndShareOnFacebook">
           <h3>{story?.countries?.join(", ")}</h3>
-          {story?.user?._id === user?._id &&<button className="updateStoryButton" onClick={handleShareClick}>Generate a post for social media</button>}
+          {story?.user?._id === user?._id &&<button className="GeneratePostButton" onClick={handleShareClick}>Generate a post for social media</button>}
         </div>
         <p>{story?.description}</p>
         <p>
@@ -138,6 +140,7 @@ const StoryPage: React.FC = () => {
         </p>
         {story?.locations && <CollapseStoryList locations={story.locations} />}
       </div>
+
       <div className="bottomStoryPage">
         <div className="likesSection">
           <div className="likesDiv">{likes} People liked this story</div>
@@ -157,6 +160,7 @@ const StoryPage: React.FC = () => {
             </button>}
         </div>
       </div>
+      
     </div>
   );
 };
