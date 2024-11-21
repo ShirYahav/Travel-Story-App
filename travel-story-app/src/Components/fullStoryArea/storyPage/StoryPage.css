@@ -3,7 +3,6 @@
 }
 .likesSection {
     display: flex;
-    margin-top: 20px;
 }
 
 .likesDiv {
@@ -50,7 +49,7 @@
 .bottomStoryPage {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    margin-top: 20px;
 }
 
 .likeButton {
