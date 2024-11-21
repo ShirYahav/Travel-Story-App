@@ -7,7 +7,7 @@
 
 .searchBarContainer {
     position: absolute;
-    top: 35%;
+    top: 25%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
@@ -19,7 +19,7 @@
 
 .getInspired {
     color: var(--lightGrey);
-    font-size: 45px;
+    font-size: 60px;
     margin-bottom: 8px;
 }
 
@@ -32,6 +32,11 @@
 @media (max-width: 768px) {
 
     .searchBarContainer {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        flex-direction: column;
+        text-align: start;
         top: 27%;
         left: 33%;
         width: 45%;
