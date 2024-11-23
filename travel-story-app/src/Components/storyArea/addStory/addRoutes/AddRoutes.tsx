@@ -315,7 +315,8 @@ const AddRoutes: React.FC <AddRoutesProps> = ({routes, setRoutes, validationErro
             </div>
 
           <div className="inputFieldAddForm">
-            <Box display="flex" justifyContent="space-between">
+            <span className="routeDurationLabel">Transportation Duration:</span>
+            <Box display="flex" justifyContent="space-between" sx={{ mt: 2 }}>
               <TextField
                 select
                 label="Days"

@@ -10,6 +10,15 @@
     gap: 30px;
 }
 
+.routeDurationLabel {
+    color: #5d5c5c;
+    margin-bottom: 3px;
+    font-size: 12px;
+    text-align: left;
+    display: block; 
+    font-family: sans-serif;
+}
+
 @media (max-width: 768px) {
     .addRoutesButtons{
         flex-direction: column;
