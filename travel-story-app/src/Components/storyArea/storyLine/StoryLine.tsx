@@ -68,18 +68,24 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
           <img src={imageUrl} alt="Story location photo" />
         </div>
         <div className="textContainerLine">
-          <h3 className="storyTitleLine">{story.title}</h3>
-          <hr className="hrStoryTitleLine"></hr>
-          <p className="storyDescriptionLine">{story.description}</p>
-          <p className="duration"> <img src={plane} />Duration: {duration} days</p>
-          {story.budget !== 0 && <p className="budget"><img src={budgetIcon} />Budget: {story.budget} {story.currency}</p>}
-        </div>
-        <div className='lineBottomRight'>
-          <p className="byUserLine">By: {story?.user?.firstName} {story?.user?.lastName}</p>
-          {story?.user?._id === user?._id &&
-            <button className="deleteStoryLineButton" onClick={deleteStoryLine}>
-              <img className="deleteStoryLineIcon" src={brownTrash} />
-            </button>}
+          <div>
+            <h3 className="storyTitleLine">{story.title}</h3>
+            <p className="byUserLine">By: {story?.user?.firstName} {story?.user?.lastName}</p>
+            <hr className="hrStoryTitleLine"></hr>
+          </div>
+          <div>
+            <p className="storyDescriptionLine">{story.description}</p>
+          </div>
+          <div>
+            <p className="duration"> <img src={plane} />Duration: {duration} days</p>
+            {story.budget !== 0 && <p className="budget"><img src={budgetIcon} />Budget: {story.budget} {story.currency}</p>}
+          </div>
+          <div className='lineBottomRight'>
+            {story?.user?._id === user?._id &&
+              <button className="deleteStoryLineButton" onClick={deleteStoryLine}>
+                <img className="deleteStoryLineIcon" src={brownTrash} />
+              </button>}
+          </div>
         </div>
       </div>
     </>
