@@ -63,34 +63,43 @@ const StoryPage: React.FC = () => {
   }, []);
 
   const toggleLike = async () => {
-    if (!user) return;
+    if (!user) {
+      toast('Login to like this story', {
+        icon: '✈️',
+      });
+      return; 
+    }
+  
     try {
       if (isLiked) {
         setLikes((prevLikes) => prevLikes - 1);
         setIsLiked(false);
-
+  
         if (user.likedStories) {
-          const updatedLikedStories = user.likedStories.filter((likedStoryId: string) => likedStoryId !== storyId);
-          user.likedStories = updatedLikedStories; 
+          const updatedLikedStories = user.likedStories.filter(
+            (likedStoryId: string) => likedStoryId !== storyId
+          );
+          user.likedStories = updatedLikedStories;
         }
-
+  
         await axios.post(config.dislikeStoryUrl + storyId);
       } else {
         setLikes((prevLikes) => prevLikes + 1);
         setIsLiked(true);
-
+  
         if (user.likedStories) {
-          user.likedStories.push(storyId as string); 
+          user.likedStories.push(storyId as string);
         } else {
-          user.likedStories = [storyId as string]; 
+          user.likedStories = [storyId as string];
         }
-
+  
         await axios.post(config.likeStoryUrl + storyId);
       }
     } catch (error) {
-      toast.error("Error liking/disliking story");
+      toast.error('Error liking/disliking story');
     }
   };
+  
 
   const handleUpdateStory = () => {
     navigate(`/update-story/${storyId}`);
