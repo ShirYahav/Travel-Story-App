@@ -143,10 +143,10 @@ const StoryPage: React.FC = () => {
             formatDate(new Date(story.startDate))} -{" "}
           {story?.endDate && formatDate(new Date(story.endDate))}
         </p>
-        <p>
+        {story?.budget !== 0 && <p>
           <img src={budgetIcon} />
           &nbsp;{story?.budget} {story?.currency}
-        </p>
+        </p>}
         {story?.locations && <CollapseStoryList locations={story.locations} />}
       </div>
 
