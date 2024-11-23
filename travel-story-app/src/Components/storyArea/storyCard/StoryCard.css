@@ -65,13 +65,13 @@
 
 .storyTitle {
     color: var(--lightGrey);
-    font-size: 19px;
+    font-size: 17px;
     margin-top: 2px;
     margin-bottom: 2px;
 }
 
 .storyDescription {
-    font-size: 15px;
+    font-size: 13px;
     text-align: center;
     height: auto;
     padding: 0px;
