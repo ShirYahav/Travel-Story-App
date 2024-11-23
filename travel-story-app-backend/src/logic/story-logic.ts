@@ -17,8 +17,9 @@ const s3 = new S3Client({
 
 async function getAllStories(): Promise<IStory[]> {
   return StoryModel.find()
-    .populate({ path: "locations", model: LocationModel })
-    .populate({ path: "routes", model: RouteModel })
+  .populate({ path: "locations", model: LocationModel })
+  .populate({ path: "routes", model: RouteModel })
+  .populate({ path: "user", model: UserModel })
     .exec();
 }
 
