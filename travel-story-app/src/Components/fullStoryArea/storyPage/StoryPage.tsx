@@ -162,7 +162,7 @@ const StoryPage: React.FC = () => {
           </button>
         </div>
         <div className="updateDeleteStory">
-          {story?.user?._id === user?._id && <button className="updateStoryButton" onClick={handleUpdateStory}>Update Story</button>}
+          {story?.user?._id === user?._id && <button className="updateStoryButton" onClick={handleUpdateStory}>Update</button>}
           {story?.user?._id === user?._id && 
             <button className="deleteStoryButton" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={deleteStory}>
               <img className="deleteStoryIcon" src={getTrashIcon()}/>
