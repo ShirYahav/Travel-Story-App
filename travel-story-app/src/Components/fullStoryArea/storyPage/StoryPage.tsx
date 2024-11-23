@@ -134,8 +134,8 @@ const StoryPage: React.FC = () => {
       <div className="collapseStoryPageDiv">
         <div className="h3AndShareOnFacebook">
           <h3>{story?.countries?.join(", ")}</h3>
-          {story?.user?._id === user?._id &&<button className="GeneratePostButton" onClick={handleShareClick}>Generate a post for social media</button>}
         </div>
+        {story?.user?._id === user?._id &&<button className="GeneratePostButton" onClick={handleShareClick}>Generate a post for social media</button>}
         <p>{story?.description}</p>
         <p>
           <img src={durationIcon} />
