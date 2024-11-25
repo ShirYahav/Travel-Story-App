@@ -1,32 +1,20 @@
 import { useEffect, useState } from "react";
-import {
-  APIProvider,
-  Map,
-  AdvancedMarker,
-  InfoWindow,
-} from "@vis.gl/react-google-maps";
-import {
-  calculateDaysDifference,
-  formatDate,
-} from "../../../Services/DateService";
+import {APIProvider,Map,AdvancedMarker,InfoWindow} from "@vis.gl/react-google-maps";
+import {calculateDaysDifference, formatDate,} from "../../../Services/DateService";
 import { Directions } from "./Directions";
 import LocationModel from "../../../Models/LocationModel";
 import "./Map.css";
 import { getCityCoordinatesGoogle } from "../../../Services/CountriesCitiesService";
-import axios from "axios";
 import StoryModel from "../../../Models/StoryModel";
 import Slider from "react-slick";
 import durationIcon from "../../../Assets/SVGs/flight-date.png";
 import budgetIcon from "../../../Assets/SVGs/money-bag.png";
 import pinSharpCircle from '../../../Assets/SVGs/pin-sharp-circle.png';
-import config from "../../../Utils/Config";
+import Media from "../../reusableComponents/Media";
 
-interface LocationWithCoordinates
-  extends Omit<LocationModel, "photos" | "videos"> {
+interface LocationWithCoordinates extends LocationModel {
   lat: number;
   lng: number;
-  photos: string[];
-  videos: string[];
 }
 
 interface MapComponentProps {
@@ -51,37 +39,10 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
     for (const location of story.locations) {
       const coordinates = await getCityCoordinatesGoogle(location.city);
       if (coordinates) {
-        let photos: string[] = [];
-        let videos: string[] = [];
-
-        try {
-          const photosResponse = await axios.get(
-            config.getPhotosByLocationIdUrl + location._id
-          );
-          photos = photosResponse.data.photos;
-        } catch (error) {
-          if (axios.isAxiosError(error) && error.response?.status !== 404) {
-            console.error("Error fetching photos:", error);
-          }
-        }
-
-        try {
-          const videosResponse = await axios.get(
-            config.getVideosByLocationIdUrl + location._id
-          );
-          videos = videosResponse.data.videos;
-        } catch (error) {
-          if (axios.isAxiosError(error) && error.response?.status !== 404) {
-            console.error("Error fetching videos:", error);
-          }
-        }
-
         updatedLocations.push({
           ...location,
           lat: coordinates.lat,
           lng: coordinates.lng,
-          photos,
-          videos,
           startDate: new Date(location.startDate),
           endDate: new Date(location.endDate),
         });
@@ -90,7 +51,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
 
     setLocations(updatedLocations);
   };
-
 
   const sliderSettings = {
     dots: false,
@@ -133,10 +93,11 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
             onClick={() => setSelectedLocation(location)}
           >
             <div className="pinImageDiv">
-              <img
+              <Media
+                filename={(location.photos && location.photos.length > 0 ? location.photos[0] : pinSharpCircle) as string}
+                type="photo"
                 className={`pinImage ${location.photos && location.photos.length > 0 ? '' : 'defaultImage'}`}
-                src={location.photos && location.photos.length > 0 ? location.photos[0] : pinSharpCircle}
-                alt={location.city}
+                altText={location.city}
               />
             </div>
           </AdvancedMarker>
@@ -154,16 +115,15 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
                     key={`${selectedLocation.city}-video-${index}`}
                     className="mapVideosDiv"
                   >
-                    <video
+                    <Media
                       id={`video-${selectedLocation.city}-${index}`}
+                      filename={video as string}
+                      type="video"
                       autoPlay
                       muted
                       loop
                       playsInline
-                    >
-                      <source src={video} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
+                    />
                   </div>
                 ))}
               </Slider>
@@ -183,7 +143,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
                   )}{" "}
                   days)
                 </p>
-                {selectedLocation.cost !== 0 &&  <p className="budgetInfoWindow">
+                {selectedLocation.cost !== 0 && <p className="budgetInfoWindow">
                   <img src={budgetIcon} />
                   &nbsp; Cost: {selectedLocation.cost}{" "}
                   {selectedLocation.currency}
@@ -191,10 +151,11 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
               </div>
               <div className="mapPhotosDiv">
                 {selectedLocation.photos.map((photo, index) => (
-                  <img
+                  <Media
                     key={index}
-                    src={photo}
-                    alt={selectedLocation.city}
+                    filename={photo as string}
+                    type="photo"
+                    altText={selectedLocation.city}
                     className="mapPhoto"
                   />
                 ))}

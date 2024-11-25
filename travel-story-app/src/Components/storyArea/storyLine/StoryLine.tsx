@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './StoryLine.css';
 import plane from '../../../Assets/SVGs/flight-date.png';
 import budgetIcon from '../../../Assets/SVGs/money-bag.png';
@@ -11,7 +11,7 @@ import brownTrash from '../../../Assets/SVGs/trash-bin-trash-brown.png';
 import defaultStoryImg from '../../../Assets/defaults/default-story-img.jpg';
 import toast from 'react-hot-toast';
 import config from '../../../Utils/Config';
-import { fetchFirstPhoto } from '../../../Services/MediaService';
+import Media from '../../reusableComponents/Media';
 
 interface StoryLineProps {
   story: StoryModel;
@@ -23,22 +23,6 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
   const { user } = useUser();
   const navigate = useNavigate();
   const duration = calculateDaysDifference(story.startDate, story.endDate);
-  const [imageUrl, setImageUrl] = useState<any>(defaultStoryImg);
-
-  useEffect(() => {
-    const loadImage = async () => {
-      const firstPhoto = story?.locations?.[0]?.photos?.[0];
-      if (firstPhoto) {
-        const fileName = firstPhoto.toString().replace("photos/", "");
-        const image = await fetchFirstPhoto(fileName, defaultStoryImg);
-        setImageUrl(image);
-      } else {
-        setImageUrl(defaultStoryImg);
-      }
-    };
-
-    loadImage();
-  }, []);
 
   const storyClicked = () => {
     navigate(`/story/${story._id}`);
@@ -65,7 +49,12 @@ const StoryLine: React.FC<StoryLineProps> = ({ story, onDeleteStory }) => {
     <>
       <div className="storyLine" onClick={storyClicked}>
         <div className="storyImgLine">
-          <img src={imageUrl} alt="Story location photo" />
+          <Media
+              filename={story?.locations[0]?.photos[0] as string}
+              type="photo"
+              altText="Story location photo"
+              defaultAsset={defaultStoryImg}
+          />
         </div>
         <div className="textContainerLine">
           <div>

@@ -4,9 +4,7 @@ import LocationModel from '../../Models/LocationModel';
 import RouteModel from '../../Models/RouteModel';
 import { generateFacebookPost } from '../../Services/AIService';
 import { Link, Navigate, useLocation } from 'react-router-dom';
-import { TextField, CircularProgress, Box, Typography, createTheme, ThemeProvider, Button } from '@mui/material';
-import axios from 'axios';
-import config from '../../Utils/Config';
+import { TextField, Box, Typography, createTheme, ThemeProvider, Button } from '@mui/material';
 import QuiltedMediaList from './QuiltedMediaList';
 
 const theme = createTheme({
@@ -34,11 +32,6 @@ const theme = createTheme({
     },
 });
 
-interface MediaItem {
-    url: string;
-    type: 'image' | 'video';
-}
-
 const GeneratePost: React.FC = () => {
 
     const location = useLocation();
@@ -47,15 +40,12 @@ const GeneratePost: React.FC = () => {
     const [postContent, setPostContent] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
     const [redirect, setRedirect] = useState<boolean>(false);
-    const [mediaData, setMediaData] = useState<MediaItem[]>([]);
-    const [mediaLoading, setMediaLoading] = useState(true);
 
     useEffect(() => {
         if (!story) {
             setRedirect(true);
             return;
         }
-
         const fetchPostContent = async () => {
             setLoading(true);
             try {
@@ -70,53 +60,26 @@ const GeneratePost: React.FC = () => {
                 setLoading(false);
             }
         };
-
-        const fetchLocationsMedia = async () => {
-            try {
-                setMediaLoading(true);
-                const allMedia: MediaItem[] = [];
-
-                for (const location of story.locations) {
-                    let photos: string[] = [];
-                    let videos: string[] = [];
-
-                    try {
-                        const photosResponse = await axios.get(config.getPhotosByLocationIdUrl + location._id);
-                        photos = photosResponse.data.photos;
-                    } catch (error) {
-                        if (axios.isAxiosError(error) && error.response?.status !== 404) {
-                            console.error("Error fetching photos:", error);
-                        }
-                    }
-
-                    try {
-                        const videosResponse = await axios.get(config.getVideosByLocationIdUrl + location._id);
-                        videos = videosResponse.data.videos;
-                    } catch (error) {
-                        if (axios.isAxiosError(error) && error.response?.status !== 404) {
-                            console.error("Error fetching videos:", error);
-                        }
-                    }
-
-                    photos.forEach((photoUrl) => {
-                        allMedia.push({ url: photoUrl, type: 'image' });
-                    });
-
-                    videos.forEach((videoUrl) => {
-                        allMedia.push({ url: videoUrl, type: 'video' });
-                    });
-                }
-
-                setMediaData(allMedia);
-            } catch (error) {
-                console.error("Error fetching location media:", error);
-            } finally {
-                setMediaLoading(false);
-            }
-        };
         fetchPostContent();
-        fetchLocationsMedia();
     }, []);
+
+    const getStoryPhotos = (story: StoryModel): string[] => {
+        const allPhotos: string[] = [];
+        story.locations.forEach((location) => {
+          const stringPhotos = location.photos.filter((photo): photo is string => typeof photo === "string");
+          allPhotos.push(...stringPhotos);
+        });
+        return allPhotos;
+    };
+
+    const getStoryVideos = (story: StoryModel): string[] => {
+        const allVideos: string[] = [];
+        story.locations.forEach((location) => {
+          const stringVideos = location.videos.filter((video): video is string => typeof video === "string");
+          allVideos.push(...stringVideos);
+        });
+        return allVideos;
+    };
 
     if (redirect) {
         return <Navigate to="/" />;
@@ -146,7 +109,6 @@ const GeneratePost: React.FC = () => {
                 locationSummaries.push(summarizeRoute(story.routes[i]));
             }
         }
-
         return `
         Create a social media post for this travel story:
         Title: ${story.title}
@@ -192,13 +154,8 @@ const GeneratePost: React.FC = () => {
                     />
                 )}
 
-                {mediaLoading ? (
-                    <Box display="flex" alignItems="center" justifyContent="center" sx={{ mt: 4 }}>
-                        <CircularProgress />
-                    </Box>
-                ) : (
-                    <QuiltedMediaList mediaData={mediaData} />
-                )}
+                <QuiltedMediaList photos={getStoryPhotos(story)} videos={getStoryVideos(story)} />
+
                 {/* <Button variant="contained" color="secondary" style={{ marginTop: "20px" }} onClick={handleShareOnFacebook}>
                     Publish on Facebook
                 </Button> */}

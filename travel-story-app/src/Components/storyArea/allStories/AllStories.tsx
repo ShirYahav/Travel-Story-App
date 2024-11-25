@@ -62,7 +62,6 @@ const AllStories: React.FC = () => {
         : true;
       return meetsBudget && meetsDuration;
     });
-    console.log(filtered)
     setFilteredStories(filtered);
   }, [stories, budgetFilter, durationFilter]);
 

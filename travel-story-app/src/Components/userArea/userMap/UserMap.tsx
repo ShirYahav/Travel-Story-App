@@ -1,22 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
 import StoryModel from '../../../Models/StoryModel';
 import LocationModel from '../../../Models/LocationModel';
-import axios from 'axios';
 import { getCityCoordinatesGoogle } from '../../../Services/CountriesCitiesService';
 import Slider from 'react-slick';
 import durationIcon from '../../../Assets/SVGs/flight-date.png';
 import budgetIcon from '../../../Assets/SVGs/money-bag.png';
 import { calculateDaysDifference, formatDate } from '../../../Services/DateService';
-import pinSharpCircle from '../../../Assets/SVGs/pin-sharp-circle.png'; 
+import pinSharpCircle from '../../../Assets/SVGs/pin-sharp-circle.png';
 import './UserMap.css';
-import config from '../../../Utils/Config';
+import Media from '../../reusableComponents/Media';
 
-interface LocationWithCoordinates extends Omit<LocationModel, 'photos' | 'videos'> {
+interface LocationWithCoordinates extends LocationModel {
   lat: number;
   lng: number;
-  photos: string[];
-  videos: string[];
 }
 
 interface UserMapProps {
@@ -27,55 +24,36 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
 
   const [locations, setLocations] = useState<LocationWithCoordinates[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<LocationWithCoordinates | null>(null);
-  
-  
+
+
   useEffect(() => {
     const updateLocations = async () => {
       const updatedLocations: LocationWithCoordinates[] = [];
-  
+
       for (const story of stories) {
         const locationPromises = story.locations.map(async (location) => {
           const coordinates = await getCityCoordinatesGoogle(location.city);
+
           if (!coordinates) return null;
-  
-          let photos: string[] = [];
-          let videos: string[] = [];
-          try {
-            const photosResponse = await axios.get(config.getPhotosByLocationIdUrl + location._id);
-            photos = photosResponse.data.photos || [];
-          } catch (error) {
-            console.warn(`No photos found for location ${location._id}:`, error);
-          }
-  
-          try {
-            const videosResponse = await axios.get(config.getVideosByLocationIdUrl + location._id);
-            videos = videosResponse.data.videos || [];
-          } catch (error) {
-            console.warn(`No videos found for location ${location._id}:`, error);
-          }
-  
+
           return {
             ...location,
             lat: coordinates.lat,
             lng: coordinates.lng,
-            photos,
-            videos,
             startDate: new Date(location.startDate),
             endDate: new Date(location.endDate),
           };
         });
-  
+
         const resolvedLocations = await Promise.all(locationPromises);
         updatedLocations.push(...(resolvedLocations.filter(Boolean) as LocationWithCoordinates[]));
       }
-  
-      console.log("Updated Locations:", updatedLocations);
       setLocations(updatedLocations);
     };
-  
+
     if (stories.length > 0) updateLocations();
   }, [stories]);
-  
+
 
   const sliderSettings = {
     dots: false,
@@ -90,7 +68,7 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
     south: -85,
     west: -360,
     east: 360,
-  }; 
+  };
 
   return (
     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'Your_API_Key_Here'}>
@@ -100,14 +78,14 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
         mapId={process.env.REACT_APP_GOOGLE_MAPS_ID}
         className="userStoriesMap"
         colorScheme="DARK"
-        gestureHandling= "greedy"
+        gestureHandling="greedy"
         streetViewControl={false}
         mapTypeControl={false}
         zoomControl={false}
         restriction={{
-          latLngBounds: WORLD_BOUNDS,  
+          latLngBounds: WORLD_BOUNDS,
           strictBounds: true,
-        }} 
+        }}
       >
         {locations.map((location, index) => (
           <AdvancedMarker
@@ -116,10 +94,11 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
             onClick={() => setSelectedLocation(location)}
           >
             <div className="pinImageDiv">
-              <img
+              <Media
+                filename={(location.photos && location.photos.length > 0 ? location.photos[0] : pinSharpCircle) as string}
+                type="photo"
                 className={`pinImage ${location.photos && location.photos.length > 0 ? '' : 'defaultImage'}`}
-                src={location.photos && location.photos.length > 0 ? location.photos[0] : pinSharpCircle}
-                alt={location.city}
+                altText={location.city}
               />
             </div>
           </AdvancedMarker>
@@ -134,10 +113,15 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
               <Slider {...sliderSettings}>
                 {selectedLocation.videos.map((video, index) => (
                   <div key={`${selectedLocation.city}-video-${index}`} className="mapVideosDiv">
-                    <video id={`video-${selectedLocation.city}-${index}`} autoPlay muted loop controls>
-                      <source src={video} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
+                    <Media
+                      id={`video-${selectedLocation.city}-${index}`}
+                      filename={video as string}
+                      type="video"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
                   </div>
                 ))}
               </Slider>
@@ -159,7 +143,13 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
               </div>
               <div className="mapPhotosDiv">
                 {selectedLocation.photos.map((photo, index) => (
-                  <img key={index} src={photo} alt={selectedLocation.city} className="mapPhoto" />
+                  <Media
+                    key={index}
+                    filename={photo as string}
+                    type="photo"
+                    altText={selectedLocation.city}
+                    className="mapPhoto"
+                  />
                 ))}
               </div>
             </div>

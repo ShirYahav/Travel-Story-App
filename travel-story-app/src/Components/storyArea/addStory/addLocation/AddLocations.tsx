@@ -487,7 +487,7 @@ const AddLocations: React.FC<AddLocationsProps> = ({locations, setLocations, cur
                     locations[index].photos.map((file, i) => (
                       <div key={i} className="formImageDiv">
                         <img
-                          src={URL.createObjectURL(file)}
+                          src={URL.createObjectURL(file as File)}
                           alt={`Preview ${i}`}
                         />
                         <IconButton
@@ -515,7 +515,7 @@ const AddLocations: React.FC<AddLocationsProps> = ({locations, setLocations, cur
                       <div key={i} className="formVideoDiv">
                         <video width="200" controls>
                           <source
-                            src={URL.createObjectURL(file)}
+                            src={URL.createObjectURL(file as File)}
                             type="video/mp4"
                           />
                           Your browser does not support the video tag.

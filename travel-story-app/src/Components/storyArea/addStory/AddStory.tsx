@@ -273,7 +273,7 @@ const AddStory: React.FC = () => {
               const locationPhotos = locations[i].photos || [];
               const locationVideos = locations[i].videos || [];
 
-              await handleUpload(locationId, locationPhotos, locationVideos);
+              await handleUpload(locationId, locationPhotos as File[], locationVideos as File[]);
             }
           }
         } else {

@@ -4,13 +4,12 @@ import StoryCard from "../storyCard/StoryCard";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./StoriesList.css";
-import StoryModel from "../../../Models/StoryModel";
+import useStories from "../../../Store/useStories";
 
-interface StoriesListProps {
-  stories: StoryModel[];
-}
+interface StoriesListProps {}
 
-const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
+const StoriesList: React.FC<StoriesListProps> = () => {
+  const stories = useStories(state => state.stories);
 
   const settings = {
     dots: true,
@@ -37,6 +36,7 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
+          infinite: true,
           dots: true,
           autoplay: true,
           autoplaySpeed: 10000,
@@ -61,11 +61,11 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories }) => {
       },
     ],
   };
-
+  
   return (
     <div className="sliderContainer">
       <Slider {...settings} className="storyCardsContainer">
-        {stories.map((story, index) => {
+        {stories?.map?.((story, index) => {
           return (
             <div key={index} className="storyCardList">
               <StoryCard story={story} />

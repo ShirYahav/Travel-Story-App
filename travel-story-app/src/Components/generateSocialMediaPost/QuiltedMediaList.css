@@ -1,0 +1,13 @@
+#quiltedPhoto {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+#quiltedVideo{
+    width: 100%; 
+    height: 230px;
+    object-fit: cover;
+    border-radius: 8px;
+}

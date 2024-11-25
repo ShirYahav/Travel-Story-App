@@ -6,23 +6,17 @@ import StoryModel from "../../Models/StoryModel";
 import axios from "axios";
 import toast from 'react-hot-toast';
 import config from '../../Utils/Config'
+import useStories from "../../Store/useStories";
 
 const Home: React.FC = () => {
-  
-  const [stories, setStories] = useState<StoryModel[]>([]);
+  const {getStories} = useStories(state => state)
 
   useEffect(() => {
-      const fetchStories = async () => {
-        try {
-          const response = await axios.get(config.getTopStories);
-          setStories(response.data);
-          
-        } catch (error) {
-          toast.error("error fetching stories");
-        }
-      };
-        
-      fetchStories(); 
+    try { 
+      getStories();
+    } catch (error) {
+      toast.error("error fetching stories");
+    }
   }, []); 
 
   return (
@@ -43,7 +37,7 @@ const Home: React.FC = () => {
           <h3 className="peopleTell">People Tell</h3>
           <hr className="underlinePeopleTell"></hr>
           <div>
-            {stories && <StoriesList stories={stories} />}
+            <StoriesList />
           </div>
         </div>
       </div>

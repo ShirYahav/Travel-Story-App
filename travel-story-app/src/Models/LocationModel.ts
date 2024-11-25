@@ -7,8 +7,8 @@ class LocationModel {
     public story: string;
     public cost: number;
     public currency: string;
-    public photos: File[];
-    public videos: File[];
+    public photos: (File | string)[];
+    public videos: (File | string)[];
 }
 
 export default LocationModel;

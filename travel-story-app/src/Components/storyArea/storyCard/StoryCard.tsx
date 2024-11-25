@@ -1,32 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './StoryCard.css';
 import StoryModel from '../../../Models/StoryModel';
 import { useNavigate } from 'react-router-dom';
 import defaultStoryImg from '../../../Assets/defaults/default-story-img.jpg';
-import { fetchFirstPhoto } from '../../../Services/MediaService';
+import Media from '../../reusableComponents/Media';
 
 interface StoryCardProps {
   story: StoryModel;
 }
 
+
 const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
-  const [imageUrl, setImageUrl] = useState<any>(defaultStoryImg);
+  
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const loadImage = async () => {
-      const firstPhoto = story?.locations?.[0]?.photos?.[0];
-      if (firstPhoto) {
-        const fileName = firstPhoto.toString().replace("photos/", "");
-        const image = await fetchFirstPhoto(fileName, defaultStoryImg);
-        setImageUrl(image);
-      } else {
-        setImageUrl(defaultStoryImg);
-      }
-    };
-
-    loadImage();
-  }, []);
 
   const handleStoryCardClick = () => {
     navigate(`story/${story._id}`);
@@ -36,7 +22,13 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
     <>
       <div className="storyCard" onClick={handleStoryCardClick}>
         <div className="imageContainer">
-          <img src={imageUrl} alt="Story" className="storyImage" />
+          <Media
+              filename={story?.locations[0]?.photos[0] as string}
+              type="photo"
+              altText="Story location photo"
+              defaultAsset={defaultStoryImg}
+              className="storyImage"
+          />
           <div className="imageOverlay"></div>
         </div>
         <div className="textContainer">

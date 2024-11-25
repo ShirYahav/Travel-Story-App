@@ -4,6 +4,7 @@ class Config {
 }
 
 class DevelopmentConfig extends Config {
+    public assetBaseUrl = "https://d3t44flm6qnly0.cloudfront.net";
     public appUrl = "http://localhost:3001/"
     public userLoginUrl = "http://localhost:3001/api/auth/login/";
     public userRegisterUrl = "http://localhost:3001/api/auth/register/";
@@ -33,6 +34,7 @@ class DevelopmentConfig extends Config {
 }
 
 class ProductionConfig extends Config {
+    public assetBaseUrl = "https://d3t44flm6qnly0.cloudfront.net";
     public appUrl = "https://travelog-app-server.vercel.app/";
     public userLoginUrl = "https://travelog-app-server.vercel.app/api/auth/login/";
     public userRegisterUrl = "https://travelog-app-server.vercel.app/api/auth/register/";

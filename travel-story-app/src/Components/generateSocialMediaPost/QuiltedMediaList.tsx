@@ -1,18 +1,15 @@
 import * as React from 'react';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
 import { Box } from '@mui/material';
-
-interface MediaItem {
-  url: string;
-  type: 'image' | 'video';
-}
+import Media from '../reusableComponents/Media';
+import './QuiltedMediaList.css'
 
 interface QuiltedMediaListProps {
-  mediaData: MediaItem[];
+  photos: string[];
+  videos: string[];
 }
 
-const QuiltedMediaList: React.FC<QuiltedMediaListProps> = ({ mediaData }) => {
+const QuiltedMediaList: React.FC<QuiltedMediaListProps> = ({ photos, videos }) => {
+  console.log(photos,videos)
   return (
     <Box
       sx={{
@@ -23,29 +20,32 @@ const QuiltedMediaList: React.FC<QuiltedMediaListProps> = ({ mediaData }) => {
         gap: 1,
         gridTemplateColumns: {
           xs: 'repeat(2, 1fr)', 
-          sm: 'repeat(3, 1fr)', 
-          md: 'repeat(4, 1fr)', 
-          lg: 'repeat(5, 1fr)', 
-          xl: 'repeat(6, 1fr)', 
+          sm: 'repeat(4, 1fr)', 
+          md: 'repeat(5, 1fr)', 
+          lg: 'repeat(6, 1fr)', 
+          xl: 'repeat(8, 1fr)', 
         },
       }}
     >
-      {mediaData.map((item, index) => (
+
+      {photos.map((photo, index) => (
         <Box key={index} sx={{ width: '100%'}}>
-          {item.type === 'image' ? (
-            <img
-              src={item.url}
-              alt={`media-${index}`}
-              loading="lazy"
-              style={{ width: '100%', height: '230px', objectFit: 'cover', borderRadius: '8px' }}
-            />
-          ) : (
-            <video
-              src={item.url}
-              controls
-              style={{ width: '100%', height: '230px', objectFit: 'cover', borderRadius: '8px' }}
-            />
-          )}
+          <Media
+            filename={photo}
+            type="photo"
+            id="quiltedPhoto"
+            altText={`media-photo${index}`}
+          />
+        </Box>
+      ))}
+      {videos.map((video, index) => (
+        <Box key={index} sx={{ width: '100%' }}>
+          <Media
+            filename={video}
+            type="video"
+            id="quiltedVideo"
+            altText={`media-video${index}`}
+          />
         </Box>
       ))}
     </Box>
