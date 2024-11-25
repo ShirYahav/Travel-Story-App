@@ -123,6 +123,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ story, center }) => {
                       muted
                       loop
                       playsInline
+                      controls = {false}
                     />
                   </div>
                 ))}

@@ -9,7 +9,6 @@ interface QuiltedMediaListProps {
 }
 
 const QuiltedMediaList: React.FC<QuiltedMediaListProps> = ({ photos, videos }) => {
-  console.log(photos,videos)
   return (
     <Box
       sx={{

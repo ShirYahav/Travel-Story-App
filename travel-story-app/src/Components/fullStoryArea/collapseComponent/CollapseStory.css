@@ -138,6 +138,7 @@
 }
 
 @media (max-width: 768px) {
+
     .modal-content-video,
     #modal-content {
         width: 93%;
@@ -152,5 +153,11 @@
         color: white;
         font-weight: bold;
         font-size: 14px;
+        background-color: transparent;
+    }
+
+    .prev:hover,
+    .next:hover {
+        background-color: transparent;
     }
 }

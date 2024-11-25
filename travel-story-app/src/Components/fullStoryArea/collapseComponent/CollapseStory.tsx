@@ -111,7 +111,9 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
                   key={`video-${index}`}
                   filename={video as string}
                   type="video"
-                  controls
+                  controls={false}
+                  muted
+                  autoPlay
                   onClick={() => openModal(location.photos.length + index)}
                   onTouchStart={() => openModal(location.photos.length + index)}
                 />
@@ -141,7 +143,8 @@ const CollapseStory: React.FC<CollapseStoryProps> = ({ location }) => {
                 filename={location.videos[selectedMediaIndex - location.photos.length] as string}
                 type="video"
                 className="modal-content-video"
-                controls
+                controls={false}
+                muted={false}
                 autoPlay
               />
             )}

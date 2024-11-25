@@ -25,11 +25,9 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
   const [locations, setLocations] = useState<LocationWithCoordinates[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<LocationWithCoordinates | null>(null);
 
-
   useEffect(() => {
     const updateLocations = async () => {
       const updatedLocations: LocationWithCoordinates[] = [];
-
       for (const story of stories) {
         const locationPromises = story.locations.map(async (location) => {
           const coordinates = await getCityCoordinatesGoogle(location.city);
@@ -44,7 +42,6 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
             endDate: new Date(location.endDate),
           };
         });
-
         const resolvedLocations = await Promise.all(locationPromises);
         updatedLocations.push(...(resolvedLocations.filter(Boolean) as LocationWithCoordinates[]));
       }
@@ -53,7 +50,6 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
 
     if (stories.length > 0) updateLocations();
   }, [stories]);
-
 
   const sliderSettings = {
     dots: false,
@@ -121,6 +117,7 @@ const UserMap: React.FC<UserMapProps> = ({ stories }) => {
                       muted
                       loop
                       playsInline
+                      controls = {false}
                     />
                   </div>
                 ))}

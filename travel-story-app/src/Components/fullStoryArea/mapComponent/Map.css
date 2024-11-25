@@ -40,7 +40,6 @@
 .mapVideosDiv {
     width: 375px;
     height: auto;
-    margin-bottom: 27px;
 }
 
 .mapVideosDiv > video{
@@ -100,6 +99,7 @@
     font-size: 25px;
     font-family: Georgia, 'Times New Roman', Times, serif;
     margin-bottom: 10px;
+    margin-top: -4px;
 }
 
 .mapHr {
