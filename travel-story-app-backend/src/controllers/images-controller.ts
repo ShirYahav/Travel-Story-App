@@ -1,10 +1,7 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'; 
 import express, { Request, Response } from "express";
-import multer from "multer";
-import { Readable } from 'stream';
 import LocationModel from "../models/location-model";
-import locationLogic from '../logic/location-logic'
 
 const router = express.Router();
 
@@ -15,9 +12,6 @@ const s3 = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
 });
-
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
 
 router.post("/get-presigned-url", async (req: Request, res: Response) => {
   const { fileName, fileType, folder } = req.body;  
@@ -99,102 +93,6 @@ router.delete('/delete-location-media/:locationId', async (req: Request, res: Re
   } catch (error) {
     console.error("Error deleting media:", error);
     res.status(500).send("Error deleting media.");
-  }
-});
-
-const getS3Object = async (key: string) => {
-  const command = new GetObjectCommand({
-    Bucket: process.env.S3_BUCKET_NAME!,
-    Key: key,
-  });
-
-  const result = await s3.send(command);
-  return result.Body as Readable;
-};
-
-router.get("/story/photo/:imageName", async (request: Request, response: Response) => {
-  try {
-    const imageName = request.params.imageName;
-    const key = `photos/${imageName}`; 
-
-    const s3Stream = await getS3Object(key);
-
-    if (s3Stream) {
-      s3Stream.pipe(response);
-    } else {
-      response.status(404).json({ message: "Image not found" });
-    }
-
-  } catch (err) {
-    console.error("Error fetching photo from S3:", err);
-    response.status(500).json({ error: "Error fetching photo from S3", details: err });
-  }
-});
-
-router.get("/story/photos/:locationId", async (request: Request, response: Response) => {
-  try {
-    const { locationId } = request.params;
-    const location = await locationLogic.findLocationById(locationId);
-
-    if (!location || !location.photos.length) {
-      return response.status(404).send("No photos found for this location");
-    }
-
-    const base64Photos: string[] = [];
-
-    for (const photoUrl of location.photos) {
-      const photoName = photoUrl.split('/').pop();
-      const key = `photos/${photoName}`; 
-
-      const s3Stream = await getS3Object(key);
-
-      const chunks: Uint8Array[] = [];
-      for await (const chunk of s3Stream) {
-        chunks.push(chunk);
-      }
-      const buffer = Buffer.concat(chunks);
-      const base64Photo = buffer.toString("base64");
-
-      base64Photos.push(`data:image/jpeg;base64,${base64Photo}`);
-    }
-
-    response.json({ photos: base64Photos });
-  } catch (err) {
-    console.error("Error fetching photos:", err);
-    response.status(400).json(err);
-  }
-});
-
-router.get("/story/videos/:locationId", async (request: Request, response: Response) => {
-  try {
-    const { locationId } = request.params;
-    const location = await locationLogic.findLocationById(locationId);
-
-    if (!location || !location.videos.length) {
-      return response.status(404).send("No videos found for this location");
-    }
-
-    const base64Videos: string[] = [];
-
-    for (const videoUrl of location.videos) {
-      const videoName = videoUrl.split('/').pop();
-      const key = `videos/${videoName}`; 
-      const s3Stream = await getS3Object(key);
-
-      const chunks: Uint8Array[] = [];
-      for await (const chunk of s3Stream) {
-        chunks.push(chunk);
-      }
-      const buffer = Buffer.concat(chunks);
-      const base64Video = buffer.toString("base64");
-
-      base64Videos.push(`data:video/mp4;base64,${base64Video}`);
-    }
-
-    response.json({ videos: base64Videos });
-  } catch (err) {
-    console.error("Error fetching videos:", err);
-    response.status(400).json(err);
   }
 });
 

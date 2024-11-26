@@ -1,26 +1,15 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  TextField,
-  Autocomplete,
-  Button,
-  MenuItem,
-  Typography,
-  IconButton,
-  CircularProgress,
-} from "@mui/material";
+import {Box, TextField, Autocomplete, Button, MenuItem, Typography, IconButton} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Cancel";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import debounce from "lodash.debounce";
-import {
-  fetchCitiesAPI,
-  fetchCountriesAPI,
-} from "../../../../Services/CountriesCitiesService";
+import {fetchCitiesAPI,fetchCountriesAPI} from "../../../../Services/CountriesCitiesService";
 import LocationModel from "../../../../Models/LocationModel";
 import axios from "axios";
 import config from "../../../../Utils/Config";
+import Media from "../../../reusableComponents/Media";
 
 const theme = createTheme({
   palette: {
@@ -51,13 +40,6 @@ type CurrencyOption = {
   label: string;
 };
 
-// const currencies = [
-//   { value: "USD", label: "$" },
-//   { value: "EUR", label: "€" },
-//   { value: "BTC", label: "฿" },
-//   { value: "JPY", label: "¥" },
-// ];
-
 interface UpdateLocationsProps {
   locations: LocationModel[];
   setLocations: (locations: LocationModel[]) => void;
@@ -72,7 +54,6 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
   const [isLoading, setIsLoading] = useState(false);
   const [cities, setCities] = useState<string[]>([]);
   const [isLoadingCities, setIsLoadingCities] = useState(false);
-  const [mediaLoading, setMediaLoading] = useState<boolean[]>(Array(locations.length).fill(true));
   const [originalMediaKeys, setOriginalMediaKeys] = useState<any>([]);
 
   useEffect(() => {
@@ -96,82 +77,6 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
       }
     };
     getCountries();
-  }, []);
-
-  useEffect(() => {
-    const fetchAllLocationMedia = () => {
-      const updatedLocationsPromises = locations.map((location, index) => {
-        setMediaLoading((prev) => {
-          const updatedLoading = [...prev];
-          updatedLoading[index] = true;
-          return updatedLoading;
-        });
-  
-        let photos:any = undefined;
-        let videos:any = undefined;
-  
-        const photosPromise = axios
-          .get(config.getPhotosByLocationIdUrl + location._id)
-          .then((response) => {
-            photos = response.data.photos.length > 0 ? response.data.photos : undefined;
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 404) {
-              photos = undefined;
-            } else {
-              console.error("Error fetching photos for location:", location._id, error);
-            }
-          });
-  
-        const videosPromise = axios
-          .get(config.getVideosByLocationIdUrl + location._id)
-          .then((response) => {
-            videos = response.data.videos.length > 0 ? response.data.videos : undefined;
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 404) {
-              videos = undefined; 
-            } else {
-              console.error("Error fetching videos for location:", location._id, error);
-            }
-          });
-  
-        return Promise.all([photosPromise, videosPromise])
-          .then(() => {
-            setMediaLoading((prev) => {
-              const updatedLoading = [...prev];
-              updatedLoading[index] = false;
-              return updatedLoading;
-            });
-  
-            return {
-              ...location,
-              photos,
-              videos,
-            };
-          });
-      });
-  
-      Promise.all(updatedLocationsPromises)
-        .then((updatedLocations) => {
-          setLocations(updatedLocations);
-        })
-        .catch((error) => {
-          console.error("Error updating locations:", error);
-        });
-    };
-  
-    fetchAllLocationMedia();
-  }, []);
-  
-  useEffect(() => {
-    if (locations.length > 0 && originalMediaKeys.length === 0) {
-      const mediaKeys = locations.map((location) => ({
-        photos: [...location.photos],
-        videos: [...location.videos],
-      }));
-      setOriginalMediaKeys(mediaKeys);
-    }
   }, []);
 
   const handleFetchCities = debounce(
@@ -207,11 +112,7 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
     handleLocationChange(index, "city", "");
   };
 
-  const handleCityInputChange = (
-    index: number,
-    countryName: string,
-    cityQuery: string
-  ) => {
+  const handleCityInputChange = (index: number, countryName: string, cityQuery: string) => {
     const selectedCountry = countries.find((c) => c.name === countryName);
     if (!selectedCountry) return;
     handleFetchCities(selectedCountry.code, cityQuery);
@@ -240,10 +141,7 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
     ]);
   };
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
 
@@ -268,39 +166,25 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
     }
   };
 
-  const handleDeleteFile = (
-    locationIndex: number,
-    fileIndex: number,
-    fileType: "photos" | "videos"
-  ) => {
-    const updatedLocations = [...locations];
-
-    const fileKey =
-      fileType === "photos"
-        ? originalMediaKeys[locationIndex].photos[fileIndex]
-        : originalMediaKeys[locationIndex].videos[fileIndex];
-
-    if (fileType === "photos") {
-      const updatedPhotos = updatedLocations[locationIndex].photos.filter(
-        (photo, i) => i !== fileIndex
-      );
-      updatedLocations[locationIndex] = {
-        ...updatedLocations[locationIndex],
-        photos: updatedPhotos,
-      };
-    } else if (fileType === "videos") {
-      const updatedVideos = updatedLocations[locationIndex].videos.filter(
-        (video, i) => i !== fileIndex
-      );
-      updatedLocations[locationIndex] = {
-        ...updatedLocations[locationIndex],
-        videos: updatedVideos,
-      };
+  const handleDeleteFile = (locationIndex: number, fileName: string, fileType: "photos" | "videos") => {
+    if (!locations[locationIndex]) {
+      console.error(`Location at index ${locationIndex} is undefined`);
+      return;
     }
-
+    const updatedLocations = [...locations];
+    if (fileType === "photos") {
+      updatedLocations[locationIndex].photos = updatedLocations[locationIndex].photos.filter(
+        (photo) => photo !== fileName
+      );
+    } else if (fileType === "videos") {
+      updatedLocations[locationIndex].videos = updatedLocations[locationIndex].videos.filter(
+        (video) => video !== fileName
+      );
+    }
     setLocations(updatedLocations);
-    deleteMedia(updatedLocations[locationIndex]._id, fileKey, fileType);
+    deleteMedia(updatedLocations[locationIndex]._id, fileName, fileType);
   };
+  
 
   const deleteMedia = async (locationId: string, fileKey: string, fileType: "photos" | "videos") => {
     try {
@@ -311,28 +195,6 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
       console.error("Error deleting media:", error);
     }
   };
-
-  function base64ToBlobUrl(base64: string) {
-    if (base64.startsWith("data:video/mp4;base64,")) {
-      try {
-        const byteString = atob(base64.split(",")[1]);
-        const mimeType = base64.split(",")[0].split(":")[1].split(";")[0];
-        const byteNumbers = new Array(byteString.length);
-
-        for (let i = 0; i < byteString.length; i++) {
-          byteNumbers[i] = byteString.charCodeAt(i);
-        }
-
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: mimeType });
-        return URL.createObjectURL(blob);
-      } catch (error) {
-        console.error("Failed to convert base64 to blob:", error);
-        return "";
-      }
-    }
-    return base64;
-  }
 
   const validateField = (index: number, field: keyof LocationModel, value: any) => {
     const newErrors = { ...validationErrors };
@@ -599,106 +461,89 @@ const UpdateLocations: React.FC<UpdateLocationsProps> = ({ locations, setLocatio
               </TextField>
             </div>
 
-            {mediaLoading[index] ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', marginRight: '17px' }}>
-                <CircularProgress />
+            <Box>
+              <div className="inputFieldAddForm">
+                <input
+                  accept="image/*, video/*"
+                  type="file"
+                  multiple
+                  onChange={(e) => handleFileChange(e, index)}
+                  style={{ display: "none" }}
+                  id={`upload-button-${index}`}
+                />
+                <label htmlFor={`upload-button-${index}`}>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    color="primary"
+                    component="span"
+                    size="small"
+                  >
+                    Upload Images/Videos
+                  </Button>
+                </label>
               </div>
-            ) : (
-              <Box>
-                <div className="inputFieldAddForm">
-                  <input
-                    accept="image/*, video/*"
-                    type="file"
-                    multiple
-                    onChange={(e) => handleFileChange(e, index)}
-                    style={{ display: "none" }}
-                    id={`upload-button-${index}`}
-                  />
-                  <label htmlFor={`upload-button-${index}`}>
-                    <Button
-                      variant="outlined"
-                      fullWidth
-                      color="primary"
-                      component="span"
-                      size="small"
-                    >
-                      Upload Images/Videos
-                    </Button>
-                  </label>
-                </div>
 
-                <div className="imagePreview">
-                  {locations[index].photos?.length > 0 &&
-                    locations[index].photos.map((file, i) => (
-                      <div key={i} className="formImageDiv">
-                        <img
-                          src={
-                            typeof file === "string"
-                              ? file
-                              : URL.createObjectURL(file)
-                          }
-                          alt={`Preview ${i}`}
-                        />
-                        <IconButton
-                          onClick={() => handleDeleteFile(index, i, "photos")}
+              <div className="imagePreview">
+                {locations[index].photos?.length > 0 &&
+                  locations[index].photos.map((fileName, i) => (
+                    <div key={i} className="formImageDiv">
+                      <Media
+                        filename={fileName as string}
+                        type="photo"
+                        altText="Selected"
+                      />
+                      <IconButton
+                          onClick={() => handleDeleteFile(index, fileName as string, "photos")}
                           style={{
-                            position: "absolute",
-                            top: "0px",
-                            right: "0px",
-                            backgroundColor: "white",
-                            borderRadius: "50%",
-                            padding: "2px",
-                          }}
-                        >
-                          <DeleteIcon
-                            style={{ fontSize: "16px", color: "#B25E39" }}
-                          />
-                        </IconButton>
-                      </div>
-                    ))}
-                </div>
+                          position: "absolute",
+                          top: "0px",
+                          right: "0px",
+                          backgroundColor: "white",
+                          borderRadius: "50%",
+                          padding: "2px",
+                        }}
+                      >
+                        <DeleteIcon
+                          style={{ fontSize: "16px", color: "#B25E39" }}
+                        />
+                      </IconButton>
+                    </div>
+                  ))}
+              </div>
 
-                <div className="videoPreview">
-                  {locations[index].videos?.length > 0 &&
-                    locations[index].videos.map(
-                      (file: string | File, i: number) => {
-                        const videoSrc =
-                          typeof file === "string"
-                            ? base64ToBlobUrl(file)
-                            : URL.createObjectURL(file);
+              <div className="videoPreview">
+                {locations[index].videos?.length > 0 &&
+                  locations[index].videos.map((fileName, i) => (
+                    <div key={i} className="formVideoDiv">
+                      <Media
+                        filename={fileName as string}
+                        type="video"
+                        className="modal-content-video"
+                        controls={false}
+                        muted
+                        autoPlay
+                      />
 
-                        return videoSrc ? (
-                          <div key={i} className="formVideoDiv">
-                            <video width="200" controls>
-                              <source src={videoSrc} type="video/mp4" />
-                              Your browser does not support the video tag.
-                            </video>
-                            <IconButton
-                              onClick={() =>
-                                handleDeleteFile(index, i, "videos")
-                              }
-                              style={{
-                                position: "absolute",
-                                top: "0px",
-                                right: "0px",
-                                backgroundColor: "white",
-                                borderRadius: "50%",
-                                padding: "2px",
-                              }}
-                            >
-                              <DeleteIcon
-                                style={{ fontSize: "16px", color: "#B25E39" }}
-                              />
-                            </IconButton>
-                          </div>
-                        ) : (
-                          <p key={i}>Error loading video</p>
-                        );
-                      }
-                    )}
-                </div>
-              </Box>
-            )}
+                      <IconButton
+                        onClick={() => handleDeleteFile(index, fileName as string, "videos")}
+                        style={{
+                          position: "absolute",
+                          top: "0px",
+                          right: "0px",
+                          backgroundColor: "white",
+                          borderRadius: "50%",
+                          padding: "2px",
+                        }}
+                      >
+                        <DeleteIcon
+                          style={{ fontSize: "16px", color: "#B25E39" }}
+                        />
+                      </IconButton>
+                    </div>
+                  ))}
+              </div>
+            </Box>
           </Box>
         ))}
 
